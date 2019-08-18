@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1563752375 source:d:\projects\statistical-computing\entrypoint\main.cpp
+	<iostream>
+	<string>
+	"storageSize.h"
+	"printBinary.h"
+
+1563748681 d:\projects\statistical-computing\entrypoint\storagesize.h
+	<iostream>
+
+1563752512 d:\projects\statistical-computing\entrypoint\printbinary.h
+

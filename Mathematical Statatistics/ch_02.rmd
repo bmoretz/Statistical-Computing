@@ -142,18 +142,110 @@ xt <- log(x)
 
 Does $\bar{x}$ = $\tilde{x}$ ?
 
-```{r, c2_1a, echo = T}
+```{r echo = T}
+
+log(mean(x)) == mean(xt)
 
 ```
 
-### 2.3
+Does $m$ = $\tilde{m}$ ?
+
+```{r echo = T}
+
+log(median(x)) == median(xt)
+
+```
+
+### 2.2
+
+Compute the median $\bar{x}$ and median of the eight numbers: 1, 2, 4, 5, 6, 8, 11, 15.
+
+Let $f(x) = \sqrt{x}$
+
+Apply the transformation, then compute the mean, $tilde{x}$ and median, m, of the transformed data.
+
+```{r echo = T}
+
+x <- c(1, 2, 4, 5, 6, 8, 11, 15)
+xt <- sqrt(x)
+   
+```
+
++ Is $f(\bar{x}) = \tilde{x}$?
+
+```{r echo = T}
+
+sqrt(mean(x)) == mean(xt)
+
+```
+
++ Is $f(m) = \tilde{m}$?
+
+```{r echo = T}
+
+sqrt(median(x)) == median(xt)
+
+```
+
+### 2.4
 
 Import the flights data.
 
-```{r, c2_3, echo = T}
+```{r echo = T}
 
-flights <- read.csv(paste0(data.dir, "FlightDelays.csv"),
-                 header = T)
-
+flights <- data.table(read.csv(paste0(data.dir, "FlightDelays.csv"),
+                 header = T))
 
 ```
+
+a.) Create a table and bar chart of the departure times _(DepartTimes)_
+
+```{r echo = T}
+
+table(flights$DepartTime)
+
+```
+
+```{r echo = T, fig.height=3.5}
+
+ggplot(flights, aes(DepartTime)) +
+   geom_bar(aes(fill = ..count..)) +
+   labs(title = "Depart Times")
+
+```
+
+\newpage
+
+b.) Create a contingency table of the variables _Day_ and _Delay30_.
+
+```{r echo = T}
+
+delay <- table(flights$Day, flights$Delayed30)
+
+pretty_kable(delay, "Flight Delays")
+
+```
+
+Show the proportions of delayed flights, by day:
+
+```{r echo = T}
+
+pretty_kable(round(prop.table(delay), 4) * 100, "Flight Delays Proportions")
+
+```
+
+\newpage
+
+c.) Create side-by-side boxplots of the lengths of flight times, grouped by wether or not the flight was delayed at least 30 minutes:
+
+```{r echo = T, fig.height=3.5}
+
+ggplot(flights) +
+   geom_boxplot(aes(Delayed30, FlightLength, fill = Delayed30)) +
+   labs(title = "Flight Length by Delayed30")
+  
+```
+
+d.) Do you think there is a relationship between the length of the flight and whether or not the departure time is delayed by at least 30 minutes?
+
+The average flight time is the same, however, the flights that are delayed 30 minutes or more seem to be shorter overall.

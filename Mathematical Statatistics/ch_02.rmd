@@ -249,3 +249,161 @@ ggplot(flights) +
 d.) Do you think there is a relationship between the length of the flight and whether or not the departure time is delayed by at least 30 minutes?
 
 The average flight time is the same, however, the flights that are delayed 30 minutes or more seem to be shorter overall.
+
+### 2.5
+
+Import the General Social Survey data.
+
+```{r echo = T}
+
+gss <- data.table(read.csv(paste0(data.dir, "GSS2002.csv"),
+                 header = T))
+
+```
+
+a.) Create a table and a bar chart of the response to the question about the death penalty.
+
+```{r echo = T}
+
+table(gss$DeathPenalty)
+
+```
+
+```{r echo = T, fig.height=3.5}
+
+ggplot(gss, aes(DeathPenalty)) +
+   geom_bar(aes(fill = ..count..)) +
+   labs(title = "Death Penalty Survey Results")
+
+```
+
+b.) Use the _table_ command and the summary command in R on the gun ownership variable. What additional information does the summary command give that the table does not?
+
+```{r echo = T}
+
+table(gss$OwnGun)
+
+```
+
+```{r echo = T}
+
+summary(gss$OwnGun)
+
+```
+
+The summary tells us how many people didn't respond at all to the question.
+
+c.) Create a contingency table displaying the relationship between opinions about the death penalty to that about gun ownership.
+
+```{r echo = T}
+
+with(gss, {
+   table(OwnGun, DeathPenalty)
+})
+
+```
+
+d.) What proportion of gun owners favor the death penalty? Does it appear to be different from the proportion among those who do not own guns?
+
+```{r echo = T}
+
+round(prop.table(with(gss, {
+   table(OwnGun, DeathPenalty)
+})) * 100, 2)
+
+```
+
+It does seem that gun owners are overwhelmingly in favor of the death penalty compared to those who do not own a gun.
+
+
+### 2.6
+
+Import the data from the recidivism case study in section 1.4.
+
+Import the General Social Survey data.
+
+```{r echo = T}
+
+recid <- data.table(read.csv(paste0(data.dir, "Recidivism.csv"),
+                 header = T))
+
+```
+
+a.) Create a table and bar chart  of the __Recid__ variable.
+
+```{r echo = T}
+table(recid$Recid)
+```
+
+```{r echo = T}
+ggplot(recid, aes(Recid)) +
+   geom_bar(aes(fill = ..count..)) +
+   labs(title = "Recidivism")
+```
+
+b.) Create a contingency table summarizing the relationship between recidivism (__Recid__) by age (__Age25__).
+
+```{r echo = T}
+with(recid, {
+   table(Recid, Age25)
+})
+```
+
+Of those over 25 years of age, what proportion were sent back to prision?
+
+```{r echo = T}
+round(prop.table(with(recid, {
+   table(Recid, Age25)
+})) * 100, 2)
+```
+
+c.) Create side-by-side boxplots of the number of days to recidivism grouped by type of violation, and give three comparative statements about the distributions.
+
+```{r echo = T, fig.height=3.5}
+ggplot(recid[!is.na(Days)], aes(Type, Days)) +
+   geom_boxplot(aes(fill = Type)) +
+   labs(title = "Days Until Recidivism by Crime Type")
+
+```
+
++ 1.) Technical violations seem to happen quicker after initial release than new crimes.
+
++ 2.) There are more outliers present in the technical violations, with a cluster of them occuring after 900 days.
+
++ 3.) The variance is days until recidivism is larger for new crimes. The chances of a technical violation occuring after 450 days drop dramatically. 
+
+```{r echo = T}
+recid[!is.na(Days), .(Variance = comma(var(Days))), by = Type]
+```
+
+d.) Use the quantile command to obtain the quartiles of the number of days to recidivism. Since there are missing values (__NA__) for those released offeneders who had not recidivated, you will need to add the argument __na.rm = T__ to the __quartile__ command to exclude those observations.
+
+```{r echo = T}
+quantile(recid$Days, na.rm = T)
+```
+e.) Create ecdf's of days to recidivism for those under 25 years of age and those 25 years of age or older.
+
+```{r echo = T}
+
+with(recid, {
+   recid$U25 <- Age25 == "Under 25"
+   
+   plot.ecdf(recid[U25 == T]$Days)
+   plot.ecdf(recid[U25 == F]$Days, col="cornflowerblue", add = T)
+})
+
+```
+
+Approximately what proportion in each age group were sent back to prision 400 days after release?
+
+Of those who were sent back to prision,
+
+```{r echo = T}
+
+recid[!is.na(Days), 
+      .(Days, O400 = Days >= 400), by = Age25][,
+                                               .(Proportion = sum(O400) / .N), by = Age25]
+
+```
+
+went back after being release 400 days or more.

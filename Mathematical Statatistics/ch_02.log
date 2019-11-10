@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  9 NOV 2019 12:21
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  10 NOV 2019 11:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1254,22 +1254,189 @@ Package xcolor Warning: Incompatible color definition on input line 372.
 
 File: ch_02_files/figure-latex/unnamed-chunk-11-1.png Graphic file (type bmp)
 <ch_02_files/figure-latex/unnamed-chunk-11-1.png>
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 384.
+
+Package xcolor Warning: Incompatible color definition on input line 388.
+
+
+Package xcolor Warning: Incompatible color definition on input line 393.
+
+
+Package xcolor Warning: Incompatible color definition on input line 393.
+
+
+Package xcolor Warning: Incompatible color definition on input line 398.
+
+
+Package xcolor Warning: Incompatible color definition on input line 402.
+
+
+Package xcolor Warning: Incompatible color definition on input line 402.
+
+
+Package xcolor Warning: Incompatible color definition on input line 410.
+
 [4]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 384.
+
+Package xcolor Warning: Incompatible color definition on input line 416.
+
+
+Package xcolor Warning: Incompatible color definition on input line 416.
+
+File: ch_02_files/figure-latex/unnamed-chunk-14-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-14-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 424.
+
+
+Package xcolor Warning: Incompatible color definition on input line 428.
+
+
+Package xcolor Warning: Incompatible color definition on input line 428.
+
+
+Package xcolor Warning: Incompatible color definition on input line 436.
+
+
+Package xcolor Warning: Incompatible color definition on input line 440.
+
+
+Package xcolor Warning: Incompatible color definition on input line 440.
+
+
+Package xcolor Warning: Incompatible color definition on input line 453.
+
+
+Package xcolor Warning: Incompatible color definition on input line 459.
+
+
+Package xcolor Warning: Incompatible color definition on input line 459.
+
+[5]
+
+Package xcolor Warning: Incompatible color definition on input line 473.
+
+
+Package xcolor Warning: Incompatible color definition on input line 479.
+
+
+Package xcolor Warning: Incompatible color definition on input line 479.
+
+
+Package xcolor Warning: Incompatible color definition on input line 499.
+
+
+Package xcolor Warning: Incompatible color definition on input line 504.
+
+
+Package xcolor Warning: Incompatible color definition on input line 504.
+
+
+Package xcolor Warning: Incompatible color definition on input line 508.
+
+
+Package xcolor Warning: Incompatible color definition on input line 512.
+
+
+Package xcolor Warning: Incompatible color definition on input line 512.
+
+
+Package xcolor Warning: Incompatible color definition on input line 520.
+
+
+Package xcolor Warning: Incompatible color definition on input line 526.
+
+
+Package xcolor Warning: Incompatible color definition on input line 526.
+
+File: ch_02_files/figure-latex/unnamed-chunk-21-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-21-1.png>
+[6]
+
+Package xcolor Warning: Incompatible color definition on input line 533.
+
+
+Package xcolor Warning: Incompatible color definition on input line 539.
+
+
+Package xcolor Warning: Incompatible color definition on input line 539.
+
+
+Package xcolor Warning: Incompatible color definition on input line 551.
+
+
+Package xcolor Warning: Incompatible color definition on input line 557.
+
+
+Package xcolor Warning: Incompatible color definition on input line 557.
+
+
+Package xcolor Warning: Incompatible color definition on input line 570.
+
+[7]
+
+Package xcolor Warning: Incompatible color definition on input line 576.
+
+
+Package xcolor Warning: Incompatible color definition on input line 576.
+
+File: ch_02_files/figure-latex/unnamed-chunk-24-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-24-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 593.
+
+
+Package xcolor Warning: Incompatible color definition on input line 597.
+
+
+Package xcolor Warning: Incompatible color definition on input line 597.
+
+
+Package xcolor Warning: Incompatible color definition on input line 611.
+
+[8]
+
+Package xcolor Warning: Incompatible color definition on input line 615.
+
+
+Package xcolor Warning: Incompatible color definition on input line 615.
+
+
+Package xcolor Warning: Incompatible color definition on input line 625.
+
+
+Package xcolor Warning: Incompatible color definition on input line 634.
+
+
+Package xcolor Warning: Incompatible color definition on input line 634.
+
+File: ch_02_files/figure-latex/unnamed-chunk-27-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-27-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 643.
+
+
+Package xcolor Warning: Incompatible color definition on input line 649.
+
+
+Package xcolor Warning: Incompatible color definition on input line 649.
+
+[9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 660.
+[10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 660.
 (./ch_02.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 384.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 384.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 660.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 660.
 Package rerunfilecheck Info: File `ch_02.out' has not changed.
-(rerunfilecheck)             Checksum: F6A63D82533008AF7DCA06959A184998.
+(rerunfilecheck)             Checksum: 293A9D7C001F353650B6B4F3076BDAE4.
  ) 
 Here is how much of TeX's memory you used:
- 26953 strings out of 494894
- 495660 string characters out of 6175663
- 598519 words of memory out of 5000000
- 30580 multiletter control sequences out of 15000+600000
+ 26971 strings out of 494894
+ 496386 string characters out of 6175663
+ 598571 words of memory out of 5000000
+ 30594 multiletter control sequences out of 15000+600000
  545240 words of font info for 64 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 53i,11n,116p,802b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 53i,12n,116p,802b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on ch_02.pdf (4 pages).
+Output written on ch_02.pdf (10 pages).

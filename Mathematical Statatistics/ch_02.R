@@ -1,7 +1,4 @@
 
-
-D:\Projects\Statistical-Computing
-
 qnorm(.5)
 
 
@@ -14,11 +11,15 @@ plot(x, dnorm(x))
 
 ?pnorm
 
-f <- function(x, mu = 0, sgma = 1) (1 / sgma*sqrt(2*pi)) ^ exp( (-1/2) * ( (x - mu)/sgma)**2 )
+
+x <- seq(-3, 3, 0.01)
 
 par(mfrow=c(1,1))
-plot(x, f(x))
+plot(x, f(x), lty=3)
 segments(a, 0, a, f(a), col = "blue")
+
+f_norm <- function(x, mu = 0, sgma = 1) (1 / sgma*sqrt(2*pi)) ^ exp( (-1/2) * ( (x - mu)/sgma)**2 )
+curve(f_norm, from = -3, to = 3)
 
 qnorm(.455)
 pnorm(-.11)

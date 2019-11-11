@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  10 NOV 2019 11:55
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  11 NOV 2019 16:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1421,22 +1421,105 @@ Package xcolor Warning: Incompatible color definition on input line 649.
 Package xcolor Warning: Incompatible color definition on input line 649.
 
 [9]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 660.
+
+Package xcolor Warning: Incompatible color definition on input line 664.
+
+
+Package xcolor Warning: Incompatible color definition on input line 669.
+
+
+Package xcolor Warning: Incompatible color definition on input line 669.
+
+
+Package xcolor Warning: Incompatible color definition on input line 674.
+
+
+Package xcolor Warning: Incompatible color definition on input line 678.
+
+
+Package xcolor Warning: Incompatible color definition on input line 678.
+
+
+Package xcolor Warning: Incompatible color definition on input line 690.
+
+
+Package xcolor Warning: Incompatible color definition on input line 698.
+
+
+Package xcolor Warning: Incompatible color definition on input line 698.
+
+File: ch_02_files/figure-latex/unnamed-chunk-31-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-31-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 702.
+
 [10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 660.
+
+Package xcolor Warning: Incompatible color definition on input line 709.
+
+
+Package xcolor Warning: Incompatible color definition on input line 709.
+
+File: ch_02_files/figure-latex/unnamed-chunk-32-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-32-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 721.
+
+
+Package xcolor Warning: Incompatible color definition on input line 726.
+
+
+Package xcolor Warning: Incompatible color definition on input line 726.
+
+File: ch_02_files/figure-latex/unnamed-chunk-33-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-33-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 733.
+
+[11]
+
+Package xcolor Warning: Incompatible color definition on input line 737.
+
+
+Package xcolor Warning: Incompatible color definition on input line 737.
+
+
+Package xcolor Warning: Incompatible color definition on input line 752.
+
+
+Package xcolor Warning: Incompatible color definition on input line 759.
+
+
+Package xcolor Warning: Incompatible color definition on input line 759.
+
+File: ch_02_files/figure-latex/unnamed-chunk-35-1.png Graphic file (type bmp)
+<ch_02_files/figure-latex/unnamed-chunk-35-1.png>
+[12]
+
+Package xcolor Warning: Incompatible color definition on input line 770.
+
+
+Package xcolor Warning: Incompatible color definition on input line 775.
+
+
+Package xcolor Warning: Incompatible color definition on input line 775.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 778.
+[13]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 778.
 (./ch_02.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 660.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 660.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 778.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 778.
 Package rerunfilecheck Info: File `ch_02.out' has not changed.
-(rerunfilecheck)             Checksum: 293A9D7C001F353650B6B4F3076BDAE4.
+(rerunfilecheck)             Checksum: 3998241A99020EA9055D284AA5A12915.
  ) 
 Here is how much of TeX's memory you used:
- 26971 strings out of 494894
- 496386 string characters out of 6175663
- 598571 words of memory out of 5000000
- 30594 multiletter control sequences out of 15000+600000
+ 26989 strings out of 494894
+ 497112 string characters out of 6175663
+ 598626 words of memory out of 5000000
+ 30608 multiletter control sequences out of 15000+600000
  545240 words of font info for 64 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  53i,12n,116p,802b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on ch_02.pdf (10 pages).
+Output written on ch_02.pdf (13 pages).

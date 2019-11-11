@@ -162,7 +162,7 @@ Compute the median $\bar{x}$ and median of the eight numbers: 1, 2, 4, 5, 6, 8, 
 
 Let $f(x) = \sqrt{x}$
 
-Apply the transformation, then compute the mean, $tilde{x}$ and median, m, of the transformed data.
+Apply the transformation, then compute the mean, $\tilde{x}$ and median, m, of the transformed data.
 
 ```{r echo = T}
 
@@ -381,6 +381,7 @@ d.) Use the quantile command to obtain the quartiles of the number of days to re
 ```{r echo = T}
 quantile(recid$Days, na.rm = T)
 ```
+
 e.) Create ecdf's of days to recidivism for those under 25 years of age and those 25 years of age or older.
 
 ```{r echo = T}
@@ -407,3 +408,71 @@ recid[!is.na(Days),
 ```
 
 went back after being release 400 days or more.
+
+### 2.7
+
+Import the data from the black spruce case study in 1.10.
+
+```{r echo=T}
+spruce <- data.table(read.csv(paste0(data.dir, "Spruce.csv"),
+                 header = T))
+```
+
+a.) Compute the numeric summaries for the hight changes of the seedlings.
+
+```{r echo=T}
+summary(spruce$Ht.change)
+```
+
+b.) Create a histogram and normal quantile plot for the height changes of the seedlings. 
+
+Is the distribution approximately normal?
+
+```{r echo=T, fig.height=3}
+ggplot(spruce) +
+   geom_histogram(aes(x = Ht.change, y = ..density.., fill = ..count..), bins = 20) +
+   geom_density(aes(x = Ht.change, y = ..density.., col = "darkred"), lwd = 1) +
+   guides(col = "none") +
+   labs(title = "Height-Change Densities")
+```
+```{r echo=T, fig.height=3}
+ggplot(spruce) +
+   geom_qq(aes(sample = Ht.change)) +
+   geom_qq_line(aes(sample = Ht.change)) +
+   labs(title = "Height Change QQ-Plot")
+```
+
+For the height change variable, we see an uneven density plot, qq-plot with outliers in the tails. The data appers to be "approximately" normal. 
+
+c.) Create a boxplot to compare the distribution of the change in diameters of the seedlings (__Di.change__), grouped by wheather or not they were in fertilized plots.
+
+```{r echo=T, fig.height = 3}
+ggplot(spruce) +
+   geom_boxplot(aes( y = Di.change, fill = Fertilizer ))
+```
+
+d.) Use the __tapply__ command to find the numeric summaries of the diameter changes for the two levels of fertilization.
+
+```{r echo=T}
+tapply(spruce$Di.change, spruce$Fertilizer, summary)
+```
+
+e.) Create a scatter plot of the hight change against the diameter changes, and describe the relationship.
+
+```{r echo=T, fig.height=3.5}
+ggplot(spruce, aes(Di.change, Ht.change)) +
+   geom_point() +
+   geom_smooth(method = "lm") +
+   labs(title = "Height Change ~ Diameter Change")
+```
+
+\newpage
+
+### 2.8
+
+Import the mobile ads data from section 1.12.
+
+```{r echo=T}
+mobile <- data.table(read.csv(paste0(data.dir, "MobileAds.csv"),
+                 header = T))
+```

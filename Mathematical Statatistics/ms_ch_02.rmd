@@ -565,9 +565,15 @@ Let $w_i = x_i + y_i$ for $i = 1, 2, \ldots, n$.
 
 a.) Prove or give a counterexample: $\bar{x} + \bar{y}$ is the mean of $w_1, w_2, ..., w_n$.
 
-$\bar{w} = \bar{x} + \bar{y} = \frac{1}{n}\sum_{i=1}^{n}x_n + y_n$
+$\bar{w} = \bar{x} + \bar{y} = \frac{1}{n}\sum_{i=1}^{n}x_n + \frac{1}{n}\sum_{i=1}^{n}y_n$
+
+$\ldots = \frac{1}{n}\sum_{i=1}^{n}[x_n + y_n]$
+
+$\ldots = \frac{1}{n}\sum_{i=1}^{n}x_n + y_n$
 
 b.) Prove or give a counterexample: $m_x + m_y$ is the median of $w_1, w_2, ..., w_n$.
+
+
 
 
 ### 2.10

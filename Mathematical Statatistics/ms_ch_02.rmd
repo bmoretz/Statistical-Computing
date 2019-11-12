@@ -561,9 +561,19 @@ This data definitely does not fit a normal distribution. As we saw with the dens
 
 Let $x_1 < x_2 < \ldots < x_n$ and $y_1 < y_2 < \ldots < y_n$ be two sets of data with means $\bar{x}, \bar{y}$ and means $m_x, m_y$, respectively.
 
-Let $w_i = x_i + y_i$ for i = 1, 2, ..., n.
+Let $w_i = x_i + y_i$ for $i = 1, 2, \ldots, n$.
 
 a.) Prove or give a counterexample: $\bar{x} + \bar{y}$ is the mean of $w_1, w_2, ..., w_n$.
 
+$\bar{w} = \bar{x} + \bar{y} = \frac{1}{n}\sum_{i=1}^{n}x_n + y_n$
+
 b.) Prove or give a counterexample: $m_x + m_y$ is the median of $w_1, w_2, ..., w_n$.
 
+
+### 2.10
+
+Find the median __m__ and first and third quartiles for the random variable $X$ having:
+
+a.) The exponential distribution with $pdf f(x) = \lambda e^{-\lambda x}$
+
+b.) The Pareto distribution with parameter $\alpha > 0$ with $pdf f(x) = \frac{\alpha}{\chi^{\alpha+1}}$

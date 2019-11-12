@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  12 NOV 2019 12:08
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  12 NOV 2019 12:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1583,20 +1583,20 @@ File: ms_ch_02_files/figure-latex/unnamed-chunk-40-1.png Graphic file (type bmp
 )
 <ms_ch_02_files/figure-latex/unnamed-chunk-40-1.png>
 [15]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 897.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 911.
 [16]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 897.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 911.
 (./ms_ch_02.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 897.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 897.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 911.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 911.
 Package rerunfilecheck Info: File `ms_ch_02.out' has not changed.
-(rerunfilecheck)             Checksum: F7A8DF6CDA1CE4EC59927EFBF708882C.
+(rerunfilecheck)             Checksum: 90A2A097DD8E35F9379C2C29E6475A55.
  ) 
 Here is how much of TeX's memory you used:
- 27009 strings out of 494894
- 498046 string characters out of 6175663
- 599660 words of memory out of 5000000
- 30622 multiletter control sequences out of 15000+600000
+ 27010 strings out of 494894
+ 498057 string characters out of 6175663
+ 599691 words of memory out of 5000000
+ 30623 multiletter control sequences out of 15000+600000
  545248 words of font info for 65 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  53i,12n,116p,805b,450s stack positions out of 5000i,500n,10000p,200000b,80000s

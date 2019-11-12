@@ -519,6 +519,51 @@ The distribution of cpc pre and post seem to follow an approximately lognormal d
 
 b.) Compute the difference between these two variables, create a histogram, and describe the distribution.
 
-```{r echo = T}
+```{r echo = T, fig.height=3.5}
+
+diff <- data.table(Diff = with(mobile, { m.cpc_pre - m.cpc_post}))[, Index := .I ]
+
+suppressWarnings({
+   fit <- fitdistr(diff$Diff, "t")
+})
+
+ggplot(diff, aes(Diff)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..))+
+   geom_density(aes(y = ..density..), col = "cornflowerblue", lwd = 1.2) +
+   stat_function(fun = dt, size = 1.2, color = "darkred",
+                    args = list(df = fit$estimate[3])) +
+   stat_function(fun = dstd, size = 1.2, color = "darkgreen",
+                    args = list(mean = fit$estimate[1], sd = fit$estimate[2])) +   
+   guides(col = "none") +
+   labs(title = "CPC Pre-Post vs t-dist") +
+   theme(legend.position = "none")
 
 ```
+
+We fit the delta data to a t-distribution, estimating the parameters with __fitdist__. The distribution is way too tail heavy for a normal, and the standard t-distribution has tails that are too light, while the normal t-distribution has tails that are too heavy.
+
+We also note that the true tails in the distribution are polynomial, so getting a close fit would be a bit challenging.
+
+d.) Create a normal quantile plot of the difference. Does it appear to be normally distributed?
+
+```{r echo = T, fig.height=3.5}
+
+ggplot(diff, aes(sample = Diff)) +
+   geom_qq() +
+   geom_qq_line() +
+   labs(title = "Normal QQ-Plot of Pre-Post")
+
+```
+
+This data definitely does not fit a normal distribution. As we saw with the density plots, there are numerious problems with fitting the tails of the data. A simple normal estimate is a terrible fit, while even parametric approaches have problems due to the polynomial tails.
+
+### 2.9
+
+Let $x_1 < x_2 < \ldots < x_n$ and $y_1 < y_2 < \ldots < y_n$ be two sets of data with means $\bar{x}, \bar{y}$ and means $m_x, m_y$, respectively.
+
+Let $w_i = x_i + y_i$ for i = 1, 2, ..., n.
+
+a.) Prove or give a counterexample: $\bar{x} + \bar{y}$ is the mean of $w_1, w_2, ..., w_n$.
+
+b.) Prove or give a counterexample: $m_x + m_y$ is the median of $w_1, w_2, ..., w_n$.
+

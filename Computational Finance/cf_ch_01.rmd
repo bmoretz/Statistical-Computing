@@ -158,6 +158,8 @@ chartSeries(GE)
 chartSeries(GE, TA=NULL, subset='2001-01::2001-02')
 ```
 
+
+
 ```{r echo=T}
 saveRDS(GE, file = "GE.rds")
 ```

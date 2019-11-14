@@ -565,16 +565,29 @@ Let $w_i = x_i + y_i$ for $i = 1, 2, \ldots, n$.
 
 a.) Prove or give a counterexample: $\bar{x} + \bar{y}$ is the mean of $w_1, w_2, ..., w_n$.
 
+\setlength{\leftskip}{2cm}
+
 $\bar{w} = \bar{x} + \bar{y} = \frac{1}{n}\sum_{i=1}^{n}x_n + \frac{1}{n}\sum_{i=1}^{n}y_n$
 
 $\ldots = \frac{1}{n}\sum_{i=1}^{n}[x_n + y_n]$
 
-$\ldots = \frac{1}{n}\sum_{i=1}^{n}x_n + y_n$
+\setlength{\leftskip}{0pt}
 
 b.) Prove or give a counterexample: $m_x + m_y$ is the median of $w_1, w_2, ..., w_n$.
 
+\setlength{\leftskip}{2cm}
 
+$m_x = \frac{x_{[(\#x+1)\div2]} + x_{[(\#x+1)\div2]}}{2}$
 
+$m_y = \frac{y_{[(\#y+1)\div2]} + y_{[(\#y+1)\div2]}}{2}$
+
+$m_x + m_y = \frac{x_{[(\#x+1)\div2]} + x_{[(\#x+1)\div2]}}{2} + \frac{y_{[(\#y+1)\div2]} + y_{[(\#y+1)\div2]}}{2}$
+
+$\ldots = \frac{1}{2}(x_{[(\#x+1)\div2]} + x_{[(\#x+1)\div2]} + y_{[(\#y+1)\div2]} + y_{[(\#y+1)\div2]})$
+
+\setlength{\leftskip}{0pt}
+
+\newpage
 
 ### 2.10
 
@@ -582,4 +595,22 @@ Find the median __m__ and first and third quartiles for the random variable $X$ 
 
 a.) The exponential distribution with $pdf f(x) = \lambda e^{-\lambda x}$
 
-b.) The Pareto distribution with parameter $\alpha > 0$ with $pdf f(x) = \frac{\alpha}{\chi^{\alpha+1}}$
+\setlength{\leftskip}{2cm}
+
+__m__ = $\frac{ln(2)}{\lambda}$ =
+
+$q_p = -\frac{ln(1 - p)}{\lambda}$, where q in .25, .5, .75.
+
+\setlength{\leftskip}{0cm}
+
+b.) The Pareto distribution with parameter $\alpha > 0$ with $pdf f(x) = \frac{\alpha}{X^{\alpha+1}}$
+
+### 2.11
+
+Let the random variable X have a Cauchy distribution with $pdf f(x) = \frac{1}{\pi(1 + x(x - \theta)^2))}$ for $-\infty < x < \infty$.
+
+a.) Show that the mean of X does not exist.
+
+b.) More generally, will $\mathbb{E}[X^k]$ exist? (k = 1, 2, 3, ...).
+
+c.) Show that $\theta$ is the median of the distribution.

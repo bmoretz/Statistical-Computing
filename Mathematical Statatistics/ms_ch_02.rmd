@@ -607,7 +607,7 @@ b.) The Pareto distribution with parameter $\alpha > 0$ with $pdf f(x) = \frac{\
 
 ### 2.11
 
-Let the random variable X have a Cauchy distribution with $pdf f(x) = \frac{1}{\pi(1 + x(x - \theta)^2))}$ for $-\infty < x < \infty$.
+Let the random variable X have a Cauchy distribution with pdf $f(x) = \frac{1}{\pi(1 + x(x - \theta)^2))}$ for $-\infty < x < \infty$.
 
 a.) Show that the mean of X does not exist.
 
@@ -619,4 +619,193 @@ c.) Show that $\theta$ is the median of the distribution.
 
 Find:
 
-a.) The $30^{th}$ and $60^{th}$ percentiles for $$.
+a.) The $30^{th}$ and $60^{th}$ percentiles for $N(10, 17^2)$.
+
+```{r, echo = T}
+
+# 30th percentile
+qnorm(.3, mean = 10, sd = 17)
+
+# 60th percentile
+qnorm(.6, mean = 10, sd = 17)
+
+```
+
+b.) The 0.10 and 0.90 quantile for $N(25, 32^2)$.
+
+```{r, echo = T}
+
+# .1 quantile
+qnorm(.1, mean = 25, sd = 32)
+
+# .9 quantile
+qnorm(.9, mean = 25, sd = 32)
+
+```
+
+c.) The point that marks off the upper 25% in $N(25, 32^2)$.
+
+```{r, echo = T}
+
+qnorm(.75, mean = 25, sd = 32, lower.tail = T)
+
+```
+
+### 2.13
+
+The cdf of the exponential distribution is $F(t) = 1 - e^{-\lambda t}$
+
+a.) Find an expression for the 0.05 quantile $q_{0.05}$.
+
+\setlength{\leftskip}{2cm}
+
+$q_t = \frac{ln(1 - t)}{-\lambda}$
+
+$q_{0.05} = \frac{0.513}{\lambda}$
+
+\setlength{\leftskip}{0cm}
+
+b.) Let $\lambda = 4$, and use your answer from (a) to find $q_0.05$, and then check your answer in R using __qexp__.
+
+```{r, echo = T}
+qexp(0.05, 4)
+
+-1/4*log(1 - 0.05)
+
+```
+
+### 2.14
+
+Let $X$ be a random variable with cdf $F(x) = \frac{x^2}{a^2}$ for $0 \le x \le a$.
+
+Find an expression for the $\frac{a}{2}$ and $(1 - \frac{a}{2})$ quantiles, where 0 < a < 1.
+
+$\sqrt{\frac{a}{2}}x$, $1 - \sqrt{\frac{a}{2}}x$
+
+### 2.15
+
+Let X be a random variable with cdf $F(x) = 1 - \frac{9}{x^2}$ for $x \ge 3$.
+
+Find an expression for the $q^{th}$ quantile of $X$.
+
+$\frac{3}{\sqrt{1-x}}$
+
+\newpage
+
+### 2.16
+
+Let $X \sim {\sf Binom}(20, 0.3)$ and let __F__ denotes its cdf.
+
+Does there exist a __q__ such that $F(q) = 0.05$?
+
+### 2.17
+
+In this exercise, we investigate normal quantile plots using R.
+
+a.) Draw a random sample of size $n = 15$ from $N(0, 1)$, and plot both a normal quantile plot and a histogram.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+plot_norm_sample <- function( n ) {
+   dat <- data.table( X = rnorm(n) )[, N := .I]
+   
+   p1 <- ggplot(dat, aes(sample = X)) +
+      geom_qq() +
+      geom_qq_line() +
+      labs(title = paste0( "Normal Distribution, N=", n ))
+   
+   p2 <- ggplot(dat, aes(X)) +
+      geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+      geom_density(col = "darkorange", fill = "darkorange", alpha = .3)
+   
+   grid.arrange(p1, p2, nrow = 2)
+}
+
+```
+
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+plot_norm_sample(15)
+
+```
+
++ Do the points on the quantile plot appear to fall on a straight line? Is the histogram symmetric, unimodal and bell shaped?
+
+No, the lines do not fit the QQ plot and the histogram is skewed all over.
+
++ Do this several times.
+
+b.) Repeat part (a) for samples of size n = 30, n = 60, and n = 100.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+plot_norm_sample(30)
+
+```
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+plot_norm_sample(60)
+
+```
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+plot_norm_sample(100)
+
+```
+
+c.) What lesson do you draw about using graphs to assess whether or not a data set follows a normal distribution?
+
+The random samples from a normal distirbution do not follow the expectation until the sample size is relatively larger (n>30).
+
+### 2.18
+
+Plot by hand the empirical cumulative distribution function for the set of values:
+
+4, 7, 8, 9, 9, 13, 18, 18, 18, 21
+
+### 2.19
+
+The ecdf for a data set with $n = 20$ values is given in figure 2.18.
+
+a.) How many values are less than or equal to 7?
+
+3
+
+b.) How many times does the value 8 occur?
+
+4
+
+c.) In a histogram of these values, how many values fall in the bin (20, 25]?
+
+6
+
+### 2.20
+
+The data set __ChiMarathonMen__ has a sample of times ffor men between 20 and 39 years of age who completed the Chicago Marathon in 2015.
+
+Graph the ecdf's of the times for men in the 25-29-age division and men in the 35-39-age division.
+
+```{r, echo = T, fig.height=4, fig.width=8}
+marathon <- data.table(read.csv(paste0(data.dir, "ChiMarathonMen.csv"),
+                 header = T))
+
+p1 <- ggplot(marathon[Division == "25-29"], aes(FinishMin)) +
+   stat_ecdf(geom = "point") +
+   geom_vline(xintercept = 160, color = "cornflowerblue") +
+   labs(title = "Men 25-29 Finish Times", y = "")
+
+p2 <- ggplot(marathon[Division == "35-39"], aes(FinishMin)) +
+   stat_ecdf(geom = "point") +
+   geom_vline(xintercept = 160, color = "cornflowerblue") +
+   labs(title = "Men 35-39 Finish Times", y = "")
+
+grid.arrange(p1, p2, nrow = 2)
+
+```
+
++ Approximately what proportion of men in these two divisions finished in 160 min or less?
+
+25-29 is around 70%, and 35-39 is around 40%.

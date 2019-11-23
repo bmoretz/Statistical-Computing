@@ -11,6 +11,8 @@ Working Materials:
 
 <a href="http://computationalfinance.lsi.upc.edu/">Computational Finance: An Introductory Course with R</a>
 
+<a href="https://www.crcpress.com/Basics-of-Matrix-Algebra-for-Statistics-with-R/Fieller/p/book/9781498712361">Basics of Matrix Algebra for Statistics with R</a>
+
 <a href="https://www.wiley.com/en-us/Derivatives+Analytics+with+Python%3A+Data+Analysis%2C+Models%2C+Simulation%2C+Calibration+and+Hedging-p-9781119037996">Derivatives Analytics with Python: Data Analysis, Models, Simulation, Calibration and Hedging</a>
 
 <hr/>

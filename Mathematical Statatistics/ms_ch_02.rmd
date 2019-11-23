@@ -614,3 +614,9 @@ a.) Show that the mean of X does not exist.
 b.) More generally, will $\mathbb{E}[X^k]$ exist? (k = 1, 2, 3, ...).
 
 c.) Show that $\theta$ is the median of the distribution.
+
+### 2.12
+
+Find:
+
+a.) The $30^{th}$ and $60^{th}$ percentiles for $$.

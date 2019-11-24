@@ -87,6 +87,7 @@ library(forecast, quietly = TRUE, warn.conflicts = FALSE)
 library(tseries, quietly = TRUE, warn.conflicts = FALSE)
 library(gmodels, quietly = TRUE, warn.conflicts = FALSE)
 library(rugarch, quietly = TRUE, warn.conflicts = FALSE)
+library(EnvStats, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -696,7 +697,9 @@ $\frac{3}{\sqrt{1-x}}$
 
 Let $X \sim {\sf Binom}(20, 0.3)$ and let __F__ denotes its cdf.
 
-Does there exist a __q__ such that $F(q) = 0.05$?
++ Does there exist a __q__ such that $F(q) = 0.05$?
+
+No, the discrete nature of this distribution doesn't have a value that falls in this interval.
 
 ### 2.17
 

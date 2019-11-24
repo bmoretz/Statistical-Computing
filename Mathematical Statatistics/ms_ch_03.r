@@ -66,5 +66,118 @@ ggplot(data.table(result), aes(result)) +
   scale_y_continuous(labels = comma) +
   labs(title = "Verizon Repair Times - Resampling")
 
-p <- ( sum(result <= observed) + 1 ) / ( N + 1 )
-v <- p*(1 - p) / N
+p <- ( sum(result <= observed) + 1 ) / ( N + 1 ) # p-value
+p * 100
+
+v <- p*(1 - p) / N # variance of p
+
+### Verizon, Median
+
+with(Verizon, {
+  tapply(Time, Group, median)
+})
+
+observed <- median(Time.ILEC) - median(Time.CLEC)
+
+N <- 10e4 - 1
+
+result <- numeric(N)
+sample.size <- length(Time.ILEC) + length(Time.CLEC)
+
+for( i in 1:N)
+{
+  index <- sample(sample.size, length(Time.ILEC), replace = F)
+  result[i] <- median(Time[index]) - median(Time[-index])
+}
+
+ggplot(data.table(result), aes(result)) +
+  geom_histogram(aes(fill = ..count..)) +
+  geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.3) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Verizon Repair Times - Resampling")
+
+p <- ( sum( result <= observed ) + 1) / ( N + 1)
+p * 100
+v <- p*(1 - p)/N
+
+### Verizon, Trimmed Mean
+
+with(Verizon, {
+  tapply(Time, Group, function(x) { mean(x, trim = .25)})
+})
+
+observed <- mean(Time.ILEC, trim = .25) - mean(Time.CLEC, trim = .25)
+
+N <- 10e4 - 1
+
+result <- numeric(N)
+sample.size <- length(Time.ILEC) + length(Time.CLEC)
+
+for( i in 1:N)
+{
+  index <- sample(sample.size, length(Time.ILEC), replace = F)
+  result[i] <- mean(Time[index], trim = .25) - mean(Time[-index], trim = .25)
+}
+
+ggplot(data.table(result), aes(result)) +
+  geom_histogram(aes(fill = ..count..)) +
+  geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.3) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Verizon Repair Times - Resampling")
+
+p <- ( sum( result <= observed ) + 1) / ( N + 1)
+p * 100
+v <- p*(1 - p)/N
+
+### Verizon, repair time differences
+
+observed <- mean(Time.ILEC > 10) - mean(Time.CLEC > 10)
+observed
+
+N <- 10e4 - 1
+
+result <- numeric(N)
+sample.size <- length(Time.ILEC) + length(Time.CLEC)
+
+for( i in 1:N)
+{
+  index <- sample(sample.size, length(Time.ILEC), replace = F)
+  result[i] <- mean(Time[index] > 10) - mean(Time[-index] > 10)
+}
+
+ggplot(data.table(result), aes(result)) +
+  geom_histogram(aes(fill = ..count..)) +
+  geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.3) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Verizon Repair Times - Resampling")
+
+p <- ( sum( result <= observed ) + 1) / ( N + 1)
+p * 100
+v <- p*(1 - p)/N
+
+### Verizon, repair time varances
+
+observed <- var(Time.ILEC) - var(Time.CLEC)
+observed
+
+N <- 10e4 - 1
+
+result <- numeric(N)
+sample.size <- length(Time.ILEC) + length(Time.CLEC)
+
+for( i in 1:N)
+{
+  index <- sample(sample.size, length(Time.ILEC), replace = F)
+  result[i] <- var(Time[index]) - var(Time[-index])
+}
+
+ggplot(data.table(result), aes(result)) +
+  geom_histogram(aes(fill = ..count..)) +
+  geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.3) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Verizon Repair Times - Resampling")
+
+p <- ( sum( result <= observed ) + 1) / ( N + 1)
+p * 100
+v <- p*(1 - p)/N
+

@@ -88,6 +88,7 @@ library(tseries, quietly = TRUE, warn.conflicts = FALSE)
 library(gmodels, quietly = TRUE, warn.conflicts = FALSE)
 library(rugarch, quietly = TRUE, warn.conflicts = FALSE)
 library(quantmod, quietly = TRUE, warn.conflicts = FALSE)
+library(gtools, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -141,23 +142,104 @@ Their times for running a maze are 8, 10, 15 s; the times for two control mice a
 a.) Compute the difference in mean times between the treatment group and the control group.
 
 ```{r, echo = T}
+
+mice.t <- c(8, 10, 15)
+mice.c <- c(5, 9)
+
+observed <- mean(mice.t) - mean(mice.c)
+
+observed
 ```
 
 b.) Write out all the possible permutations of these times to the two groups and calculate the diffence in means.
 
 ```{r, echo = T}
+
+mice <- c(mice.t, mice.c)
+
+treatment <- combinations(n = 5, r = 3, mice, repeats.allowed = F)
+
+control <- matrix(nrow = 10, ncol = 2)
+for( i in 1:nrow(control))
+{
+  control[i,] <- mice[!mice %in% treatment[i,]]
+}
+
+perms <- data.table(cbind(treatment, control))
+
+colnames(perms) <- c("D1", "D2", "D3", "C1", "C2")
+
+perms$Xd <- (perms$D1 + perms$D2 + perms$D3) / 3
+perms$Xc <- (perms$C1 + perms$C2) / 2
+perms$Diff <- round(perms$Xd - perms$Xc, 2)
+
 ```
+
+\newpage
+
+```{r, echo = F}
+pretty_kable(perms, "Mice Permutations")
+```
+
 c.) What proportion of the differences are as large or larger than the observed differences in mean times?
 
 ```{r, echo = T}
+
+gte.observed <- perms[Diff >= observed]
+
+pretty_kable(gte.observed, "Greater than or Equal to Observed")
+
+p1c <- nrow(gte.observed) / nrow(perms)
+
 ```
+
+__Proportion of differences greater than or equal to observed: `r p1c*100`%__
 
 d.) For each permutation, calculate the mean of the treatment group only.
 
 What proportion of these means are as large or larger than the observed mean of the treatment group?
 
 ```{r, echo = T}
+
+gte.t <- perms[ Xd >= mean(mice.t),]
+pretty_kable(gte.t, "Mean Treatment Greater than Observed")
+
+p1d <- nrow(gte.t) / nrow(perms)
+
 ```
+
+__Proportion of treatment groups greater than observed: `r p1d*100`%__
 
 ### 3.2
 
+Your statistics professor comes to class with a big urn that she claims contains 9,999 blue marbels and 1 red marble.
+
+You draw our one marble at random and finds that it is red.
+
+Would you be willing to tell your professor that you think she is wrong about the distribution of colors?
+
+Why or why not?
+
+What are you assuming in making your decision?
+
+What if instead, she claims there are nine blue marbles and 1 red one (and you draw out a red marble)?
+
+### 3.3
+
+In a hypothesis test comparing two populations means, $H_0 : \mu_1 = \mu_2\ versus \ H_A : \mu_1 > \mu_2$
+
+a.) Which P-value, 0.03 or 0.006 provides stronger evidence for the alternative hypothesis?
+
+b.) Which P-value, 0.095 or 0.04 provides stronger evidence that chance alone might account for the observed result?
+
+### 3.4
+
+In the algorithms for conducting a permutation test, why do we add 1 to the number of replications N when calculating the P-Value?
+
+### 3.5
+
+In the flight delays case study in Section 1.1, the data contain flight delays for two airlines, American Airlines and United Airlines.
+
+a.) Conduct a two-sided permutation test to see if the difference in mean delay times between the two carriers are statistically significant.
+
+b.) The flights took place in May and June of 2009. Conduct a two-sided permutation test to see if the differences in mean delay times between two months is statistically significant.

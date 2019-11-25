@@ -1,5 +1,6 @@
 library(data.table)
 library(ggplot2)
+library(gtools)
 
 ### Beer/Wings Consumption
 
@@ -184,7 +185,7 @@ v <- p*(1 - p)/N
 ### Recidivism Data
 
 Recid <- data.table(read.csv(paste0(data.dir, "Recidivism.csv"),
-                                 header = T))
+                             header = T))
 
 k <- complete.cases(Recid$Age25)
 
@@ -209,7 +210,7 @@ for(i in 1:N)
 ### Diving Scores
 
 Diving <- data.table(read.csv(paste0(data.dir, "Diving2017.csv"),
-                             header = T))
+                              header = T))
 
 Diff <- Diving$Final - Diving$Semifinal # Difference in two scores
 observed <- mean(Diff)                  # mean of differences 
@@ -232,3 +233,30 @@ ggplot(data.table(result), aes(result)) +
 
 p <- 2 * (sum(result >= observed + 1)) / (N + 1)
 v <- p*(1 - p) / N
+
+# Table 3.1
+
+drug.t <- c(30, 25, 20)
+drug.c <- c(18, 21, 22)
+
+drug <- c(drug.t, drug.c)
+
+treatment <- combinations(n = 6, r = 3, drug, repeats.allowed = F)
+
+control <- matrix(nrow = 20, ncol = 3)
+for( i in 1:nrow(c))
+{
+  control[i,] <- drug[!drug %in% treatment[i,]]
+}
+control
+
+perms <- data.table(cbind(treatment, control))
+
+colnames(perms) <- c("D1", "D2", "D3", "C1", "C2", "C3")
+
+perms$Xd <- (perms$D1 + perms$D2 + perms$D3) / 3
+perms$Xc <- (perms$C1 + perms$C2 + perms$C3) / 3
+perms$Diff <- round(perms$Xd - perms$Xc, 2)
+
+perms[Diff >= 4.67]
+

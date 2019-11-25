@@ -7,8 +7,6 @@ Working Materials:
 
 <a href="https://sites.google.com/site/chiharahesterberg/">Mathematical Statistics with Resampling and R</a>
 
-<a href="https://people.orie.cornell.edu/davidr/SDAFE2/index.html">Statistics and Data Analysis for Financial Engineering with R Examples</a>
-
 <a href="http://computationalfinance.lsi.upc.edu/">Computational Finance: An Introductory Course with R</a>
 
 <a href="https://www.crcpress.com/Basics-of-Matrix-Algebra-for-Statistics-with-R/Fieller/p/book/9781498712361">Basics of Matrix Algebra for Statistics with R</a>
@@ -19,4 +17,4 @@ Working Materials:
 
 <b>Complete</b>
 
-<strike><a href="http://www.cambridge.org/us/academic/subjects/statistics-probability/statistics-econometrics-finance-and-insurance/numerical-methods-finance-c?format=HB&isbn=9781107003712#UHcyUcdxcgGeUwmy.97">Numerical Methods in Finance with C++</a></strike>
+<strike><a href="https://people.orie.cornell.edu/davidr/SDAFE2/index.html">Statistics and Data Analysis for Financial Engineering with R Examples</a></strike>

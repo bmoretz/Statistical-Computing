@@ -157,6 +157,8 @@ b.) Write out all the possible permutations of these times to the two groups and
 
 mice <- c(mice.t, mice.c)
 
+# 5 choose 3 for treatment
+
 treatment <- combinations(n = 5, r = 3, mice, repeats.allowed = F)
 
 control <- matrix(nrow = 10, ncol = 2)
@@ -166,6 +168,8 @@ for( i in 1:nrow(control))
 }
 
 perms <- data.table(cbind(treatment, control))
+
+stopifnot(nrow(perms) == choose(5, 3))
 
 colnames(perms) <- c("D1", "D2", "D3", "C1", "C2")
 
@@ -202,7 +206,7 @@ What proportion of these means are as large or larger than the observed mean of 
 ```{r, echo = T}
 
 gte.t <- perms[ Xd >= mean(mice.t),]
-pretty_kable(gte.t, "Mean Treatment Greater than Observed")
+pretty_kable(gte.t, "Mean Treatment Greater than or Equal to Observed")
 
 p1d <- nrow(gte.t) / nrow(perms)
 
@@ -220,26 +224,96 @@ Would you be willing to tell your professor that you think she is wrong about th
 
 Why or why not?
 
++ Yes, a 1/10,000 chance is pretty rare.
+
 What are you assuming in making your decision?
 
 What if instead, she claims there are nine blue marbles and 1 red one (and you draw out a red marble)?
+
++ A 1/10 chance is fairly common.
 
 ### 3.3
 
 In a hypothesis test comparing two populations means, $H_0 : \mu_1 = \mu_2\ versus \ H_A : \mu_1 > \mu_2$
 
-a.) Which P-value, 0.03 or 0.006 provides stronger evidence for the alternative hypothesis?
+__a.)__ Which P-value, _0.03_ or _0.006_, provides stronger evidence for the alternative hypothesis?
 
-b.) Which P-value, 0.095 or 0.04 provides stronger evidence that chance alone might account for the observed result?
+_0.03_ provides stronger evidence for the alternative hypothesis.
+
+__b.)__ Which P-value, 0.095 or 0.04, provides stronger evidence that chance alone might account for the observed result?
+
+_0.095_ provides stronger evidence that chance alone is responsible for the observed result.
 
 ### 3.4
 
 In the algorithms for conducting a permutation test, why do we add 1 to the number of replications N when calculating the P-Value?
 
+__Answer__: We need to account for the original observed result.
+
 ### 3.5
 
 In the flight delays case study in Section 1.1, the data contain flight delays for two airlines, American Airlines and United Airlines.
 
+```{r, echo = T}
+
+Flights <- data.table(read.csv(paste0(data.dir, "FlightDelays.csv"),
+                               header = T))
+
+```
+
 a.) Conduct a two-sided permutation test to see if the difference in mean delay times between the two carriers are statistically significant.
 
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+Flights[, .(Delay = mean(Delay)), by = Carrier]
+
+observed <- mean(Flights[Carrier == "UA"]$Delay) - mean(Flights[Carrier == "AA"]$Delay)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Carrier == "UA"]), replace = F)
+   results[i] <- mean(Flights[index]$Delay) - mean(Flights[-index]$Delay)
+}
+
+p <- (sum(results[results >= observed]) + 1) / ( N + 1)
+v <- p*(1 - p) / ( N + 1 )
+
+ggplot(data.table(results)) +
+   geom_histogram(aes(results, fill = ..count..)) +
+   geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Flight Delay Times, UA/AA vs Observed, p=", p ))
+
+
+```
+
 b.) The flights took place in May and June of 2009. Conduct a two-sided permutation test to see if the differences in mean delay times between two months is statistically significant.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+Flights[, .(Delay = mean(Delay)), by = Month]
+
+observed <- mean(Flights[Month == "May"]$Delay) - mean(Flights[Month == "June"]$Delay)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Month == "May"]), replace = F)
+   results[i] = mean(Flights[index]$Delay) - mean(Flights[-index]$Delay)
+}
+
+p <- (sum(results[results <= observed]) + 1) / ( N + 1)
+v <- p*(1 - p) / ( N + 1 )
+
+ggplot(data.table(results)) +
+   geom_histogram(aes(results, fill = ..count..)) +
+   geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Flight Delay Times, May/June, vs Observed, p=", round(p, 5)))
+
+```

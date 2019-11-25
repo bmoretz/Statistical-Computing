@@ -239,6 +239,8 @@ v <- p*(1 - p) / N
 drug.t <- c(30, 25, 20)
 drug.c <- c(18, 21, 22)
 
+choose(6, 3)
+
 drug <- c(drug.t, drug.c)
 
 treatment <- combinations(n = 6, r = 3, drug, repeats.allowed = F)
@@ -251,6 +253,8 @@ for( i in 1:nrow(c))
 control
 
 perms <- data.table(cbind(treatment, control))
+
+stopifnot(nrow(perms) == choose(6, 3))
 
 colnames(perms) <- c("D1", "D2", "D3", "C1", "C2", "C3")
 

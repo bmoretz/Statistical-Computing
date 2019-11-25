@@ -278,15 +278,16 @@ for(i in 1:N)
    results[i] <- mean(Flights[index]$Delay) - mean(Flights[-index]$Delay)
 }
 
-p <- (sum(results[results >= observed]) + 1) / ( N + 1)
+# two-sided test
+p <- 2 * (sum(results[results >= observed]) + 1) / ( N + 1)
 v <- p*(1 - p) / ( N + 1 )
 
 ggplot(data.table(results)) +
-   geom_histogram(aes(results, fill = ..count..)) +
+   geom_histogram(aes(results, fill = ..count..), bins = 30) +
    geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
    scale_y_continuous(labels = comma) +
-   labs(title = paste0("Flight Delay Times, UA/AA vs Observed, p=", p ))
-
+   labs(title = paste0("Flight Delay Times, UA/AA vs Observed, p=", round(p, 5)),
+        subtitle = paste0("Observed Value: ", round(observed, 4)))
 
 ```
 
@@ -307,13 +308,155 @@ for(i in 1:N)
    results[i] = mean(Flights[index]$Delay) - mean(Flights[-index]$Delay)
 }
 
-p <- (sum(results[results <= observed]) + 1) / ( N + 1)
+# two-sided test
+
+p <- 2 * (sum(results[results <= observed]) + 1) / ( N + 1)
 v <- p*(1 - p) / ( N + 1 )
 
 ggplot(data.table(results)) +
-   geom_histogram(aes(results, fill = ..count..)) +
+   geom_histogram(aes(results, fill = ..count..), bins = 30) +
    geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
    scale_y_continuous(labels = comma) +
-   labs(title = paste0("Flight Delay Times, May/June, vs Observed, p=", round(p, 5)))
+   labs(title = paste0("Flight Delay Times, May/June, vs Observed, p=", round(p, 5)),
+        subtitle = paste0("Observed Value: ", round(observed, 4)))
+
+```
+
+### 3.6
+
+In the flight delays case study in Section 1.1, the data contains flight delays for two airlines, American and United.
+
+a.) Compute the proportion of times that each carrier's flight was delays more than 20 min.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+Flights[, .(Delay20 = sum(Delay > 20) / .N), by = Carrier]
+
+observed <- as.numeric(Flights[Carrier == "UA", .(Delay = sum(Delay > 20)/.N)] - Flights[Carrier == "AA", .(Delay = sum(Delay > 20)/.N)])
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Carrier == "UA"]), replace = F)
+   results[i] <- as.numeric(Flights[index, .(Delay = sum(Delay > 20)/.N)] - Flights[-index, .(Delay = sum(Delay > 20)/.N)])
+}
+
+p <- 2 * (sum(results[results >= observed]) + 1) / ( N + 1)
+v <- p*(1 - p) / ( N + 1 )
+
+ggplot(data.table(results)) +
+   geom_histogram(aes(results, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Flight Delay Times, Over 20 Minutes, vs Observed, p=", round(p, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed, 4)))
+
+```
+
++ Conduct a two-sided test to see if the difference in these proportions is statistically significant.
+
+__Answer__: There is statistical significance with a P-value < 0.0001.
+
+b.) Compute the variance in the flight delay lengths for each carrier.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+Flights[, .(Variance = var(Delay)), by = Carrier]
+
+observed <- var(Flights[Carrier == "UA"]$Delay) - var(Flights[Carrier == "AA"]$Delay)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Carrier == "UA"]), replace = F)
+   results[i] <- var(Flights[index]$Delay) - var(Flights[-index]$Delay)
+}
+
+p <- min(1, 2 * (sum(results[results >= observed]) + 1) / ( N + 1))
+v <- p*(1 - p) / ( N + 1 )
+
+ggplot(data.table(results)) +
+   geom_histogram(aes(results, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Flight Delay Time Variance, vs Observed, p=", round(p, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed, 4)))
+
+```
+
++ Conduct a test to see if the variance for United Airlines differes from that of American Airlines.
+
+__Answer__: There does not appear to be a statistically significant difference in the variance in delay times between airlines.
+
+\newpage
+
+### 3.7
+
+In the flight delays case study in Section 1.1, repeat Excercise 3.5 part __(a)__ using three test statistics, 
+
++ i.) The mean of the United Airline delay times
++ ii.) The sum of the United Airline delay times
++ iii.) The difference in the means
+
+Compare the P-values.
+
+Make sure all three test statistics are computed within the same __for__ loop.
+
+What do you observe?
+
+```{r, echo = T, fig.height=7.5, fig.width=8}
+
+ua.delay <- Flights[Carrier == "UA"]$Delay
+aa.delay <- Flights[Carrier == "AA"]$Delay
+
+observed.mean <- mean(ua.delay)
+observed.sum <- sum(ua.delay)
+observed.diff <- mean(ua.delay) - mean(aa.delay)
+
+N <- 10e2 - 1
+results <- matrix(nrow = N, ncol = 3)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), length(ua.delay), replace = F)
+
+   results[i, 1] <- mean(Flights[index]$Delay)
+   results[i, 2] <- sum(Flights[index]$Delay)
+   results[i, 3] <- mean(Flights[index]$Delay) - mean(Flights[-index]$Delay)
+}
+
+dt.results <- data.table(results)
+colnames(dt.results) <- c("Mean", "Sum", "MeanDiff")
+
+p.mean <- ( sum( dt.results$Mean >= observed.mean ) + 1 ) / ( N + 1)
+p.sum <- ( sum(dt.results$Sum >= observed.sum) + 1) / ( N + 1 )
+p.diff <- ( sum(dt.results$MeanDiff >= observed.diff) + 1) / ( N + 1)
+
+p1 <- ggplot(dt.results) +
+   geom_histogram(aes(Mean, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed.mean, col = "darkorange", lwd = 1.2, linetype = 3) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("United Airlines - Mean Delay Time vs Observed, p=", round(p.mean, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed.mean, 4)))
+
+p2 <- ggplot(dt.results) +
+   geom_histogram(aes(Sum, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed.sum, col = "darkorange", lwd = 1.2, linetype = 3) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("United Airlines - Sum Delay Time vs Observed, p=", round(p.sum, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed.sum, 4)))
+
+p3 <- ggplot(dt.results) +
+   geom_histogram(aes(MeanDiff, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed.diff, col = "darkorange", lwd = 1.2, linetype = 3) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Mean Delay Time Difference vs Observed, p=", round(p.diff, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed.diff, 4)))
+
+grid.arrange(p1, p2, p3, nrow = 3)
 
 ```

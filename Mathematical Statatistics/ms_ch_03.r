@@ -181,3 +181,54 @@ p <- ( sum( result <= observed ) + 1) / ( N + 1)
 p * 100
 v <- p*(1 - p)/N
 
+### Recidivism Data
+
+Recid <- data.table(read.csv(paste0(data.dir, "Recidivism.csv"),
+                                 header = T))
+
+k <- complete.cases(Recid$Age25)
+
+Recid2 <- Recid[k]
+Recid2[, .(Recid = sum(Recid == "Yes"), Pct = sum(Recid == "Yes") / .N), by = Age25]
+
+observed <- .365 - 0.306
+N <- 10e4 - 1
+
+result <- numeric(N)
+
+RecidR <- ifelse(Recid2$Recid == "Yes", 1, 0)
+
+for(i in 1:N)
+{
+  index <- sample(nrow(Recid2), 3077, replace = F)
+  result[i] <- mean(RecidR[index]) - mean(RecidR[-index]) 
+}
+
+2 * (sum(result >= observed) + 1) / (N + 1)
+
+### Diving Scores
+
+Diving <- data.table(read.csv(paste0(data.dir, "Diving2017.csv"),
+                             header = T))
+
+Diff <- Diving$Final - Diving$Semifinal # Difference in two scores
+observed <- mean(Diff)                  # mean of differences 
+
+N <- 10e5-1
+result <- numeric(N)
+
+for(i in 1:N)
+{
+  Sign <- sample(c(-1,1), 12, replace = T) # Random vector of 1's or -1's
+  Diff2 <- Sign*Diff # random pairs (a-b) -> (b-a)
+  result[i] <- mean(Diff2)
+}
+
+ggplot(data.table(result), aes(result)) +
+  geom_histogram(aes(fill = ..count..)) +
+  geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.3) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Diving Times - Resampling")
+
+p <- 2 * (sum(result >= observed + 1)) / (N + 1)
+v <- p*(1 - p) / N

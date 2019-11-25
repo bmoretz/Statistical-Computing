@@ -130,6 +130,34 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### Section
+#### Chapter 3 Exercises
 
-### Subsection
+### 3.1
+
+Suppose you conduct an experiment and inject a drug into three mice.
+
+Their times for running a maze are 8, 10, 15 s; the times for two control mice are 5 and 9 s.
+
+a.) Compute the difference in mean times between the treatment group and the control group.
+
+```{r, echo = T}
+```
+
+b.) Write out all the possible permutations of these times to the two groups and calculate the diffence in means.
+
+```{r, echo = T}
+```
+c.) What proportion of the differences are as large or larger than the observed differences in mean times?
+
+```{r, echo = T}
+```
+
+d.) For each permutation, calculate the mean of the treatment group only.
+
+What proportion of these means are as large or larger than the observed mean of the treatment group?
+
+```{r, echo = T}
+```
+
+### 3.2
+

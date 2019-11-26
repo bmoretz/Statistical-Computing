@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  25 NOV 2019 19:39
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  26 NOV 2019 11:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1462,22 +1462,178 @@ Package xcolor Warning: Incompatible color definition on input line 932.
 
 Package xcolor Warning: Incompatible color definition on input line 932.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 940.
-[16] [17]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 940.
+[16]
+
+Package xcolor Warning: Incompatible color definition on input line 945.
+
+
+Package xcolor Warning: Incompatible color definition on input line 950.
+
+
+Package xcolor Warning: Incompatible color definition on input line 950.
+
+
+Package xcolor Warning: Incompatible color definition on input line 956.
+
+
+Package xcolor Warning: Incompatible color definition on input line 964.
+
+
+Package xcolor Warning: Incompatible color definition on input line 964.
+
+
+Package xcolor Warning: Incompatible color definition on input line 984.
+
+
+Package xcolor Warning: Incompatible color definition on input line 999.
+
+
+Package xcolor Warning: Incompatible color definition on input line 999.
+
+[17]
+
+Package xcolor Warning: Incompatible color definition on input line 1018.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1024.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1024.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1043.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1058.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1058.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1072.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1077.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1077.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1082.
+
+[18]
+
+Package xcolor Warning: Incompatible color definition on input line 1086.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1086.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1183.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1188.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1188.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1206.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1223.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1223.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1239.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1244.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1244.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1249.
+
+[19]
+
+LaTeX Warning: Text page 20 contains only floats.
+
+[20]
+
+Package xcolor Warning: Incompatible color definition on input line 1253.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1253.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1328.
+
+[21]
+
+Package xcolor Warning: Incompatible color definition on input line 1334.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1334.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1341.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1355.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1355.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1364.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1372.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1372.
+
+File: ms_ch_03_files/figure-latex/unnamed-chunk-34-1.png Graphic file (type bmp
+)
+<ms_ch_03_files/figure-latex/unnamed-chunk-34-1.png>
+[22]
+
+Package xcolor Warning: Incompatible color definition on input line 1382.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1400.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1400.
+
+[23]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1411.
+[24]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1411.
 (./ms_ch_03.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 940.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 940.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1411.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1411.
+
 Package rerunfilecheck Info: File `ms_ch_03.out' has not changed.
-(rerunfilecheck)             Checksum: 76C76208298F9170F8F6215D7126B114.
+(rerunfilecheck)             Checksum: 8BA53F4571CB2E5ADCE5F41D36FBFDAF.
  ) 
 Here is how much of TeX's memory you used:
- 26988 strings out of 494894
- 496873 string characters out of 6175663
- 605198 words of memory out of 5000000
- 30608 multiletter control sequences out of 15000+600000
+ 27002 strings out of 494894
+ 497228 string characters out of 6175663
+ 616924 words of memory out of 5000000
+ 30621 multiletter control sequences out of 15000+600000
  545248 words of font info for 65 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  53i,12n,116p,805b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on ms_ch_03.pdf (17 pages).
+Output written on ms_ch_03.pdf (24 pages).

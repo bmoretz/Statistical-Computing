@@ -64,7 +64,6 @@ library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
-library(Rblpapi, quietly = TRUE, warn.conflicts = FALSE)
 library(scales, quietly = TRUE, warn.conflicts = FALSE)
 library(pander, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
@@ -647,3 +646,243 @@ p <- min(1, ( sum(results >= observed) + 1) / ( N + 1) )
 There does not appear to be a statistically significat relationship between the number of home and away strikeouts.
 
 P-value: __`r p`__
+
+### 3.12
+
+In the Iowa recidivism case study in Section 1.4, offenders had originally been convicted of either a felony or misdemenor.
+
+```{r, echo = T}
+Recidivism <- data.table(read.csv(paste0(data.dir, "Recidivism.csv"),
+                               header = T))
+```
+
+a.) Use R to create a table displaying the proportion of felons who recidivated and the propportion of those convictted of a misdemeanor who recidivated.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+
+Recidivism[, Recidivated := is.na(Days)]
+
+Recidivated <- Recidivism[, .(RecidPct = sum(Recidivated) / .N), by = Offense]
+
+pretty_kable(Recidivated, "Recidivated")
+
+```
+
+b.) Determine whether or not the difference in recidivism proportions computed in (a) is statistically significant.
+
+```{r, echo = T}
+
+observed <- as.numeric( Recidivated[Offense == "Felony"]$RecidPct - Recidivated[Offense == "Misdemeanor"]$RecidPct )
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   index <- sample(nrow(Recidivism), nrow(Recidivism[Offense == "Felony"]), replace = F)
+   results[i] <- as.numeric( Recidivism[index, .(Pct = sum(Recidivated) / .N)] - Recidivism[-index, .(Pct = sum(Recidivated) / .N)] )
+}
+
+p <- ( sum(results >= observed) + 1 ) / ( N + 1 )
+
+```
+
+It appears there is statistical significance in the recidivism rates between felony and misdemeanor convictions.
+
+P-value: `r p`
+
+### 3.13
+
+In the Iowa recidivism case study in Section 1.4, for those offenders who recidivated, we have data on the number of days until they reoffended.
+
+For those offenders who did recidivate, determine if the difference in the mean number of days (__Days__) until recidivism between those under 25 years of age and those 25 years of age and older is statistically significant.
+
+```{r, echo = T}
+
+Recid.Age25 <- Recidivism[, .(RecidDays = mean(Days, na.rm = T)), by = Age25]
+
+pretty_kable(Recid.Age25, "Days Until Recidivism by Age ( < 25 < )")
+
+observed <- as.numeric( Recid.Age25[Age25 == "Under 25"]$RecidDays - Recid.Age25[Age25 == "Over 25"]$RecidDays)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   index <- sample(nrow(Recidivism), nrow(Recidivism[Age25 == "Under 25"]), replace = F)
+   results[i] <- mean(Recidivism[index]$Days, na.rm = T) - mean(Recidivism[-index]$Days, na.rm = T)
+}
+
+p <- min(1, ( sum(results >= observed) + 1 ) / ( N + 1 ) )
+
+```
+
+There does not appear to be a statistical difference between the days until recidivism by those over/under 25 years of age.
+
+P-value: `r p`
+
+### 3.14
+
+Does chocolate ice cream have more calories than vanilla ice cream? The data set __IceCream__ contains calorie information for a sample of brands of chocolate and vanilla ice cream.
+
+```{r, echo = T}
+IceCream <- data.table(read.csv(paste0(data.dir, "IceCream.csv"),
+                               header = T))
+```
+
+a.) Inspect the data set, then explain why this is an example of matched pairs data.
+
+```{r, echo = T}
+pretty_kable(IceCream, "Ice Cream Data")
+```
+
+This data set is matched pairs becase there are multiple brands associated with each flavor. They are not independent samples.
+
+b.) Compute summary statistics of the number of calories for the two flavors.
+
+```{r, echo = T}
+
+pretty_kable(IceCream[, .(Vanilla = mean(VanillaCalories), Chocolate = mean(ChocolateCalories))], 
+             "Ice cream Calories by Flavor")
+
+```
+
+
+c.) Conduct a permutation tests to determine whether or not chocolate ice cream has, on average, more calories than vanilla ice cream.
+
+```{r, echo = T}
+
+diff <- IceCream$VanillaCalories - IceCream$ChocolateCalories
+observed <- mean(diff)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   Sign <- sample(c(-1, 1), nrow(IceCream), replace = T)
+   diff2 <- Sign * diff
+   results[i] <- mean(diff2)
+}
+
+p <- ( sum( results <= observed ) + 1 ) / ( N + 1 )
+
+```
+
+The data supports the claim that chocolate ice cream has more calories than vanilla.
+
+P-value: `r p`
+
+### 3.15
+
+Is there a difference in the price of groceries sold by the two retailers Target and Walmart?
+
+The data set Groceries contains a sample of grocery items and their prices advertised on their respective web sites on one specific day.
+
+```{r, echo = T}
+Groceries <- data.table(read.csv(paste0(data.dir, "Groceries.csv"),
+                               header = T))
+
+
+```
+
+a.) Inspect the data set, then explain why this is an example of matched pairs data.
+
+```{r, echo = T}
+pretty_kable(Groceries, "Target vs Walmart")
+```
+
+b.) Compute summary statistics of the prices for each store.
+
+```{r, echo = T}
+
+diff <- Groceries$Target - Groceries$Walmart
+
+observed <- mean(diff)
+
+```
+
+Observed difference: __`r observed`__
+
+c.) Conduct a permutation test to determine whether or not there is a difference in the mean prices.
+
+```{r, echo = T}
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   Sign <- sample(c(-1, 1), nrow(Groceries), replace = T)
+   diff2 <- Sign * diff
+   results[i] <- mean(diff2)
+}
+
+p <- min(1, 2 * ( sum(results >= observed ) + 1 ) / ( N + 1) )
+
+```
+
+There does not appear to be a statistical difference in the prices at the two stores.
+
+P-value: `r p`
+
+d.) Create a histogram of the difference in prices. 
+
+```{r, echo = T, fig.height=5, fig.width=8}
+
+ggplot(data.table( Product = Groceries$Product, Diff = diff)) +
+   geom_bar(aes(Product, Diff, fill = Product), stat = "identity") +
+   coord_flip() +
+   labs(title = "Grocery Price Difference (Target vs Walmart)") +
+   theme(legend.position = "none")
+
+```
+
+What is unusual about Quaker Oats Life cerial?
+
+__Price difference is a multiple SD outlier.__
+
+e.) Redo the hypothesis test without this observation.
+
+```{r, echo = T}
+
+diff <- Groceries[Product != "Quaker Oats Life Cereal  Original ", .(Diff = Target - Walmart ) ]$Diff
+
+observed <- mean(diff)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   Sign <- sample(c(-1, 1), length(diff), replace = T)
+   diff2 <- Sign * diff
+   results[i] <- mean(diff2)
+}
+
+p <- min(1, 2 * ( sum(results >= observed ) + 1 ) / ( N + 1) )
+
+```
+
+Do you reach the same conclusion?
+
+__No, there is a statistical difference in the prices of products at the two retailers with the outlier removed.__
+
+P-value: `r p`
+
+### 3.16
+
+In the sampling version of permutation testing, the one-sided P-value is 
+
+$\hat{P} = \frac{(X + 1)}{(N + 1)}$, where X is the number of permutation test statistics that are as large or larger than the observed test statistic.
+
+Suppose the true P-value (for the exaustive test, conditional on the observed data) is __p__.
+
+a.) What is the variance of $\hat{P}$?
+
+$\mathbb{V} = p*(1 - p) / (N + 1)$
+
+b.) What is the variance of $\hat{P}_2$ for the two-sided test (assuming that __p__ is not close to 0.5, where __p__ is the smaller true one-side P-value)?
+
+
+

@@ -30,10 +30,10 @@ header-includes:
    \setlength\headheight{30pt}
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
-   \fancyhead[C]{\Large\bfseries\color{headergrey}An Abridged Introduction to Finance}
-   \rfoot{\color{headergrey}Chapter 1}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Sampling Distributions}
+   \rfoot{\color{headergrey}Chapter 4}
    \lfoot{\color{headergrey}}
-   \fancyfoot[C]{\rmfamily\color{headergrey}Computational Finance}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Mathematical Statistics}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -130,120 +130,6 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### Chapter 1
+#### Sampling Distributions
 
-### Ex 1.1
-
-We shall use the __getSymbols__ function in the quantmod package to retrieve financial data for General Electric (__GE__).
-
-```{r echo = T}
-
-getSymbols("GE", src = "yahoo", from = "2000-01-01", to = "2009-12-30")
-
-names(GE)
-
-GE["2000-01-01/2000-01-20"]
-
-geAdj = GE$GE.Adjusted["2000-01-01-/2000-01-20"]; geAdj
-
-max(geAdj); min(geAdj); mean(geAdj)
-
-```
-
-```{r echo = T, fig.height=3.5}
-chartSeries(GE)
-```
-
-```{r echo = T, fig.height=3.5}
-chartSeries(GE, TA=NULL, subset='2001-01::2001-02')
-```
-
-```{r echo=T}
-saveRDS(GE, file = "GE.rds")
-```
-
-### 1.3.4
-
-```{r, echo = T}
-
-symbols <- c('^VLIC', 'GE', 'KO', 'AAPL', 'MCD')
-getSymbols( symbols, src = "yahoo", from = "2012-02-01", to = "2013-02-01")
-
-# obtain Adjusted Close
-
-VLICad <- VLIC$VLIC.Adjusted; GEad <- GE$GE.Adjusted
-KOad <- KO$KO.Adjusted; AAPLad <- AAPL$AAPL.Adjusted
-MCDad <- MCD$MCD.Adjusted
-
-# compute cumulative sum (cumsum) of daily returns (Delt)
-
-vl <- cumsum( (Delt(VLICad) * 100)[-1, ])
-ge <- cumsum( (Delt(GEad) * 100)[-1, ])
-ko <- cumsum( (Delt(KOad) * 100)[-1, ])
-ap <- cumsum( (Delt(AAPLad) * 100)[-1, ])
-md <- cumsum( (Delt(MCDad) * 100)[-1, ])
-
-### Range for the plot
-
-lim <- c(min(vl, ge, ko, ap, md), max(vl, ge, ko, ap, md))
-
-```
-
-```{r, echo = T, fig.width=8, fig.height=4}
-### plot
-
-stocks <- data.table( Date = index(vl),
-                      VLIC = as.numeric(vl), 
-                      GE = as.numeric(ge), 
-                      KO = as.numeric(ko), 
-                      AAPL = as.numeric(ap), 
-                      MCD = as.numeric(md))
-
-stocks.long <- melt(stocks, 
-     id.vars = c("Date"), 
-     variable.name = c("Stock"), 
-     value.name = "Return")
-
-ggplot(stocks.long, aes(Date, Return, col = Stock)) +
-   geom_line() +
-   labs(title = "Stock Performance")
-
-```
-
-### 1.3.6
-
-Using no arbitrage arguments show that for options on stocks:
-
-i.) the stock's price is an upper bound for the price of a call;
-
-ii.) the strike price is an upper bound for the price of a put.
-
-### 1.3.7
-
-The following is a list of well-known investment strategies obtained by different combinations of put and call options on the same underlying asset. For each one of these strategies compute the payoff function and draw the profit graph.
-
-Additionally, argue about the situations where the strategy is profitable.
-
-#### The strangle:
-
-Similar to the straddle. It consists on buying a put and a call with the same expiration date, but different strike prices. If $K_c$ is the strike price for the call, and $K_p$ is the strike price for the put, then the strategy requires $K_c > K_p$.
-
-```{r, echo = T}
-
-```
-
-#### The strip:
-
-This strategy consists of long positions in one call and two puts, all with the same strike price and expiration date.
-
-```{r, echo = T}
-
-```
-
-#### The strap:
-
-This one consists of long positions in two calls and one put, all with the same strike price and expiration date.
-
-#### The butterfly spread:
-
-This is made with options of the same type. Suppose we use calls and athe underlying assset is a stock. Then a butterfly spread of calls consists on short selling two calls waith strike price $K_0$ close to the current stock price, and buying two calls, one with strike price $K_0-c$ and the other with strike price $K_0 + c$, where 2c > 0 is the length of the spread chosen by the investor.
+### 4.1

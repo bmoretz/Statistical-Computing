@@ -410,19 +410,19 @@ What do you observe?
 
 ```{r, echo = T, fig.height=7.5, fig.width=8}
 
-ua.delay <- Flights[Carrier == "UA"]$Delay
-aa.delay <- Flights[Carrier == "AA"]$Delay
+UA.Delay <- Flights[Carrier == "UA"]$Delay
+AA.Delay <- Flights[Carrier == "AA"]$Delay
 
-observed.mean <- mean(ua.delay)
-observed.sum <- sum(ua.delay)
-observed.diff <- mean(ua.delay) - mean(aa.delay)
+observed.mean <- mean(UA.Delay)
+observed.sum <- sum(UA.Delay)
+observed.diff <- mean(UA.Delay) - mean(AA.Delay)
 
 N <- 10e2 - 1
 results <- matrix(nrow = N, ncol = 3)
 
 for(i in 1:N)
 {
-   index <- sample(nrow(Flights), length(ua.delay), replace = F)
+   index <- sample(nrow(Flights), length(UA.Delay), replace = F)
 
    results[i, 1] <- mean(Flights[index]$Delay)
    results[i, 2] <- sum(Flights[index]$Delay)
@@ -460,3 +460,190 @@ p3 <- ggplot(dt.results) +
 grid.arrange(p1, p2, p3, nrow = 3)
 
 ```
+
+\newpage
+
+### 3.8
+
+In the flight delays case study in Section 1.1,
+
+a.) Find the trimmed mean of the delay times for United Airlines and American Airlines.
+
+```{r, echo = T}
+
+trim.amount <- .25
+UA.trimmed <- mean(UA.Delay, trim = trim.amount)
+AA.trimmed <- mean(AA.Delay, trim = trim.amount)
+
+observed <- UA.trimmed - AA.trimmed
+
+pretty_kable(data.table( UA = UA.trimmed, AA = AA.trimmed), "Trimmed Means")
+
+```
+
+b.) Conduct a two-sided test to see if the difference in trimmed means is statistically significant.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Carrier == "UA"]), replace = F)
+   results[i] <- mean(Flights[index]$Delay, trim = trim.amount) - mean(Flights[-index]$Delay, trim = trim.amount)
+}
+
+p <- min(1, 2 * (sum(results[results >= observed]) + 1) / ( N + 1))
+v <- p*(1 - p) / ( N + 1 )
+
+ggplot(data.table(results)) +
+   geom_histogram(aes(results, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed, col = "darkorange", linetype = 3, lwd = 1.2) +
+   scale_y_continuous(labels = comma) +
+   labs(title = paste0("Flight Delay Time Trimmed Mean vs Observed, p=", round(p, 5)), 
+        subtitle = paste0("Observed Value: ", round(observed, 4)))
+```
+
+### 3.9
+
+In the flight delays case study in Section 1.1,
+
+a.) Compute the proportion of times the flights in May and in June were delayed more than 20 min.
+
+```{r, echo = T}
+
+delay20_month <- Flights[, .(Delay20 = sum(Delay > 20) / .N), by = Month]
+
+pretty_kable(delay20_month, "Delayed by more than 20 min, by month")
+
+```
+
+Conduct a two-sided test for statistical significance.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+observed <- delay20_month[Month == "May"]$Delay20 - delay20_month[Month == "June"]$Delay20
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Month == "May"]), replace = F)
+   results[i] <- as.numeric( Flights[index, .(Delay = sum(Delay > 20) / .N)] - Flights[-index, .(Delay = sum(Delay > 20) / .N)] )
+}
+
+p <- min(1, 2 * (sum(results[results >= observed]) + 1) / ( N + 1))
+v <- p*(1 - p) / ( N + 1 )
+
+```
+
+P-value: `r round(p, 4)`, which is statistically significant.
+
+b.) Compute the ratio of the variances in the flight delay times in May and in June.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+observed <- var(Flights[Month == "May"]$Delay) - var(Flights[Month == "June"]$Delay)
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N)
+{
+   index <- sample(nrow(Flights), nrow(Flights[Month == "May"]), replace = F)
+   results[i] <- var( Flights[index, .(Delay)] ) - var( Flights[-index, .(Delay)] )
+}
+
+p <- min(1, 2 * (sum(results[results >= observed]) + 1) / ( N + 1))
+v <- p*(1 - p) / ( N + 1 )
+
+```
+
+Is this evidence that the true ratio is not equal to 1, or could this be due to chance variability?
+
+The variance appear to be due to random chance, so there does appear to be a stastical significance between the two months.
+
+Conduct a two-sided test to check.
+
+P-value: __`r p`__
+
+### 3.10
+
+In the black spruce case study in Section 1.10, seedlings were planted in plots that were either subject to competition (from other plants), or not.
+
+Use the data set _Spruce_ to conduct a test to see if the mean difference is how much the seedlings grow (in height) over the corse of the study under these two treatments is stastically significant.
+
+```{r, echo = T}
+Spruce <- data.table(read.csv(paste0(data.dir, "Spruce.csv"),
+                               header = T))
+
+observed <- mean( Spruce[Competition == "NC"]$Ht.change ) - mean( Spruce[Competition == "C"]$Ht.change )
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Spruce), nrow(Spruce[Competition == "NC"]), replace = F)
+   resutls <- mean( Spruce[index]$Ht.change ) - mean( Spruce[-index]$Ht.change )
+}
+
+p <- min(1, 2 * (sum(results[results >= observed]) + 1) / ( N + 1))
+
+```
+
+There is stastical significance in between the heights of the two groups (Competition / No-competition).
+
+P-value: __`r p`__
+
+
+### 3.11
+
+The file _Phillies2009_ contains data from the 2009 season for the baseball team the Philadelphia Phillies.
+
+```{r, echo = T}
+Phillies <- data.table(read.csv(paste0(data.dir, "Phillies2009.csv"),
+                               header = T))
+```
+
+a.) Compare the empirical distribution functions of the number of strike-outs per game (_StrikeOuts_) for games played at home and games played away (_Location_).
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+
+ggplot(Phillies, aes(StrikeOuts, color = Location)) +
+   stat_ecdf(stat = "point") +
+   labs(title = "Strike-outs / Game, by Location", y = "Percent")
+
+```
+
+b.) Find the mean number of strike-outs per game for the home and the away games.
+
+```{r, echo = T}
+strikeouts <- Phillies[, .(StrikeOuts = mean(StrikeOuts)), by = Location]
+
+pretty_kable(strikeouts, "StrikeOuts by Location")
+
+observed <- mean(strikeouts[Location == "Away"]$StrikeOuts) - mean(strikeouts[Location == "Home"]$StrikeOuts)
+
+```
+c.) Perform a permutation tests to see if the differences in means is statistically significant.
+
+```{r, echo = T}
+
+N <- 10e2 - 1
+results <- numeric(N)
+
+for( i in 1:N)
+{
+   index <- sample(nrow(Phillies), nrow(Phillies[Location == "Home"]), replace = F)
+   results[i] <- mean(Phillies[index]$StrikeOuts) - mean(Phillies[-index]$StrikeOuts)
+}
+
+p <- min(1, ( sum(results >= observed) + 1) / ( N + 1) )
+
+```
+
+There does not appear to be a statistically significat relationship between the number of home and away strikeouts.
+
+P-value: __`r p`__

@@ -88,6 +88,7 @@ library(tseries, quietly = TRUE, warn.conflicts = FALSE)
 library(gmodels, quietly = TRUE, warn.conflicts = FALSE)
 library(rugarch, quietly = TRUE, warn.conflicts = FALSE)
 library(quantmod, quietly = TRUE, warn.conflicts = FALSE)
+library(gtools, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -133,3 +134,40 @@ panderOptions('keep.trailing.zeros', TRUE)
 #### Sampling Distributions
 
 ### 4.1
+
+Consider the population {1, 2, 5, 6, 10, 12}.
+
+Find (and plot) the sampling distribution of medians for samples of size 3 without replacement.
+
+```{r, echo = T, fig.height=4.5, fig.width=8}
+
+p <- c(1, 2, 5, 6, 10, 12)
+c <- combinations(v = p, n = 6, r = 3)
+m <- apply(c, 1, median)
+
+ggplot(data.table(value = m), aes(value, fill = ..count..)) +
+   geom_histogram(bins = 30) +
+   labs(title = "Median Sampling Distribution of p")
+
+```
+
+Compare the median of the population to the mean of the medians.
+
+Median of p = __`r median(p)`__. Mean of Medians of p = __`r mean(m)`__
+
+### 4.2
+
+Consider the population {3, 6, 7, 9, 11, 14}.
+
+For samples of size 3 without replacement, find (and plot) the sampling distribution for the minimum.
+
+What is the mean of the sampling distribution?
+
+The statistic is an estimate of some parameter - what is the value of that parameter?
+
+```{r, echo = T}
+
+p <- c(3, 6, 7, 9, 11, 14)
+
+
+```

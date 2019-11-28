@@ -299,3 +299,38 @@ prob <- mean(results < 11)
 ```
 
 $P(\bar{X} < 11) = `r prob*100`$%
+
+\newpage
+
+### 4.5
+
+Consider two populations A = {3, 5, 7, 9, 10, 16}, B = {8, 10, 11, 15, 18, 25, 28}.
+
+```{r, echo = T}
+A <- c(3, 5, 7, 9, 10, 16)
+B <- c(8, 10, 11, 15, 18, 25, 28)
+```
+
+a.) Using R, draw random samples (without replacement) of size 3 from each population, and simulate the sampling distribution of the sum of their maximums.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+```
+
+Describe the distribution.
+
+b.) Use your simulation to estimate the probability that the sum of the maximums is less than 20.
+
+```{r, echo = T}
+```
+
+c.) Draw random samples of size 3 from each population, and find the maximum of the union of these two sets.
+
+Simulate the sampling distribution of the maximums of this union.
+
+Compare the distribution to part (a).
+
+d.) Use simulation to find the probability that the maximum of the union is less than 20.
+
+### 4.6
+
+

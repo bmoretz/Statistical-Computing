@@ -560,3 +560,21 @@ Suppose the _sampling distribution_ of Y has pdf $f(y) = (3/8)y^2 \ for \ 0 \le 
 Find $P(0 \le Y \le \frac{1}{5})$
 
 __Solution__:
+
+### 4.10
+
+Suppose the heights of boys in a certain large city follow a distribution with mean 48 in. and variance $9^2$.
+
+Use the CLT approximation to estimate the probability that in a random sample of 30 boys, the mean height is more than 51 in.
+
+### 4.11
+
+Let $X_1, X_2, \ldots, X_{36} \sim Bern(.55)$ be independent, and let $\hat{p}$ denote the sample proportion.
+
+Use the CLT approximation with continuity correction to find the probability that $\hat{p} \le 0.5$.
+
+### 4.12
+
+A random sample of size $n = 20$ is drawn from a distribution with mean 6 and variance 10.
+
+Use the CLT approximation to estimate $P(\bar{X} \le 4.6)$.

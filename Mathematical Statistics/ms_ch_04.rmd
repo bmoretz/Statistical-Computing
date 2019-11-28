@@ -544,7 +544,19 @@ Theoretical: `r tse`
 
 Let $X_1, X_2, \ldots, X_{25}$ be a random sample from some distribution and $W = T(X_1, X_2, \ldots, X_n)$ be a statistic.
 
+Suppose the _sampling distribution_ of W has a pdf given by $f(x) = \frac{2}{x^2}$, for 1 < x < 2.
+
+Find $P(w < 1.5)$
+
+__Solution__:
+
+
+### 4.9
+
+Let $X_1, X_2, \ldots, X_{n}$ be a random sample from some distribution and $Y = T(X_1, X_2, \ldots, X_n)$ be a statistic.
+
 Suppose the _sampling distribution_ of Y has pdf $f(y) = (3/8)y^2 \ for \ 0 \le y \le 2$.
 
 Find $P(0 \le Y \le \frac{1}{5})$
 
+__Solution__:

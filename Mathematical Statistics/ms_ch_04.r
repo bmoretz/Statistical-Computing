@@ -55,3 +55,14 @@ mean(Xbar)
 sd(Xbar)
 
 mean(Xbar > 3)
+
+# work
+
+p <- c(3, 4, 6, 6)
+
+sample.size <- 2
+perm <- permutations( length(p), sample.size, repeats.allowed = T)
+
+d <- data.table( c1 = p[perm[, 1]], c2 = p[perm[, 2]])
+d[, m := (c1 + c2) / 2]
+

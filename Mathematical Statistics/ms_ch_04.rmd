@@ -314,22 +314,60 @@ B <- c(8, 10, 11, 15, 18, 25, 28)
 a.) Using R, draw random samples (without replacement) of size 3 from each population, and simulate the sampling distribution of the sum of their maximums.
 
 ```{r, echo = T, fig.height=3.5, fig.width=8}
-```
+N <- 10e2
+results <- numeric(N)
 
-Describe the distribution.
+for(i in 1:N)
+{
+   samp.a <- sample(A, 3, replace = F)
+   samp.b <- sample(B, 3, replace = F)
+   
+   results[i] <- max(samp.a) + max(samp.b) 
+}
+
+ggplot(data.table(value = results)[, index := .I]) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Sampling Distribution: max(A) + max(B)")
+
+``` 
 
 b.) Use your simulation to estimate the probability that the sum of the maximums is less than 20.
 
 ```{r, echo = T}
+prob <- mean(results < 20)
 ```
+
+Probability: `r prob*100`%
 
 c.) Draw random samples of size 3 from each population, and find the maximum of the union of these two sets.
 
 Simulate the sampling distribution of the maximums of this union.
 
-Compare the distribution to part (a).
+```{r, echo = T, fig.height=3.5, fig.width=8}
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   samp.a <- sample(A, 3, replace = F)
+   samp.b <- sample(B, 3, replace = F)
+   
+   results[i] <- max(union(samp.a, samp.b))
+}
+
+ggplot(data.table(value = results)[, index := .I]) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Sampling Distribution: max(union(A,B))")
+```
 
 d.) Use simulation to find the probability that the maximum of the union is less than 20.
+
+```{r, echo = T}
+prob <- mean(results < 20)
+```
+
+Probability: `r prob*100`%
+
+\newpage
 
 ### 4.6
 

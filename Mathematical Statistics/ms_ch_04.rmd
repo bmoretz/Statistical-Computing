@@ -187,11 +187,6 @@ Let _A_ denote the population {1, 3, 4, 5} and _B_ the population {5, 7, 9}.
 
 ```{r, echo = T}
 
-
-permutations( v = p, n = 2, r = 2, repeats.allowed = T)
-
-combinations( v = p, n = 3, r = 2, repeats.allowed = T)
-
 A <- c(1, 3, 4, 5)
 B <- c(5, 7, 9)
 
@@ -203,13 +198,18 @@ a.) Find the sampling distribution of _X + Y_.
 
 ```{r, echo = T}
 
-p <- c(3, 4, 6, 6)
+result = numeric(12)
+index <- 1
+for(j in 1:length(A))
+{
+   for(k in 1:length(B))
+   {
+      result[index] <- A[j] + B[k]
+      index <- index + 1
+   }
+}
 
-sample.size <- 2
-perm <- permutations( length(p), sample.size, repeats.allowed = T)
-
-d <- data.table( c1 = p[perm[, 1]], c2 = p[perm[, 2]])
-d[, m := (c1 + c2) / 2]
+sort(result)
 
 ```
 
@@ -223,8 +223,79 @@ _Because 5 in is both sets._
 
 c.) Compute the mean of the values for each of _A_ and _B_ and the values in the sampling distribution of _X + Y_.
 
+Mean of _A_: __`r mean(A)`__. Mean of _B_: __`r mean(B)`__.
+
+Mean of _A + B_: __`r mean(result)`__
+
 How are the means related?
+
+mean(A) + mean(B) = mean(A + B).
 
 d.) Suppose you draw a random value from _A_ and a random value from _B_.
 
-What is the probability that the sum is 13 or larger?
+```{r, echo = T}
+
+prob <- sum(result >= 13) / length(result)
+
+```
+
+What is the probability that the sum is 13 or larger? __`r prob*100`%__
+
+\newpage
+
+### 4.4
+
+Consider the population {3, 5, 6, 6, 8, 11, 13, 15, 19, 20}.
+
+a.) Compute the mean and standard deviation and create a dot plot of its distribution.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+p <- c(3, 5, 6, 6, 8, 11, 13, 15, 19, 20)
+
+mu <- mean(p)
+sigma <- sd(p)
+
+ggplot(data.table(value = p)) +
+   geom_dotplot(aes(value, fill = ..count..), binwidth = 1) +
+   labs(title = "Population Dot Plot")
+
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+b.) Simulate the sampling distribution of $\bar{X}$ by taking random samples of size 4 and plot your results.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+N <- 10e2
+results <- numeric(N)
+
+for( i in 1:N)
+{
+   index <- sample(length(p), size = 4, replace = F)
+   results[i] <- mean( p[index] )
+}
+
+ggplot(data.table(value = results)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Sample Means")
+
+xbar <- mean(results)
+se <- sd(results) / sqrt(N)
+
+```
+
+Compute the mean and standard error, and compare to the population mean and standard deviation.
+
+mean: `r xbar`, standard error: `r se`
+
+c.) Use the simulation to find $P(\bar{X} < 11)$.
+
+```{r, echo = T}
+
+prob <- mean(results < 11)
+
+```
+
+$P(\bar{X} < 11) = `r prob*100`$%

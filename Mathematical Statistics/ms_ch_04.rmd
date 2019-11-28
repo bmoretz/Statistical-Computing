@@ -371,4 +371,180 @@ Probability: `r prob*100`%
 
 ### 4.6
 
+The data set _Recidivism_ contains the poopulation of all Iowa offenders convicted of either a felony or misdemeanor who were released in 2010 (case study in Section 1.4).
+
+```{r, echo = T}
+Recidivism <- data.table(read.csv(paste0(data.dir, "Recidivism.csv"),
+                               header = T))
+```
+
+Of these, 31.6% recidivated and were sent back to prision.
+
+Simulate the sampling distribution of $\hat{p}$, the sample proportion of offeneders who recidivated, for random samples of size 25.
+
+```{r, echo = T}
+
+mean(Recidivism$Recid == "Yes")
+
+N <- 10e2
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- sample(Recidivism$Recid, 25)
+   results[i] <- mean(samp == "Yes")
+}
+
+```
+
+a.) Create a histogram and describe the simulated sampling distribution of $\hat{p}$.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+ggplot(data.table(value = results)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Recidivism Sampling Distribution")
+```
+
+Estimate the mean and standard error.
+
+```{r, echo = T}
+mu <- mean(results)
+se <- sd(results) / sqrt(25)
+```
+
+$\mu = `r mu`$, $\sigma = `r se`$
+
+b.) Compare your estimate of the standard error with the theoretical standard error (_Corollary 4.3.2_).
+
+```{r, echo = T}
+tse <- mu * ( 1 - mu ) / sqrt(25)
+```
+
+Theoretical: `r tse`
+
+c.) Repeat the above using samples of size 250, and compare with the $n = 25$ case.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 10e2
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- sample(Recidivism$Recid, 250)
+   results[i] <- mean(samp == "Yes")
+}
+
+ggplot(data.table(value = results)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Recidivism Sampling Distribution")
+
+mu <- mean(results)
+se <- sd(results) / sqrt(250)
+
+```
+
+$\mu = `r mu`$, $\sigma = `r se`$
+
+### 4.7
+
+The data set _FlightDelays_ contains the population of all flight departures by United Airlines and American Airlines out of LGA during May and June 2009 (case study in Section 1.1).
+
+```{r, echo = T}
+Flights <- data.table(read.csv(paste0(data.dir, "FlightDelays.csv"),
+                               header = T))
+```
+
+a.) Create a histogram of _Delay_ and describe the distribution.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+ggplot(Flights, aes(Delay)) +
+   geom_histogram(aes(fill = ..count..), bins = 30) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Flight Delays")
+
+```
+
+Compute the mean and standard deviation.
+
+```{r, echo = T}
+mu <- mean(Flights$Delay)
+sigma <- sd(Flights$Delay)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+b.) Simulate the sampling distribution of $\bar{x}$, the sample mean of the length of the flight delays (_Delay_), for sample size 25.
+
+```{r, echo = T}
+
+N <- 10e2
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- sample(Flights$Delay, 25, replace = F)
+   results[i] <- mean(samp)
+}
+
+```
+
+Create a histogram and describe the simulated sampling distribution of $\bar{x}$.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+ggplot(data.table(value = results)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Flight Delay Sampling Distribution")
+```
+
+Estimate the mean and standard error.
+
+```{r, echo = T}
+mu <- mean(results)
+se <- sd(results) / sqrt(25)
+```
+
+$\mu = `r mu`$, $\Sigma = `r se`$
+
+c.) Compare your estimate of the standard error with the theoretical standard error (_Corollary A.4.1_).
+
+```{r, echo = T}
+tse <- var(results) / 25
+```
+
+Theoretical: `r tse`
+
+d.) Repeat with sample size 250.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+N <- 10e2
+results <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- sample(Flights$Delay, 250, replace = F)
+   results[i] <- mean(samp)
+}
+
+ggplot(data.table(value = results)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs(title = "Flight Delay Sampling Distribution")
+
+mu <- mean(results)
+se <- sd(results) / sqrt(250)
+tse <- var(results) / 250
+```
+
+$\mu = `r mu`$, $\Sigma = `r se`$
+
+Theoretical: `r tse`
+
+### 4.8
+
+Let $X_1, X_2, \ldots, X_{25}$ be a random sample from some distribution and $W = T(X_1, X_2, \ldots, X_n)$ be a statistic.
+
+Suppose the _sampling distribution_ of Y has pdf $f(y) = (3/8)y^2 \ for \ 0 \le y \le 2$.
+
+Find $P(0 \le Y \le \frac{1}{5})$
 

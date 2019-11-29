@@ -554,7 +554,7 @@ __Solution__:
 
 f <- function(x) 2 / x^2
 
-x <- seq( from = 1.01, to = 1.99, by = 0.001)
+x <- seq( from = 1.0001, to = 1.999, by = 0.0001)
 
 y <- f(x)
 
@@ -575,6 +575,8 @@ ggplot(d) +
 
 Numerical solution: `r p`%
 
+Analytical Solution: ${\int_{1}^{1.5}}\frac{2}{x^2} = \frac{2}{3}$
+
 ### 4.9
 
 Let $X_1, X_2, \ldots, X_{n}$ be a random sample from some distribution and $Y = T(X_1, X_2, \ldots, X_n)$ be a statistic.
@@ -585,11 +587,48 @@ Find $P(0 \le Y \le \frac{1}{5})$
 
 __Solution__:
 
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+f <- function(x) (3/8)*x**2
+
+x <- seq( from = 0, to = 2, by = 0.001)
+
+y <- f(x)
+
+ggplot(data.table(x, y)) +
+   geom_point(aes(x, y), color = "cornflowerblue", size = .6) +
+   labs(title = "pdf f(x) = (3/8)*x**2")
+
+a <- cumsum(y) / sum(y)
+p <- round( a[x == 1/5], 4 ) * 100
+
+d <- data.table(x, y = a)
+
+ggplot(d) +
+   geom_point(aes(x, y), color = "cornflowerblue", size = .6) +
+   geom_area(aes(x, y), data = d[x < 1/5], fill = "cornflowerblue", alpha = .3) +
+   labs(title = paste("cdf f(x) = 2/x^2, A =", p ))
+
+```
+
+Numerical Solution: `r p`%
+
+Analytical Solution: ${\int_{0}^{\frac{1}{5}}}\frac{x^3}{8} = \frac{.008}{8} = .001 = .1$ %
+
 ### 4.10
 
 Suppose the heights of boys in a certain large city follow a distribution with mean 48 in. and variance $9^2$.
 
 Use the CLT approximation to estimate the probability that in a random sample of 30 boys, the mean height is more than 51 in.
+
+```{r, echo = T}
+
+z <- (51 - 48) / (9^2 / sqrt(30))
+p <- pnorm(z, lower.tail = F)
+
+```
+
+Probability: __`r round(p, 4)*100`%__
 
 ### 4.11
 
@@ -597,6 +636,15 @@ Let $X_1, X_2, \ldots, X_{36} \sim Bern(.55)$ be independent, and let $\hat{p}$ 
 
 Use the CLT approximation with continuity correction to find the probability that $\hat{p} \le 0.5$.
 
+```{r, echo = T}
+
+z <- ( .5 - .55 ) / sqrt(.55 * (1 - .55) / 36)
+
+p <- pnorm(z, lower.tail = T)
+
+```
+
+Probability: `r round(p, 4)*100`%
 
 ### 4.12
 

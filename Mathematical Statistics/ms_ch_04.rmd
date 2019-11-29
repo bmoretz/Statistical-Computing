@@ -550,6 +550,30 @@ Find $P(w < 1.5)$
 
 __Solution__:
 
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+f <- function(x) 2 / x^2
+
+x <- seq( from = 1.01, to = 1.99, by = 0.001)
+
+y <- f(x)
+
+ggplot(data.table(x, y)) +
+   geom_point(aes(x, y), color = "cornflowerblue", size = .6) +
+   labs(title = "pdf f(x) = 2/x^2")
+
+a <- cumsum(y) / sum(y)
+p <- round( a[x == 1.5], 4 ) * 100
+
+d <- data.table(x, y = a)
+ggplot(d) +
+   geom_point(aes(x, y), color = "cornflowerblue", size = .6) +
+   geom_area(aes(x, y), data = d[x < 1.5], fill = "cornflowerblue", alpha = .3) +
+   labs(title = paste("cdf f(x) = 2/x^2, A =", p ))
+
+```
+
+Numerical solution: `r p`%
 
 ### 4.9
 
@@ -573,8 +597,33 @@ Let $X_1, X_2, \ldots, X_{36} \sim Bern(.55)$ be independent, and let $\hat{p}$ 
 
 Use the CLT approximation with continuity correction to find the probability that $\hat{p} \le 0.5$.
 
+
 ### 4.12
 
 A random sample of size $n = 20$ is drawn from a distribution with mean 6 and variance 10.
 
 Use the CLT approximation to estimate $P(\bar{X} \le 4.6)$.
+
+### 4.13
+
+A random sample of size $n = 244$ is drawn from a distribution with pdf $f(x) = (3/16)(x - 4)^2, 2 \le x \le 6$.
+
+Use the CLT approximation to estimate $P(X \ge 4.2)$.
+
+### 4.14
+
+According to the 2000 census, 28.6% of the US adult population recieved a high school diploma.
+
+In a random sample of 800 US adults, what is the probability that between 220 and 230 (inclusive) people have a high school deploma?
+
+Use the CLT approximation with continuity correction, and compare with the exact probility.
+
+```{r, echo = T}
+
+```
+
+### 4.15
+
+If $X_1, \ldots, X_n$ are i.i.d. from Unif[0, 1], how larage should n be so that $P(\bar{X} - \frac{1}{2} < 0.05) \ge 0.90$,
+
+that is, is there at least a 90% chance that the sample mean is within 0.05 of $\frac{1}{2}$? Use the CLT approximation.

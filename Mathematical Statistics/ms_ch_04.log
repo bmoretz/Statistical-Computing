@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  29 NOV 2019 17:33
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  29 NOV 2019 17:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1551,12 +1551,21 @@ Package xcolor Warning: Incompatible color definition on input line 815.
 
 Package xcolor Warning: Incompatible color definition on input line 815.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 857.
+
+Package xcolor Warning: Incompatible color definition on input line 827.
+
+
+Package xcolor Warning: Incompatible color definition on input line 833.
+
+
+Package xcolor Warning: Incompatible color definition on input line 833.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 867.
 [17]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 857.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 867.
 (./ms_ch_04.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 857.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 857.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 867.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 867.
 Package rerunfilecheck Info: File `ms_ch_04.out' has not changed.
 (rerunfilecheck)             Checksum: EBB181F60804DAFAF7E4E7AF814C103B.
  ) 

@@ -652,6 +652,16 @@ A random sample of size $n = 20$ is drawn from a distribution with mean 6 and va
 
 Use the CLT approximation to estimate $P(\bar{X} \le 4.6)$.
 
+```{r, echo = T}
+
+z <- ( 4.6 - 6 ) / ( 10 * sqrt(20) )
+
+p <- pnorm(z, lower.tail = T)
+
+```
+
+Probability: `r round(p, 4)*100`%
+
 ### 4.13
 
 A random sample of size $n = 244$ is drawn from a distribution with pdf $f(x) = (3/16)(x - 4)^2, 2 \le x \le 6$.

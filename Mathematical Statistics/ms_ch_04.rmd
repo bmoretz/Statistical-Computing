@@ -669,7 +669,7 @@ A random sample of size $n = 244$ is drawn from a distribution with pdf $f(x) = 
 
 Use the CLT approximation to estimate $P(X \ge 4.2)$.
 
-```{r, echo = T, fig.height=3.5, fig.width=8}
+```{r, echo = T, fig.height=2.6, fig.width=8}
 pdf <- function(x) (3/16)*(x - 4)^2
 x <- seq(from = 2, to = 6, by = 0.001)
 y <- pdf(x)
@@ -700,7 +700,7 @@ According to the 2000 census, 28.6% of the US adult population recieved a high s
 
 In a random sample of 800 US adults, what is the probability that between 220 and 230 (inclusive) people have a high school deploma?
 
-Use the CLT approximation with continuity correction, and compare with the exact probility.
+Use the CLT approximation with continuity correction, and compare with the exact probability.
 
 ```{r, echo = T}
 

@@ -150,11 +150,11 @@ max(geAdj); min(geAdj); mean(geAdj)
 
 ```
 
-```{r echo = T, fig.height=3.5}
+```{r echo = T, fig.height=3.5, fig.width=8}
 chartSeries(GE)
 ```
 
-```{r echo = T, fig.height=3.5}
+```{r echo = T, fig.height=3.5, fig.width=8}
 chartSeries(GE, TA=NULL, subset='2001-01::2001-02')
 ```
 
@@ -223,6 +223,81 @@ ii.) the strike price is an upper bound for the price of a put.
 The following is a list of well-known investment strategies obtained by different combinations of put and call options on the same underlying asset. For each one of these strategies compute the payoff function and draw the profit graph.
 
 Additionally, argue about the situations where the strategy is profitable.
+
+```{r, echo = T}
+
+plot.payoff <- function(payoff, strike) {
+   
+   breakeven <- payoff[min(which(payoff$Payoff > 0))]$Strike
+   ggplot(payoff) +
+      geom_point(aes(Strike, Payoff), col = ifelse(payoff$Payoff < 0, "darkred", "darkgreen"), lwd = .8) +
+      geom_hline(yintercept = 0, col = "cornflowerblue", lwd = 1, alpha = .45) +
+      labs(title = paste0("Option Payoff: K=$", strike, ", Break-Even: $", breakeven), 
+           x = "Strike", y = "Payoff") +
+      scale_x_continuous(labels = dollar) +
+      scale_y_continuous(labels = dollar)
+}
+
+```
+
+#### Vanilla Call Payoff
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+call.payoff <- function( strike, initial.price, contracts = 1, contract.size = 100,
+                         lower = -.15, upper = .15) {
+
+   cost <- -(initial.price * contract.size) * contracts
+   
+   x <- strike + seq(strike*lower, strike*upper, .01)
+   y <- ( ( x - strike - initial.price ) * contract.size ) * contracts
+
+   payoff <- ifelse(y < cost, cost, y)
+   
+   data.table(Strike = x, Payoff = payoff)
+}
+
+K <- 45
+plot.payoff(call.payoff(K, 2.88), K)
+
+```
+
+#### Vanilla Put Payoff
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+put.payoff <- function( strike, initial.price, contracts = 1, contract.size = 100,
+                         lower = -.15, upper = .15) {
+
+   cost <- -(initial.price * contract.size) * contracts
+   
+   x <- strike + seq(strike*lower, strike*upper, .01)
+   y <- ( ( strike - x - initial.price ) * contract.size ) * contracts
+
+   payoff <- ifelse(y < cost, cost, y)
+   
+   data.table(Strike = x, Payoff = payoff)
+}
+
+K <- 45
+plot.payoff(put.payoff(K, 2.45), K)
+
+```
+
+#### The Straddle:
+
+The straddle strategy consists of two legs, one long and one short, both with the same strike and expiration date.
+
+The main idea behind the straddle is that it is a non-directional long volatility strategy. It is generally suitable when you expect the underlying security to be very volatile and move a lot, but you are not sure whether the price move will be up or down. The position makes a profit when your expectation is correct and the underlying does make a big move to one side or the other. If the underlying price stays more or less the same, the trade makes a loss.
+
+Straddle Payoff:
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+K <- 45
+plot.payoff(call.payoff(K, 2.85) + put.payoff(K, 2.88), K)
+
+```
 
 #### The strangle:
 

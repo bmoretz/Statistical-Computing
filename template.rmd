@@ -31,8 +31,8 @@ header-includes:
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
    \fancyhead[C]{\Large\bfseries\color{headergrey} - Title}
-   \rfoot{\color{headergrey} -Section}
-   \lfoot{\color{headergrey}}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey} - Section}
    \fancyfoot[C]{\rmfamily\color{headergrey} -LF}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"

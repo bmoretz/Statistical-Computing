@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  2 DEC 2019 19:52
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  3 DEC 2019 11:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1708,54 +1708,309 @@ Package xcolor Warning: Incompatible color definition on input line 1091.
 
 [22]
 
-Package xcolor Warning: Incompatible color definition on input line 1111.
+Package xcolor Warning: Incompatible color definition on input line 1113.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1130.
+Package xcolor Warning: Incompatible color definition on input line 1132.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1130.
+Package xcolor Warning: Incompatible color definition on input line 1132.
 
 File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-44-1.png Graph
 ic file (type bmp)
 <04_sampling_distributions_files/figure-latex/unnamed-chunk-44-1.png>
 
-Package xcolor Warning: Incompatible color definition on input line 1137.
+Package xcolor Warning: Incompatible color definition on input line 1139.
 
 [23]
 
-Package xcolor Warning: Incompatible color definition on input line 1142.
+Package xcolor Warning: Incompatible color definition on input line 1144.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1142.
+Package xcolor Warning: Incompatible color definition on input line 1144.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1149.
+Package xcolor Warning: Incompatible color definition on input line 1151.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1155.
+Package xcolor Warning: Incompatible color definition on input line 1157.
 
 
-Package xcolor Warning: Incompatible color definition on input line 1155.
+Package xcolor Warning: Incompatible color definition on input line 1157.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1162.
+
+Package xcolor Warning: Incompatible color definition on input line 1179.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1197.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1197.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-47-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-47-1.png>
 [24]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1162.
+
+Package xcolor Warning: Incompatible color definition on input line 1204.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1215.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1221.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1221.
+
+[25]
+
+Package xcolor Warning: Incompatible color definition on input line 1261.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1272.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1272.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-50-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-50-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1282.
+
+[26]
+
+Package xcolor Warning: Incompatible color definition on input line 1287.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1287.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1302.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1306.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1306.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1318.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1329.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1329.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1333.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1338.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1338.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1344.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1348.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1348.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1360.
+
+[27]
+
+Package xcolor Warning: Incompatible color definition on input line 1371.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1371.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1376.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1381.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1381.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1390.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1394.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1394.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1403.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1428.
+
+[28]
+
+Package xcolor Warning: Incompatible color definition on input line 1436.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1436.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-60-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-60-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1446.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1451.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1451.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1459.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1475.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1475.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1475.
+
+[29]
+
+Package xcolor Warning: Incompatible color definition on input line 1475.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1475.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-62-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-62-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1481.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1486.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1486.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1493.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1509.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1509.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1509.
+
+[30]
+
+Package xcolor Warning: Incompatible color definition on input line 1509.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1509.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-64-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-64-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1513.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1518.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1518.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1522.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1538.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1538.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-66-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-66-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1542.
+
+[31]
+
+Package xcolor Warning: Incompatible color definition on input line 1547.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1547.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1551.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1567.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1567.
+
+File: 04_sampling_distributions_files/figure-latex/unnamed-chunk-68-1.png Graph
+ic file (type bmp)
+<04_sampling_distributions_files/figure-latex/unnamed-chunk-68-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1571.
+
+[32]
+
+Package xcolor Warning: Incompatible color definition on input line 1576.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1576.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1605.
+[33]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1605.
 (./04_sampling_distributions.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1162.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1162.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1605.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1605.
 
 Package rerunfilecheck Info: File `04_sampling_distributions.out' has not chang
 ed.
-(rerunfilecheck)             Checksum: 80B9BED363F496256B9D89DF774F81CE.
+(rerunfilecheck)             Checksum: 3A204377D21FB71279E33667BF2DBB39.
  ) 
 Here is how much of TeX's memory you used:
- 27037 strings out of 494894
- 500594 string characters out of 6175663
- 600542 words of memory out of 5000000
- 30645 multiletter control sequences out of 15000+600000
+ 27073 strings out of 494894
+ 502342 string characters out of 6175663
+ 601271 words of memory out of 5000000
+ 30674 multiletter control sequences out of 15000+600000
  545240 words of font info for 64 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  53i,12n,116p,822b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 04_sampling_distributions.pdf (24 pages).
+Output written on 04_sampling_distributions.pdf (33 pages).

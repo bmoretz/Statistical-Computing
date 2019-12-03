@@ -31,8 +31,8 @@ header-includes:
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
    \fancyhead[C]{\Large\bfseries\color{headergrey}Sampling Distributions}
-   \rfoot{\color{headergrey}Chapter 4}
-   \lfoot{\color{headergrey}}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 4}
    \fancyfoot[C]{\rmfamily\color{headergrey}Mathematical Statistics}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -876,6 +876,8 @@ Let $W = \bar{X} + \bar{Y}$
 
 a.) Give the exact sampling distribution of W.
 
+$\sigma = (10 + 15) / sqrt( 10 + 15 - 1) = 3.1$
+
 $W \sim N(36, 3.1^2)$
 
 b.) Simulate the sampling distribution in R and plot your results.
@@ -921,3 +923,357 @@ p <- pnorm(40, 36, 3)
 $\hat{p} = `r phat*100`$%
 
 $P(W < 40) = `r round(p, 4)*100`$%
+
+### 4.20
+
+Let $X_1, X_2, \ldots, X_9 \sim^{i.i.d.} N(7, 3^2)$, and $Y_1, Y_2, \ldots, X_{12} \sim^{i.i.d.} N(10, 5^2)$.
+
+Let $W = \bar{X} - \bar{Y}$.
+
+a.) Give the sampling distribution of $W$.
+
+$\sigma = (3 + 5) / sqrt( 9 + 12 - 1 ) = 1.79$
+
+$W = N(-3, 1.79^2)$
+
+b.) Simulate the sampling distribution of W in R, and plot your results.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   X <- rnorm(9, 7, 3)
+   Y <- rnorm(12, 10, 5)
+   result[i] <- mean(X) - mean(Y)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = -3, col = "darkorange", lwd = 1.5) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+```
+
+Check that the simulated mean and standard error are close to the theoretical mean and standard error.
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+c.) Use your simulation to find $P(W < -1.5)$.
+
+```{r, echo = T}
+phat <- mean(result <= -1.5)
+
+p <- pnorm(-1.5, -3, 1.79)
+```
+
+$\hat{p} = `r phat*100`$%
+
+Calculate an exact answer and compare.
+
+$P(W < 1.5) = `r round(p, 4)*100`$%
+
+### 4.21
+
+Let $X_1, X_2, \ldots, X_N$ be a random sample from $N(0, 1)$. Let $W = X^2_1 + X^2_2 + \ldots + X^2_n$
+
+What is the mean and variance of the sampling distribution of W?
+
+$\mu = 0$, $\sigma = 1$
+
+Repeat using N = 4, N = 5.
+
+$N = 4, \sigma = 4 / sqrt(4 - 1) = 2.3$
+
+$N = 5, \sigma = 5 / sqrt(5 - 1) = 2.5$
+
+What observations or conjectures do you have for general __n__?
+
+### 4.22
+
+Let $X$ be a uniform random variable on the interval $[40, 60]$ and Y be a uniform random variable on $[45, 80]$.
+
+Assume that X and Y are independent.
+
+a.) Compute the expected value and variance of $X + Y$.
+
+$\mu = 112.5$, $Var = 1/24*(140 - 85)^2 = 126.04$
+
+b.) Simulate a sampling distribution of $X + Y$.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+X <- runif(1000, 40, 60)
+Y <- runif(1000, 45, 80)
+
+total <- X + Y
+
+ggplot(data.table(value = total)) +
+   geom_histogram(aes(value, fill = ..count..), bins = 30) +
+   labs("X + Y Sampling Distribution")
+
+```
+
+Describe the sampling distribution of $X + Y$. __Approximately Normal__
+
+Compute the mean and variance of the sampling distribution and compare this with the theoretical mean and variance.
+
+```{r, echo = T}
+mu <- mean(total)
+var <- var(total)
+```
+
+$\mu = `r mu`$, $Var = `r var`$
+
+c.) Suppose the time (in minutes) Andy takes to complete his statistics homework is $Unif[40, 60]$ and the time Adam takes is $Unif[45, 80]$.
+
+Assume they work independently.
+
+One day they announce that their total time to finish an assignment was less than 90 minutes. 
+
+How likely is this?
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+p <- punif(90, 85, 140)
+```
+
+Probability: __`r round(p, 4)*100`%__
+
+### 4.23
+
+Let $X_1, X_2, \ldots, X_{20} \sim^{i.i.d.} Exp(2)$. Let $X = \sum^{20}_{i=1}X_i$.
+
+a.) Simulate the sampling distribution of $X$ in R.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp(n = 20, rate = 2)
+   result[i] <- sum(samp)
+}
+
+```
+
+b.) From your simulation, find $\mathbb{E}[X]$ and $Var[X]$.
+
+
+```{r, echo = T}
+mu <- mean(result)
+var <- var(result)
+```
+
+$\mu = `r mu`$, $Var = `r var`$
+
+c.) From your simulation, find $P( X \le 10)$.
+
+```{r, echo = T}
+phat <- mean(result <= 10)
+```
+
+Probablity: _`r round(phat, 4)*100`%_
+
+### 4.24
+
+Let $X_1, X_2, \ldots, X_{30} \sim^{i.i.d.} Exp(1/3)$ and let $\bar{X}$ denote the sample mean.
+
+a.) Simulate the sampling distribution of $\bar{X}$ in R.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp(n = 30, rate = 1/3)
+   result[i] <- mean(samp)
+}
+```
+
+b.) Find the mean and standard error of the sampling distribution, and compare with the theoretical results.
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result)
+```
+
+Sample: $\mu = `r mu`$, $\sigma = `r sigma`$
+
+Theoretical: $\mu = \frac{\lambda}{1} = 3$, $sigma = 3/sqrt(30 - 1) = .56$
+
+c.) From your simulation, find $P(\bar{X} \le 3.5)$.
+
+```{r, echo = T}
+phat <- mean(result <= 3.5)
+```
+
+$\hat{p} = `r phat`$
+
+d.) Estimate $P(\bar{X} \le 3.5)$ by assuming the CLT approximation holds.
+
+Compare this result with the one in part __(c)__.
+
+```{r, echo = T}
+
+z <- (3.5 - 3) / sigma
+p <- pnorm(z)
+```
+
+$p = `r round(p, 4)`$
+
+### 4.25
+
+Consider the exponential distribution with density $f(x) \frac{1}{20}e^{-x/20}$, with mean and standard deviation of 20.
+
+a.) Calculate the median of this distribution.
+
+$0.5 = \int_{m}^{\inf}f(x)dx = -e^{-x/20}$
+
+$\ldots = M = 20*log(2)$
+
+$\ldots = `r 20*log(2)`$
+
+b.) Using R, draw a random sample of size 50 and graph the histogram.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+samp <- rexp( n = 50, rate = 1/20)
+
+ggplot(data.table(x = samp)) +
+   geom_histogram(aes(x, fill = ..count..)) +
+   labs(title = "RExp(50, 1/20)")
+```
+
+What are the mean and standard deviation of your sample?
+
+```{r, echo = T}
+mu <- mean(samp)
+sigma <- sd(samp)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+c.) Run a simulation to find the (approximate) sampling distribution for the median of sample size 50 from the exponential distribution and describe it.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp( n = 50, rate = 1/20)
+   result[i] <- median(samp)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+```
+
+What is the mean and the standard error of this sampling distribution?
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result) / sqrt(50)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+d.) Repeat the above but use sample sizes $n = 100, 500 \ and \ 1,000$.
+
+```{r, echo = T, fig.height=3, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp( n = 100, rate = 1/20)
+   result[i] <- median(samp)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+```
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result) / sqrt(50)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+```{r, echo = T, fig.height=3, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp( n = 500, rate = 1/20)
+   result[i] <- median(samp)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+```
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result) / sqrt(50)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+```{r, echo = T, fig.height=3, fig.width=8}
+N <- 10e3
+result <- numeric(N)
+
+for(i in 1:N)
+{
+   samp <- rexp( n = 1000, rate = 1/20)
+   result[i] <- median(samp)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+```
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result) / sqrt(50)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
+How does sample size affect the sampling distribution?
+
+_The sample mean and standard error converge to the analytical solution with increased sample size._
+
+### 4.26
+
+Prove theorem 4.2.1.
+
+### 4.27
+
+Let $X_1, X_2 \sim^{i.i.d.} F$ with corresponding pdf $f(x) = \frac{2}{x^2}$, $1 \le x \le 2$.
+
+a.) Find the pdf of $X_{max}$.
+
+$F_{max}(x) = 8(\frac{1}{x^2} - \frac{1}{x^3})$
+
+b.) Find the expected value of $X_{max}$.
+
+$\mathbb{E}{[F_{max}]} = 1.545$

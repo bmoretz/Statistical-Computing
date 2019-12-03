@@ -1277,3 +1277,142 @@ $F_{max}(x) = 8(\frac{1}{x^2} - \frac{1}{x^3})$
 b.) Find the expected value of $X_{max}$.
 
 $\mathbb{E}{[F_{max}]} = 1.545$
+
+### 4.28
+
+Let $X_1, X_2, \ldots, X_N \sim^{i.i.d.}$ with corresponding pdf $f(x) = 3x^2, 0 \le x \le 1$.
+
+a.) Find the pdf for $X_{min}$.
+
+b.) Find the pdf for $X_{max}$.
+
+c.) If $n = 10$, find the probability that the largest value, $X_{max}$, is greater than 0.92.
+
+### 4.29
+
+Compute the pdf of the sampling distribution of the maximum samples of size 10 from a population with an exponential distribtuion with $\lambda = 12$.
+
+### 4.30
+
+Let $X_1, X_2, \ldots, X_N \sim^{i.i.d.} Exp(\lambda)$ with pdf $f(x) = \lambda e^{-\lambda x}, \lambda > 0, x > 0$.
+
+a.) Find the pdf $f_{min}(x)$ for the sample minimum $X_{min}$. Recognize this as the pdf of a known distribution.
+
+b.) Simulate in R the sampling distribution of $X_{min}$ of samples of size $n = 25$ from the exponential distribution with $\lambda = 7$.
+
+Compare the theoretical expected value of $X_{min}$ with the simulated expected value.
+
+### 4.31
+
+Let $X_1, X_2, \ldots, X_n \sim^{i.i.d.} Pois(3)$. Let $X = \sum^{10}_{i=1}X_i$.
+
+Find the pdf for the sampling distribution of X.
+
+### 4.32
+
+Let $X_1$ and $X_2$ be independent exponential random variables, both with parameter $\lambda > 0$.
+
+Find the cumulative distribution function for the sampling distribution of $X = X_1 + X_2$.
+
+### 4.33
+
+This simulation illustrates the CLT for a finite population.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+N <- 400
+n <- 5
+
+finpop <- rexp(N, 1/10)
+
+ggplot(data.table(x = finpop)) +
+   geom_histogram(aes(x, fill = ..count..)) +
+   labs(title = "Exp(1/10)")
+
+mean(finpop) #mean (mu) of your pop.
+sd(finpop) # stdev (sigma) of your pop.
+sd(finpop)/sqrt(n) # theoretical standard error of sampling distribution
+
+sd(finpop)/sqrt(n) * sqrt((N-n)/(N-1)) # without replacement
+
+Xbar <- numeric(1000)
+for(i in 1:1000)
+{
+   x <- sample(finpop, n) # Random sample of size n
+                          # (w/o replacement)
+   Xbar[i] <- mean(x)
+}
+
+p1 <- ggplot(data.table(x = Xbar)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   labs(title = "Mean Sampling Distribution Histogram")
+
+p2 <- ggplot(data.table(x = Xbar), aes(sample = x)) +
+   stat_qq() +
+   stat_qq_line() +
+   labs(title = "Mean Sampling Distribution QQ-Plot")
+
+grid.arrange(p1, p2, nrow = 2)
+
+mean(Xbar)
+sd(Xbar) # estimated standard error of sampling distribution
+ 
+```
+
+a.) Does the sampling distribution of sample means appear approximately normal?
+
+b.) Compare the mean and standard error of your simulated sampling distribution with the theoretical ones.
+
+c.) Calculate $(\sigma/\sqrt(n))(\sqrt{(N-n)/(N-1)}$, where $\sigma$ is the standard deviation of the finite population and compare with the (estimated) standard error of the sampling distribution.
+
+d.) Repeat for larger __n__, say __n__ = 20 and __n__ = 100.
+
+### 4.34
+
+Let $X_1, X_2, \ldots, X_n$ be independent random variables from $N(\mu, \sigma)$.
+
+We are interested in the sampling distribution of the variance.
+
+Run a simulation to draw random samples of size 20 from $N(25, 7^2)$ and calculate the variance for each sample.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+W <- numeric(1000)
+
+for(i in 1:1000)
+{
+   x <- rnorm(20, 25, 7)
+   W[i] <- var(x)
+}
+
+mean(W)
+var(W)
+
+p1 <- ggplot(data.table(x = W)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   labs(title = "Variance Sampling Distribution")
+
+p2 <-
+   ggplot(data.table(value = W), aes(sample = value)) +
+   stat_qq() +
+   stat_qq_line() +
+   labs(title = "Mean Sampling Distribution QQ-Plot")
+   
+
+grid.arrange(p1, p2, nrow = 2)
+
+```
+
+Does the sampling distribution appear to be normally distributed?
+
+Repeat with n = 50 and n = 200.
+
+### 4.35
+
+A random sample of size $n = 100$ is drawn from a distribution with pdf $f(x) = 3(1- x)^2, 0 \le x \le 1$.
+
+a.) Use the CLT approximation to estimate $P(\bar{X} \le 0.27)$.
+
+b.) Use the expanded CLT to estimate the same probability (dnorm).
+
+c.) If $X_1, X_2, X_3 \sim^{i.i.d.} Unif[0, 1]$, then the minimum has density __f__ given above.
+
+Use simulation to estimate the probability.

@@ -702,9 +702,32 @@ In a random sample of 800 US adults, what is the probability that between 220 an
 
 Use the CLT approximation with continuity correction, and compare with the exact probability.
 
+__Solution__:
+
+The sampling distribution of $\hat{p}$ is approximately normal with:
+
 ```{r, echo = T}
 
+n <- 800
+mu <- .286
+
+ev <- 800 * mu
+sigma <- sqrt(n*mu*(1-mu))
+
 ```
+
+$\mathbb{E}[X] = `r ev`$ and $\sigma = \sqrt{800(.286)(1 - .286)} = `r round(sigma, 4)`$
+
+```{r, echo = T}
+
+l <- pnorm((ev - 219.5) / sigma)
+h <- pnorm((ev - 230.5) / sigma)
+
+p <- l - h
+
+```
+
+Probability: `r round(p, 4)`
 
 ### 4.15
 
@@ -724,11 +747,36 @@ The mean of her sample is 12.
 
 a.) What is the expected value of a sample mean?
 
+$X \sim Exp(\frac{1}{10}), \mathbb{E}(x) = 10$
+
 b.) Run a simulation by drawing 1000 random samples, each of size 30, from Exp(1/10), and compute the mean for each sample.
 
-What proportion of the sample means is as large or larger than 12?
+```{r, echo = T, fig.height=3.5, fig.width=12}
+
+N <- 1000
+result <- numeric(N)
+
+for( i in 1:N)
+{
+   samp <- rexp( n = 30, rate = 1/10)
+   result[i] <- mean(samp)
+}
+
+ggplot(data.table(result), aes(result)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_vline(xintercept = 12, col = "darkorange") +
+   stat_density( kernel = "gaussian", fill = "darkorange", alpha = .3) +
+   labs(title = "Exp(1/10) Sampling Distribution")
+
+p <- mean(result > 12)
+
+```
+
+What proportion of the sample means is as large or larger than 12? __`r p*100`%__
 
 c.) Is a mean of 12 unusual for a sample of size 30 from Exp(1/10)?
+
+__Yes__, only ~13% of the sample means have a value of 12 or higher.
 
 ### 4.17
 
@@ -736,11 +784,46 @@ Let $X \sim N(15, 3^2)$ and $Y \sim N(4, 2^2)$ be independent random variables.
 
 a.) What is the exact sampling distribution of $W = X - 2Y$?
 
+$W \sim N(7, 5^2)$
+
 b.) Use R to simulate the sampling distribution of $W$ and plot your results.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+X <- rnorm(10e3, 15, 3)
+Y <- rnorm(10e3, 4, 2)
+
+W <- X - 2*Y
+
+ggplot(data.table(x = W)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = 7, col = "darkorange", lwd = 1.5) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+
+```
 
 Check that the simulated mean and standard error are close to the theoretical mean and standard error.
 
+```{r, echo = T}
+mu <- mean(W)
+sigma <- sd(W)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
 c.) Use the simulated sampling to estimate $P(W \le 10)$, and then check your estimate with an exact calculation.
+
+```{r, echo = T}
+phat <- mean(W <= 10)
+
+p <- pnorm(10, mean = 7, sd = 5)
+
+```
+
+$\hat{p}= `r phat*100`$%
+
+$P(W \le 10) = `r round(p, 4)*100`$%
 
 ### 4.18
 
@@ -748,11 +831,42 @@ Let $X \sim Pois(4)$, $Y \sim Pois(12)$, $U \sim Pois(3)$ be independent random 
 
 a.) What is the exact sampling distribution of $W = X + Y + U$?
 
+$W \sim Pois(19)$
+
 b.) Use R to simulate the sampling distribution of $W$ and plot your results.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+W <- rpois(10e3, lambda = 19)
+
+ggplot(data.table(x = W)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = 19, col = "darkorange", lwd = 1.5) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+
+```
 
 Check that the simulated mean and standard error are close to the theoretical mean and standard error.
 
+```{r, echo = T}
+mu <- mean(W)
+sigma <- sd(W)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
+
 c.) Use the simulated sampling distribution to estimate $P(W \le 14)$ and then check your estimate with an exact calculation.
+
+```{r, echo = T}
+phat <- mean(W <= 14)
+
+p <- ppois(14, lambda = 19)
+
+```
+
+$\hat{p} = `r phat*100`$%
+
+$P(W \le 14) = `r round(p, 4)*100`$%
 
 ### 4.19
 
@@ -762,6 +876,48 @@ Let $W = \bar{X} + \bar{Y}$
 
 a.) Give the exact sampling distribution of W.
 
-b.) Simulate the sampling distribution in R and plot your results. Check that the simulated mean and standard error are close to the exact mean and standard error.
+$W \sim N(36, 3.1^2)$
+
+b.) Simulate the sampling distribution in R and plot your results.
+
+```{r, echo = T, fig.height=3.5, fig.width=8}
+
+N <- 10e3
+result <- numeric(N)
+
+for( i in 1:N)
+{
+   X <- rnorm(10, 20, 8)
+   Y <- rnorm(15, 16, 7)
+   
+   result[i] <- mean(X) + mean(Y)
+}
+
+ggplot(data.table(x = result)) +
+   geom_histogram(aes(x, fill = ..count..), bins = 30) +
+   geom_vline(xintercept = 36, col = "darkorange", lwd = 1.5) +
+   scale_y_continuous(labels = comma) +
+   labs(title = "Sampling Distribution")
+
+```
+
+Check that the simulated mean and standard error are close to the exact mean and standard error.
+
+```{r, echo = T}
+mu <- mean(result)
+sigma <- sd(result)
+```
+
+$\mu = `r mu`$, $\sigma = `r sigma`$
 
 c.) Use your simulation to find $P(W < 40)$. Calculate an exact answer and compare.
+
+```{r, echo = T}
+phat <- mean(result <= 40)
+
+p <- pnorm(40, 36, 3)
+```
+
+$\hat{p} = `r phat*100`$%
+
+$P(W < 40) = `r round(p, 4)*100`$%

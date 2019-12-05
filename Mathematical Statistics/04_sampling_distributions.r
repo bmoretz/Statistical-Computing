@@ -1,3 +1,6 @@
+library(data.table)
+library(ggplot2)
+
 N <- 1000
 Xbar <- numeric(N) # space for results
 

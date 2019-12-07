@@ -30,10 +30,10 @@ header-includes:
    \setlength\headheight{30pt}
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
-   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Methods}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Basics}
    \rfoot{\color{headergrey}\thepage}
    \lfoot{\color{headergrey}Chapter 1}
-   \fancyfoot[C]{\rmfamily\color{headergrey} -LF}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Statistical Methods}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -112,7 +112,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### Chapter 1
+#### Chapter 2
 
 ### 1.1
 

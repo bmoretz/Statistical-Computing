@@ -30,10 +30,10 @@ header-includes:
    \setlength\headheight{30pt}
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
-   \fancyhead[C]{\Large\bfseries\color{headergrey} - Title}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Numerical Summaries}
    \rfoot{\color{headergrey}\thepage}
-   \lfoot{\color{headergrey} - Section}
-   \fancyfoot[C]{\rmfamily\color{headergrey} -LF}
+   \lfoot{\color{headergrey}Chapter 2}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Statistical Methods}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -64,30 +64,12 @@ library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
-library(Rblpapi, quietly = TRUE, warn.conflicts = FALSE)
 library(scales, quietly = TRUE, warn.conflicts = FALSE)
 library(pander, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(formattable, quietly = TRUE, warn.conflicts = FALSE)
 library(grid, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
-library(png, quietly = TRUE, warn.conflicts = FALSE)
-library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
-library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
-library(stringr, quietly = TRUE, warn.conflicts = FALSE)
-library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
-library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
-library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
-library(mnormt, quietly = TRUE, warn.conflicts = FALSE)
-library(Ecdat, quietly = TRUE, warn.conflicts = FALSE)
-library(MASS, quietly = TRUE, warn.conflicts = FALSE)
-library(copula, quietly = TRUE, warn.conflicts = FALSE)
-library(fGarch, quietly = TRUE, warn.conflicts = FALSE)
-library(forecast, quietly = TRUE, warn.conflicts = FALSE)
-library(tseries, quietly = TRUE, warn.conflicts = FALSE)
-library(gmodels, quietly = TRUE, warn.conflicts = FALSE)
-library(rugarch, quietly = TRUE, warn.conflicts = FALSE)
-library(quantmod, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -130,6 +112,10 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### Section
+#### Chapter 2
 
-### Subsection
+### 2.1
+
+```{r, echo = T}
+
+```

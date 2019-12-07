@@ -30,10 +30,10 @@ header-includes:
    \setlength\headheight{30pt}
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
-   \fancyhead[C]{\Large\bfseries\color{headergrey}Confidence Intervals - The Bootstrap}
+   \fancyhead[C]{\Large\bfseries\color{headergrey} - Title}
    \rfoot{\color{headergrey}\thepage}
-   \lfoot{\color{headergrey}Chapter 5}
-   \fancyfoot[C]{\rmfamily\color{headergrey}Mathematical Statistics}
+   \lfoot{\color{headergrey} - Section}
+   \fancyfoot[C]{\rmfamily\color{headergrey} -LF}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -130,66 +130,6 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### 5.1
+#### Section
 
-Consider the samples 1-6. Use a six-sided die to obtain three different bootstrap samples and their corresponding means.
-
-```{r,echo=T}
-pop <- seq(from = 1, to = 6, by = 1)
-
-n <- 6
-
-s1 <- mean( sample(pop, n, replace = T) )
-s2 <- mean( sample(pop, n, replace = T) )
-s3 <- mean( sample(pop, n, replace = T) )
-
-```
-
-$\bar{x}^*_1 = `r s1`$, $\bar{x}^*_2 = `r s2`$, $\bar{x}^*_3 = `r s3`$
-
-#### 5.2
-
-Consider the samples 1, 3, 4, and 6 from some distribution.
-
-```{r, echo = T}
-
-pop <- c(1, 3, 4, 6)
-
-```
-
-a.) For one random bootstrap sample, find the probability that the mean is one.
-
-```{r, echo = T}
-
-```
-
-
-b.) For one random bootstrap sample, find the probability that the maximum is 6.
-
-```{r, echo = T}
-
-```
-
-
-c.) For one random bootstrap sample, find the probability that exactly two elements in the sample are less than 2.
-
-```{r, echo = T}
-
-```
-
-
-### 5.3
-
-Consider the sample 1-3.
-
-a.) List all the (ordered) bootstrap samples from this sample. How many are there?
-
-b.) How many unordered bootstrap samples are there? For example, {1, 2, 2} and {2, 1, 2} are considered to be the same.
-
-c.) How many ordered bootstrap samples have one occurrence of 1 and two occurences of 3?
-
-Is this the same number of bootstrap samples that have each of 1, 2 and 3 occuring exactly once?
-
-d.) Is the probability of obtaining a bootstrap sample with one 1 and two 3's the same as the probabiliity of obtaining a bootstrap sample with each of 1, 2 and 3 occuring exactly once?
-
-
+### Subsection

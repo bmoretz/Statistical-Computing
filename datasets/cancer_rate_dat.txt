@@ -1,0 +1,25 @@
+City & Rate & calories 
+New York & 32.75 & 300
+Chicago & 30.75 & 275
+Pittsburgh & 28.00 & 280
+Seattle & 27.25 & 270
+Boston & 30.75 & 305
+Cleveland & 31.00 & 335
+Columbus & 29.00 & 340
+Indianapolis & 26.50 & 342
+New Orleans & 27.00 & 348
+ Nashville & 23.50 & 354
+Washington, DC & 31.20 & 357
+Salt Lake City & 22.70 & 394
+Omaha & 27.00 & 380
+San Diego & 25.80 & 383
+Atlanta & 27.00 & 397
+Los Angeles & 27.80 & 450
+Miami & 23.50 & 453
+Fort Worth & 21.50 & 446
+Tampa & 21.00 & 456
+Albuquerque & 22.50 & 513
+Las Vegas & 21.50 & 510
+Honolulu & 20.60 & 520
+El Paso & 22.80 & 535
+Phoenix & 21.00 & 520 

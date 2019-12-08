@@ -11,7 +11,7 @@ Working Materials:
 
 <a href="https://www.crcpress.com/Basics-of-Matrix-Algebra-for-Statistics-with-R/Fieller/p/book/9781498712361">Basics of Matrix Algebra for Statistics with R</a>
 
-<a href="http://bcs.wiley.com/he-bcs/Books?action=index&bcsId=10248&itemId=1119061393">Understanding and Applying Basic Statistical Methods ins R</a>
+<a href="http://bcs.wiley.com/he-bcs/Books?action=index&bcsId=10248&itemId=1119061393">Understanding and Applying Basic Statistical Methods in R</a>
 
 <hr/>
 

@@ -214,7 +214,11 @@ $(\sum^3_{i=1}{Y_i})^4$
 Show by numerical example that $\sum{X^2_i}$ is not necessarily equal to $(\sum{X_i}^2)$.
 
 ```{r, echo = T}
+x <- 1:10
 
+sum(x^2)
+
+(sum(x))^2
 ```
 
 ### 2.4
@@ -223,7 +227,21 @@ Find the mean and median of the following sets of numbers.
 
 a.) -1, 0, 3, 0, 2, -5.
 
+```{r, echo = T}
+x <- c(-1, 0, 3, 0, 2, -5)
+
+mean(x)
+median(x)
+```
+
 b.) 2, 2, 3, 10, 100, 1,000
+
+```{r, echo = T}
+x <- c(2, 2, 3, 10, 100, 1000)
+
+mean(x)
+median(x)
+```
 
 ### 2.5
 
@@ -232,11 +250,20 @@ The final exam scores for 15 students are: 73, 74, 92, 98, 100, 72, 74, 85, 76, 
 Compute the mean, 20% trimmed mean, and median using R.
 
 ```{r, echo = T}
+scores <- c(73, 74, 92, 98, 100, 72, 74, 85, 76, 94, 89, 73, 76, 99)
+
+mean(scores)
+mean(scores, trim = .2)
+median(scores)
 ```
 
 ### 2.6
 
 The average of 23 numbers is 14.7. What is the sum of these numbers?
+
+```{r, echo = T}
+23 * 14.7
+```
 
 ### 2.7
 
@@ -244,21 +271,55 @@ Consider the 10 values: 3, 6, 8, 12, 23, 26, 37, 42, 49, 63.
 
 The mean is $\bar{X} = 26.9$
 
+```{r, echo = T}
+x <- c(3, 6, 8, 12, 23, 26, 37, 42, 49, 63)
+mean(x)
+```
+
 a.) What is the value of the mean if the largest value, 63, is increased to 100?
+
+```{r, echo=T}
+x <- c(3, 6, 8, 12, 23, 26, 37, 42, 49, 100)
+mean(x)
+```
 
 b.) What is the mean if 633 is increased to 1,000?
 
+```{r, echo=T}
+x <- c(3, 6, 8, 12, 23, 26, 37, 42, 49, 1000)
+mean(x)
+```
+
 c.) What do these results illustrate about the mean?
+
+_The mean is very sensitive to outliers._
 
 ### 2.8
 
 Repeat the previous exercise, only compute the median instead.
 
+```{r, echo=T}
+x <- c(3, 6, 8, 12, 23, 26, 37, 42, 49, 100)
+median(x)
+```
+
+b.) What is the mean if 633 is increased to 1,000?
+
+```{r, echo=T}
+x <- c(3, 6, 8, 12, 23, 26, 37, 42, 49, 1000)
+median(x)
+```
+
 ### 2.9
 
 In general, how many values must be altered to make the sample mean arbitrarily large?
+
+_One._
 
 ### 2.10
 
 What is the minimum number of values that must be altered to make the 20% trimmed mean and sample median arbitrarily large?
 
+mean = $g = (.2N), g + 1$
+
+median = ~$.5N$

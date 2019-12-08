@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  8 DEC 2019 16:28
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  8 DEC 2019 16:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1239,13 +1239,150 @@ Package xcolor Warning: Incompatible color definition on input line 297.
 
 Package xcolor Warning: Incompatible color definition on input line 297.
 
+
+Package xcolor Warning: Incompatible color definition on input line 330.
+
 [2]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 384.
+
+Package xcolor Warning: Incompatible color definition on input line 336.
+
+
+Package xcolor Warning: Incompatible color definition on input line 336.
+
+
+Package xcolor Warning: Incompatible color definition on input line 342.
+
+
+Package xcolor Warning: Incompatible color definition on input line 346.
+
+
+Package xcolor Warning: Incompatible color definition on input line 346.
+
+
+Package xcolor Warning: Incompatible color definition on input line 359.
+
+
+Package xcolor Warning: Incompatible color definition on input line 365.
+
+
+Package xcolor Warning: Incompatible color definition on input line 365.
+
+
+Package xcolor Warning: Incompatible color definition on input line 371.
+
+
+Package xcolor Warning: Incompatible color definition on input line 375.
+
+
+Package xcolor Warning: Incompatible color definition on input line 375.
+
+
+Package xcolor Warning: Incompatible color definition on input line 383.
+
+
+Package xcolor Warning: Incompatible color definition on input line 389.
+
+
+Package xcolor Warning: Incompatible color definition on input line 389.
+
+
+Package xcolor Warning: Incompatible color definition on input line 395.
+
+
+Package xcolor Warning: Incompatible color definition on input line 399.
+
+
+Package xcolor Warning: Incompatible color definition on input line 399.
+
+
+Package xcolor Warning: Incompatible color definition on input line 413.
+
 [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 384.
+
+Package xcolor Warning: Incompatible color definition on input line 419.
+
+
+Package xcolor Warning: Incompatible color definition on input line 419.
+
+
+Package xcolor Warning: Incompatible color definition on input line 425.
+
+
+Package xcolor Warning: Incompatible color definition on input line 429.
+
+
+Package xcolor Warning: Incompatible color definition on input line 429.
+
+
+Package xcolor Warning: Incompatible color definition on input line 435.
+
+
+Package xcolor Warning: Incompatible color definition on input line 439.
+
+
+Package xcolor Warning: Incompatible color definition on input line 439.
+
+
+Package xcolor Warning: Incompatible color definition on input line 450.
+
+
+Package xcolor Warning: Incompatible color definition on input line 454.
+
+
+Package xcolor Warning: Incompatible color definition on input line 454.
+
+
+Package xcolor Warning: Incompatible color definition on input line 467.
+
+
+Package xcolor Warning: Incompatible color definition on input line 472.
+
+
+Package xcolor Warning: Incompatible color definition on input line 472.
+
+
+Package xcolor Warning: Incompatible color definition on input line 481.
+
+[4]
+
+Package xcolor Warning: Incompatible color definition on input line 486.
+
+
+Package xcolor Warning: Incompatible color definition on input line 486.
+
+
+Package xcolor Warning: Incompatible color definition on input line 494.
+
+
+Package xcolor Warning: Incompatible color definition on input line 499.
+
+
+Package xcolor Warning: Incompatible color definition on input line 499.
+
+
+Package xcolor Warning: Incompatible color definition on input line 514.
+
+
+Package xcolor Warning: Incompatible color definition on input line 519.
+
+
+Package xcolor Warning: Incompatible color definition on input line 519.
+
+
+Package xcolor Warning: Incompatible color definition on input line 527.
+
+
+Package xcolor Warning: Incompatible color definition on input line 532.
+
+
+Package xcolor Warning: Incompatible color definition on input line 532.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 557.
+[5]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 557.
 (./02_numerical-summaries.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 384.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 384.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 557.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 557.
 Package rerunfilecheck Info: File `02_numerical-summaries.out' has not changed.
 
 (rerunfilecheck)             Checksum: 274F6F4EE892C7E1E88488AB0BE4B61A.

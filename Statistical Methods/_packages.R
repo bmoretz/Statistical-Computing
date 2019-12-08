@@ -1,1 +1,1 @@
-install.packages("Rallfun")
+install.packages("WRS")

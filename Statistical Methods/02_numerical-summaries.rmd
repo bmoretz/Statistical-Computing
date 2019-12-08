@@ -116,6 +116,149 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ### 2.1
 
+Suppose,
+
+$X_1 = 1, X_2 = 3, X_3 = 0,$
+$X_4 = -2, X_5 = 4, X_6 = -1,$
+$X_7 = 5, X_8 = 2, X_9 = 10.$
+
+```{r, echo = T}
+x <- c(1, 3, 0, -2, 4, -1, 5, 2, 10)
+```
+
+Find:
+
+a.) $\sum{X_i}$
+
+```{r, echo = T}
+sum(x)
+```
+
+b.) $\sum^5_{i=3}X_i$
+
+```{r, echo = T}
+sum( x[3:5] )
+```
+
+c.) $\sum^4_{i=1}X^3_i$
+
+```{r, echo = T}
+sum(x[1:4]^3)
+```
+
+d.) $(\sum{X_i})^2$
+
+```{r, echo = T}
+(sum(x))^2
+```
+
+e.) $\sum{3}$
+
+```{r, echo = T}
+3 * length(x)
+```
+
+f.) $\sum{(X_i - 7)}$
+
+```{r, echo = T}
+sum(x - 7)
+```
+
+g.) $3\sum^5_{i=1}X_i - \sum^9_{i=6}X_i$
+
+```{r, echo = T}
+3 * sum( x[1:5] ) - sum( x[6:9] )
+```
+
+h.) $\sum{10X}$
+
+```{r, echo = T}
+sum( 10 * x)
+```
+
+i.) $\sum^6_{i=2}iX_i$
+
+```{r, echo = T}
+i <- 2:6
+sum( i * x[i]  )
+```
+
+j.) $\sum6$
+
+```{r, echo = T}
+6 * length(x)
+```
+
+### 2.2
+
+Express the following in summation notation.
+
+a.) $X_1 + \frac{X_2}{2} + \frac{X_3}{3} + \frac{X_4}{4}$
+
+$\ldots = \frac{X_1}{1} + \frac{X_2}{2} + \frac{X_3}{3} + \frac{X_4}{4}$
+
+$\ldots = \sum{^4}_{i=1}{\frac{X_i}{i}}$
+
+b.) $U_1 + U^2_2 + U^3_3 + U^4_4$
+
+$\ldots = U^1_1 + U^2_2 + U^3_3 + U^4_4$
+
+$\ldots = \sum^4_{i=1}{U^i_i}$
+
+c.) $(Y_1 + Y_2 + Y_3)^4$
+
+$(\sum^3_{i=1}{Y_i})^4$
+
+### 2.3
+
+Show by numerical example that $\sum{X^2_i}$ is not necessarily equal to $(\sum{X_i}^2)$.
+
 ```{r, echo = T}
 
 ```
+
+### 2.4
+
+Find the mean and median of the following sets of numbers.
+
+a.) -1, 0, 3, 0, 2, -5.
+
+b.) 2, 2, 3, 10, 100, 1,000
+
+### 2.5
+
+The final exam scores for 15 students are: 73, 74, 92, 98, 100, 72, 74, 85, 76, 94, 89, 73, 76, 99.
+
+Compute the mean, 20% trimmed mean, and median using R.
+
+```{r, echo = T}
+```
+
+### 2.6
+
+The average of 23 numbers is 14.7. What is the sum of these numbers?
+
+### 2.7
+
+Consider the 10 values: 3, 6, 8, 12, 23, 26, 37, 42, 49, 63.
+
+The mean is $\bar{X} = 26.9$
+
+a.) What is the value of the mean if the largest value, 63, is increased to 100?
+
+b.) What is the mean if 633 is increased to 1,000?
+
+c.) What do these results illustrate about the mean?
+
+### 2.8
+
+Repeat the previous exercise, only compute the median instead.
+
+### 2.9
+
+In general, how many values must be altered to make the sample mean arbitrarily large?
+
+### 2.10
+
+What is the minimum number of values that must be altered to make the 20% trimmed mean and sample median arbitrarily large?
+

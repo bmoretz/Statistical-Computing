@@ -2,10 +2,12 @@ library(data.table)
 library(ggplot2)
 library(gtools)
 
+data.dir <- "D:/Project/Statistical-Computing/datasets/"
+
 ### Beer/Wings Consumption
 
 Beerwings <- data.table(read.csv(paste0(data.dir, "Beerwings.csv"),
-                               header = T))
+                                 header = T))
 
 with(Beerwings, {
   tapply(Hotwings, Gender, mean)

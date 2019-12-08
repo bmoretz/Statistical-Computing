@@ -122,7 +122,7 @@ ggplot(data.table(value = result), aes(sample = value)) +
 ### Verizon data
 
 Verizon <- data.table(read.csv(paste0(data.dir, "Verizon.csv"),
-                              header = T))
+                               header = T))
 
 Time.ILEC <- Verizon[Group == "ILEC"]$Time
 Time.CLEC <- Verizon[Group == "CLEC"]$Time

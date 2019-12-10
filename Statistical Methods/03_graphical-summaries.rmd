@@ -1,0 +1,277 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Graphical Summaries}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 3}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Statistical Methods}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- "D:/Projects/Statistical-Computing/datasets/"
+
+setwd("D:/Projects/Statistical-Computing/RDS")
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+#### Chapter 3
+
+### 3.1
+
+Based upon a sample of 100 individuals, the values 1, 2, 3, 4, 5 are observed with relative frequencies 0.2, 0.3, 0.1, 0.25, 0.15, respectfully. 
+
+Compute the mean, variance and standard deviation.
+
+```{r, echo = T}
+values <- c(1, 2, 3, 4, 5)
+frequencies <- c(0.2, 0.3, 0.1, 0.25, 0.15)
+
+stopifnot(sum(frequencies) == 1)
+
+n <- 100
+
+xbar <- sum(values * frequencies)
+variance <- n/(n - 1) * sum( ((values - xbar)^2) * frequencies )
+stdDev <- sqrt(variance)
+
+```
+
+$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+
+### 3.2
+
+Fifty individual are rated on how open-mided they are. The ratings have the values 1, 2, 3, 4, and the corresponding relative frequencies are 0.2, 0.24, 0.4, 0.16, respectively.
+
+Compute the mean, variance and standard deviation.
+
+```{r, echo = T}
+```
+
+### 3.3
+
+For the values 0, 1, 2, 3, 4, 5, 6, the corresponding relative frequencies based on a sample of 10,000 observations are 0.015625, 0.093750, 0.234375, 0.312500, 0.234375, 0.312500, 0.234375, 0.093750, 0.015625, respectively.
+
+Determine the mean, variance and standard deviation.
+
+```{r, echo = T}
+```
+
+### 3.4
+
+For a local charity, the donations in dollars recieved during the last month were 5, 10, 15, 20, 25, 50, having the frequencies 20, 30, 10, 40, 50, 5, respectively.
+
+Compute the mean, variance and standard deviation.
+
+### 3.5
+
+The values 1, 5, 10, 20 have the frequencies 10, 20, 40, 30.
+
+Compute the mean, variance and standard deviation.
+
+### 3.6
+
+For the data in Table 2.1, dealing with changes in cholesterol levels, create a histogram with the R function hist.
+
+```{r, echo = T}
+data <- read.csv(paste0(data.dir, "ibtable2_1_dat.txt"), header = F)
+
+```
+
+### 3.7
+
+For the data in Table 2.2, create a histogram using the R function _hist_ and speculate about whether values less than zero are outliers.
+
+```{r, echo = T}
+data <- read.csv(paste0(data.dir, "ibtable2_2_dat.txt"), header = F)
+
+```
+
+Then compare your answer to the result obtained using _outbox_.
+
+### 3.8
+
+The heights of 30 male Egyptian skulls from 4,000 BC are reported by Thomson and Randall-Maciver (1905) to be:
+
+121, 124, 129, 130, 130, 131, 131, 132, 132, 132, 133, 133, 134, 134, 134,
+134, 135, 136, 136, 136, 136, 137, 137, 138, 138, 138, 140, 143.
+
+```{r, echo = T}
+x <- c(121, 124, 129, 129, 130, 130, 131, 131, 132, 132, 132, 133, 133, 134, 134, 134,
+134, 135, 136, 136, 136, 136, 136, 137, 137, 138, 138, 138, 140, 143)
+
+n <- length(x)
+
+stopifnot(n == 30)
+
+```
+
+Create a histogram.
+
+Find outliers with classic rule and MAD-median rule.
+
+### 3.9
+
+For the dta in the previous exercise, verify that the classic outlier detection rule, given by _2.6_, finds three outliers, which match the values flagged as outliers by the MAD-median rule.
+
+Despite this result, what are the concerns with the classic outlier detection rule?
+
+### 3.10
+
+What do Exercises 6 and 7 suggest about using a histogram to detect outliers?
+
+### 3.11
+
+Table 3.5 shows the exam scores for 27 students.
+
+Create a stem-and-leaf display.
+
+### 3.12
+
+If the leaf is the hundredths digit, what is the stem for the number 34.679?
+
+### 3.13
+
+Consider the values 5.134, 5.532, 5.869, 5.809, 5.268, 5.495, 5.142, 5.483, 
+5.329, 5.149, 5.240, 5.823.
+
+If the leaf is taken to be the tenths digit, why would this make an uninteresting stem-and-leaf display?
+
+```{r, echo = T}
+x <- c(5.134, 5.532, 5.869, 5.809, 5.268, 5.495, 5.142, 5.483, 
+5.329, 5.149, 5.240, 5.823)
+
+```
+
+### 3.14
+
+For the boxplot in Figure _3.11_, determine approximately, the quartiles, the interquartile range, and the median.
+
+Approximately how large is the largest value not declared an outlier?
+
+### 3.15
+
+In Figure _3.11_, about how large must a value be to be declared an outlier? How small?
+
+### 3.16
+
+Use R to create both a boxplot and a plot of the relative frequencies using the film data in Table 3.1.
+
+### 3.17
+
+Use R to create a boxplot and a kernel density estimate using the data in table 3.2.
+
+### 3.18
+
+Describe a situation where the sample histogram is likely to give a good indication of the population histogram based on 100 observations.
+
+### 3.19
+
+Comment generally on how large of a sample size is needed to ensure that the sample histogram will likely provide a good indication of the population histogram?
+
+### 3.20
+
+When trying to detect outliers, discuss the relative merits of using a histogram vs a boxplot.
+
+### 3.21
+
+A sample histogram indicates that the data are highly skewed to the right.
+
+Is this a reliable indication that if all individuals of interest could be measured, the resulting histogram would also be highly skewed?

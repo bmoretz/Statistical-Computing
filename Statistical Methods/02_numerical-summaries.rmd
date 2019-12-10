@@ -600,3 +600,191 @@ M <- o[ (n + 1)/2 ]
 Verify that the sample mean, 20% trimmed mean, and median are $\bar{X} = 33.33, \bar{X}_t = 32.9, and \ M = 35$
 
 $\bar{X} = `r xbar`$, $\bar{X}_t = `r tbar`$, $M = `r M`$
+
+### 2.29
+
+The largest observation in the last problem is 49. If 49 is replaced by the value 200, verify that the sample mean is now $\bar{X} = 50.1$ but the 20% trimmed mean and median are not changed.
+
+```{r, echo = T}
+x <- c(21, 36, 42, 24, 25, 36, 35, 200, 32)
+
+xbar <- 1/n * sum(x)
+
+o <- sort(x)
+g <- floor(.2*n)
+t <- o[ (g+1):(n-g) ]
+tbar <- 1/(n - 2*g)*sum(t)
+
+M <- o[ (n + 1)/2 ]
+```
+
+$\bar{X} = `r xbar`$, $\bar{X}_t = `r tbar`$, $M = `r M`$
+
+### 2.30
+
+For the data in Exercise 28, what is the minimum number of observations that must be altered so that the 20% trimmed mean is greather than 1,000?
+
+$g + 1 = `r g + 1`$
+
+### 2.31
+
+Repeat the previous exercise, but use the median instead.
+
+_N = 4_
+
+What does this illustrate about the resistance of the mean, median and 20% trimmed mean?
+
+_The mean has the least resistance, followed by the trimmed mean and then the median._
+
+### 2.32
+
+For the observations,
+
+6, 3, 2, 7, 6, 5, 8, 9, 11
+
+Use R to verify that the sample mean, 20% trimmed mean, and median are $\bar{X} = 6.5, \bar{X}_t = 6.7 \ and \ M = 6.5$, respectfully.
+
+```{r, echo = T}
+x <- c(6, 3, 2, 7, 6, 5, 8, 9, 8, 11)
+
+mean(x)
+
+mean(x, trim = .2)
+
+median(x)
+```
+
+### 2.33
+
+In general, when you have _n_ observations, what is the minimum number of values that must be altered to make the 20% trimmed mean grow as larage as you want?
+
+floor(n*.2) + 1
+
+### 2.34
+
+A class of fourth graders was asked to bring a pumpkin to school. Each of the 29 students counted the number of seeds in their pumpkin, and the results were:
+
+250, 220, 281, 247, 230, 209, 240, 160, 370, 274, 210, 204, 243, 251, 190,
+200, 130, 150, 177, 475, 221, 350, 224, 163, 272, 236, 200, 171, 98
+
+Use R to compute the sample mean, 20% trimmed mean, median and MOM.
+
+```{r, echo = T}
+x <- c(250, 220, 281, 247, 230, 209, 240, 160, 370, 274, 210, 204, 243, 251, 190, 
+       200, 130, 150, 177, 475, 221, 350, 224, 163, 272, 236, 200, 171, 98)
+
+xbar <- mean(x)
+tbar <- mean(x, trim = .2)
+M <- median(x)
+MOM <-  mean( x[ abs( x - median(x) ) / mad(x) < 2.27 ] )
+
+```
+
+$\bar{X} = `r xbar`$, $\bar{X}_t = `r tbar`$, $M = `r M`$, $MOM = `r MOM`$
+
+### 2.35
+
+Compute the 20% Winsorized values for the observations:
+
+21, 36, 42, 24, 25, 36, 35, 49, 32
+
+```{r, echo = T}
+x <- c(21, 36, 42, 24, 25, 36, 35, 49, 32)
+
+winsorize <- function( x, trim = .2) {
+   n <- length(x)
+   
+   o <- sort(x)
+   g <- floor(trim*n)
+   
+   o[1:(g+1)] <- o[(g+1)]
+   o[(n-g):n] <- o[n-g]
+   
+   o
+}
+
+winsorize(x)
+```
+
+### 2.36
+
+For the observations in the pervious problem, use R to verify that the 20% Winsorized variance is 51.36.
+
+```{r, echo = T}
+
+Wvar <- var(winsorize(x))
+
+```
+
+$W_{var} = `r Wvar`$
+
+### 2.37
+
+In the previous problem, would you expect the sample variance to be larger or smaller than 51.36?
+
+_Larger, Winsorizing pulls in the extremes._
+
+Verify your answer.
+
+```{r, echo = T}
+var(x)
+```
+
+### 2.38
+
+In general, will the Winsorized sample variance, $s^2_w$, be less than the sample variance, $s^2$?
+
+_Yes._
+
+### 2.39
+
+For the observations,
+
+6, 3, 2, 7, 6, 5, 8, 9, 8, 11
+
+verify that the sample variance and 20% Winsorized variance are 7.4 and 1.8, respectfully.
+
+```{r, echo = T}
+x <- c(6, 3, 2, 7, 6, 5, 8, 9, 8, 11)
+
+variance <- var(x)
+
+```
+
+$Var = `r variance`$, $Var_w = `r Wvar`$
+
+### 2.40
+
+Consider again the number of pumpkin seeds given in Exercise 34.
+
+Compute the 20% Winsorized variance.
+
+```{r, echo = T}
+x <- c(250, 220, 281, 247, 230, 209, 240, 160, 370, 274, 210, 204, 243, 251, 190, 
+       200, 130, 150, 177, 475, 221, 350, 224, 163, 272, 236, 200, 171, 98)
+
+Wvar <- var( winsorize(x) )
+
+```
+
+$W_{var} = `r Wvar`$
+
+### 2.41
+
+Snedecor and Cochran (1967) report results from an experiment dealing with weight gaim in rats as a function of source and amount of protein.
+
+One of the groups was fed beef with a low amount of protein. The weight gains were:
+
+90, 76, 90, 64, 86, 51, 72, 90, 95, 78
+
+Compute the 20% trimmed mean and 20% Winsorized variance.
+
+```{r, echo = T}
+x <- c(90, 76, 90, 64, 86, 51, 72, 90, 95, 78)
+
+tbar <- mean(x, trim = .2)
+wvar <- var(winsorize(x))
+
+```
+
+$\bar{X}_t = `r tbar`$, $Var_w = `r wvar`$

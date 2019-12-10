@@ -323,3 +323,280 @@ What is the minimum number of values that must be altered to make the 20% trimme
 mean = $g = (.2N), g + 1$
 
 median = ~$.5N$
+
+### 2.11
+
+For the values 0, 23, -1, 12, -10, -7, 1, -19, -6, 12, 1, -3 compute the lower and upper quartiles using the ideal fourths.
+
+```{r, echo = T}
+# Used in 11 & 12
+idealf <- function( x ) {
+   n <- length(x)
+   sorted <- sort(x)
+   i <- (n / 4) + 5/12
+   j <- floor(i)
+   h <- i - j
+   q1 <- (1 - h)*sorted[j] + h*sorted[j + 1]
+   
+   k <- n - j + 1
+   q2 <- (1 - h)*sorted[k] + h*sorted[k - 1]
+   
+   c(x[1], q1, q2, sorted[n])
+}
+
+```
+
+```{r, echo = T}
+x <- c(0, 23, -1, 12, -10, -7, 1, -19, -6, 12, 1, -3)
+
+idealf(x)
+```
+
+### 2.12
+
+For the values: -1, -10, 2, 2, -7, -2, 3, 3, -6, 12, -1, -12, -6, 8, 6 compute the lower and upper quartiles (the ideal fourths).
+
+```{r, echo = T}
+x <- c(-1, -10, 2, 2, -7, -2, 3, 3, -6, 12, -1, -12, -6, 8, 6)
+
+idealf(x)
+```
+
+### 2.13
+
+Approximately how many values must be altered to make _q2_, the estimate of the upper quartile based on the ideal fourths, arbitrarily large?
+
+_About $\frac{1}{4}$_
+
+### 2.14
+
+Argue that the smallest observed value, $X_1$, satisfies the definition of a measure of location.
+
+_The smallest (or largest) value in a set defines the boundaries of the set. This is by definition a measure of location._
+
+### 2.15
+
+The height of 10 plants is measured in inches and found to be 12, 6, 15, 3, 12, 6, 21, 15, 18 and 12.
+
+```{r, echo = T}
+
+x <- c(12, 6, 15, 3, 12, 6, 21, 15, 18, 12)
+
+xbar <- mean(x)
+
+stopifnot( sum( x - xbar ) == 0 )
+
+```
+
+Verify that $\sum(X_i - \bar{X}) = 0$
+
+### 2.16
+
+For the data in the previous exercise, compute the range, variance and standard deviation.
+
+```{r, echo = T}
+
+n <- length(x)
+
+range <- max(x) - min(x)
+variance <- (1/(n-1))*sum( ( x - xbar )^2)
+stdDev <- sqrt(variance)
+
+```
+
+$\bar{X} = `r xbar`$, Range = `r range`, $Var = `r variance`$, $\sigma = `r stdDev`$
+
+\newpage
+
+### 2.17
+
+Use the rules of summation notation to show that it is always the case that $\sum(X_i - \bar{X}) = 0$.
+
+$\bar{X} = \frac{1}{n}\sum{X_i}$
+
+$\sum{X_i} - \frac{1}{n}\sum{X_i}$
+
+$\ldots = \frac{1}{n}\sum{X_i} - \sum{X_i}$
+
+$\ldots = \frac{1}{n}(\sum{X_i - X_i})$
+
+$\ldots = \frac{1}{n}(0)$
+
+$\ldots = 0$
+
+### 2.18
+
+Seven different thermometers were used to measure the temperature of a substance. The reading in degrees Celsius are -4.10, -4.13, -5.09, -4.08, -4.10, -4.09 and -4.12.
+
+```{r, echo = T}
+x <- c(-4.10, -4.13, -5.09, -4.08, -4.10, -4.09, -4.12)
+n <- length(x)
+xbar <- 1/n*sum(x)
+variance <- (1/(n-1))*sum( (x - xbar)^2 )
+stdDev <- sqrt(variance)
+```
+
+Find the variance and standard deviation.
+
+$Var = `r variance`$, $\sigma = `r stdDev`$
+
+### 2.19
+
+A weightlifter's maximum bench press (in pounds) in each of 6 successive weaks was 280, 295, 275, 305, 300, 290.
+
+Find the standard deviation.
+
+```{r, echo = T}
+x <- c(280, 295, 275, 305, 300, 290)
+n <- length(x)
+xbar <- 1/n*(sum(x))
+variance <- (1/(n-1))*sum( (x - xbar)^2)
+sqrt(variance)
+```
+
+### 2.20
+
+For the values,
+
+20, 121, 132, 123, 145, 151, 119, 133, 134, 130, 200
+
+use the classic outlier detection rule to determine whether any outliers exist.
+
+```{r, echo = T}
+x <- c(20, 121, 132, 123, 145, 151, 119, 133, 134, 130, 200)
+
+x[ abs(x - mean(x)) / sd(x) > 2 ]
+
+```
+
+### 2.21
+
+Apply the boxplot rule and the MAD-median rule using the values in the preceding exercise. Note that the results differ, compared to using the classic rule.
+
+```{r, echo = T}
+
+x[ abs( x - median(x) ) / mad(x) > 2.27 ]
+
+```
+
+Explain why this happened.
+
+_The classic method masks the value 200 as an outlier._
+
+### 2.22
+
+Consider the values,
+
+0, 121, 132, 123, 145, 151, 119, 133, 134, 130, 250.
+
+```{r, echo = T}
+x <- c(0, 121, 132, 123, 145, 151, 119, 133, 134, 130, 250)
+
+x[ ( abs(x - mean(x)) /sd(x) ) > 2 ]
+
+```
+
+Are the values 0 and 250 declared outliers using the classic outlier detection rule?
+
+_Yes._
+
+### 2.23
+
+Verify that for the data in the previous exercise, the boxplot rule declares the values 0 and 250 outliers.
+
+```{r, echo = T}
+
+bounds <- quantile(x)[c(2,4)]
+
+lower <- bounds[1] - 1.5*(bounds[2] - bounds[1])
+upper <- bounds[2] + 1.5*(bounds[2] - bounds[1])
+
+x[ x < lower | x > upper]
+
+```
+
+### 2.24
+
+Consider the values
+
+20, 121, 132, 123, 145, 151, 119, 133, 134, 240, 250
+
+Verify that no outliers are found using the classic outlier detection rule.
+
+
+```{r, echo = T}
+x <- c(20, 121, 132, 123, 145, 151, 119, 133, 134, 240, 250)
+
+stopifnot( length( x[ ( abs( x - mean(x) ) / sd(x) ) > 2] ) == 0 )
+
+```
+
+### 2.25
+
+Verify that for the data in the previous exercise, the boxplot rule declares the values 20, 240 and 250 outliers.
+
+```{r, echo = T}
+x <- c(20, 121, 132, 123, 145, 151, 119, 133, 134, 240, 250)
+
+bounds <- quantile(x)[c(2,4)]
+
+lower <- bounds[1] - 1.5*(bounds[2] - bounds[1])
+upper <- bounds[2] + 1.5*(bounds[2] - bounds[1])
+
+x[ x < lower | x > upper]
+
+```
+
+### 2.26
+
+What do the last three exercises suggest about the boxplot rule versus the classic rule for detecting outliers?
+
+_The classic boxplot rule masks outliers._
+
+### 2.27
+
+What is the typical pulse rate (beats per minute) among adults? Imagine that you sample 21 adults, measure their pulse rate, and get:
+
+80, 85, 81, 75, 77, 79, 74, 86, 79, 55, 82, 89, 73, 79, 83, 82, 88, 79, 77, 81, 82
+
+```{r, echo = T}
+x <- c(80, 85, 81, 75, 77, 79, 74, 86, 79, 55, 82, 89, 73, 79, 83, 82, 88, 79, 77, 81, 82)
+```
+
+compute the 20% trimmed mean.
+
+```{r, echo = T}
+
+n <- length(x)
+o <- sort(x)
+g <- floor(.2*n)
+t <- o[ (g+1):(n-g) ]
+tbar <- 1/(n - 2*g)*sum(t)
+
+stopifnot(tbar == mean(x, trim = .2))
+```
+
+### 2.28
+
+For the observations,
+
+21, 36, 42, 24, 25, 36, 35, 49, 32
+
+```{r, echo = T}
+x <- c(21, 36, 42, 24, 25, 36, 35, 49, 32)
+n <- length(x)
+
+xbar <- 1/n * sum(x)
+
+o <- sort(x)
+g <- floor(.2*n)
+t <- o[ (g+1):(n-g) ]
+tbar <- 1/(n - 2*g)*sum(t)
+
+M <- o[ (n + 1)/2 ]
+
+```
+
+Verify that the sample mean, 20% trimmed mean, and median are $\bar{X} = 33.33, \bar{X}_t = 32.9, and \ M = 35$
+
+$\bar{X} = `r xbar`$, $\bar{X}_t = `r tbar`$, $M = `r M`$

@@ -143,7 +143,19 @@ Fifty individual are rated on how open-mided they are. The ratings have the valu
 Compute the mean, variance and standard deviation.
 
 ```{r, echo = T}
+n <- 50
+x <- c(1, 2, 3, 4)
+f <- c(0.2, 0.24, 0.4, 0.16)
+
+stopifnot(sum(f) == 1)
+
+xbar <- sum(x * f)
+variance <- n / ( n - 1) * sum( (x - xbar)^2 * f)
+stdDev <- sqrt(variance)
+
 ```
+
+$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.3
 
@@ -152,7 +164,19 @@ For the values 0, 1, 2, 3, 4, 5, 6, the corresponding relative frequencies based
 Determine the mean, variance and standard deviation.
 
 ```{r, echo = T}
+n <- 10e3
+x <- 0:6
+f <- c(0.015625, 0.093750, 0.234375, 0.312500, 0.234375, 0.093750, 0.015625)
+
+stopifnot(sum(f) == 1)
+
+xbar <- sum(x * f)
+variance <- ( n ) / (n - 1) * sum( (x - xbar) ^2 * f)
+stdDev <- sqrt(variance)
+
 ```
+
+$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.4
 
@@ -160,11 +184,44 @@ For a local charity, the donations in dollars recieved during the last month wer
 
 Compute the mean, variance and standard deviation.
 
+```{r, echo = T}
+
+x <- c(5, 10, 15, 20, 25, 50)
+d <- c(20, 30, 10, 40, 50, 5)
+n <- sum(d)
+f <- d / n
+
+stopifnot( sum(f) == 1)
+
+xbar <- sum(x * f)
+variance <- n / (n - 1) * sum( (x - xbar)^2 * f)
+stdDev <- sqrt(variance)
+
+``` 
+
+$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+
 ### 3.5
 
 The values 1, 5, 10, 20 have the frequencies 10, 20, 40, 30.
 
 Compute the mean, variance and standard deviation.
+
+```{r, echo = T}
+x <- c(1, 5, 10, 20)
+c <- c(10, 20, 40, 30)
+n <- sum(c)
+f <- c / n
+
+stopifnot(sum(f) == 1)
+
+xbar <- sum( x * f )
+variance <- n / (n - 1) * sum( (x - xbar)^2 * f)
+stdDev <- sqrt(variance)
+
+```
+
+$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.6
 

@@ -225,23 +225,48 @@ $\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.6
 
-For the data in Table 2.1, dealing with changes in cholesterol levels, create a histogram with the R function hist.
+For the data in Table 2.1, dealing with changes in cholesterol levels, create a histogram with R.
 
-```{r, echo = T}
-data <- read.csv(paste0(data.dir, "ibtable2_1_dat.txt"), header = F)
+```{r, echo = T, , fig.width=8, fig.height=4}
+data <- data.table::fread(paste0(data.dir, "ibtable2_1_dat.txt"), fill = T)
+
+suppressWarnings({print(
+   ggplot(data.table(value = as.vector(as.matrix(data))), aes(value)) +
+      geom_histogram(aes(fill = ..count..), bins = 30)
+)})
 
 ```
 
 ### 3.7
 
-For the data in Table 2.2, create a histogram using the R function _hist_ and speculate about whether values less than zero are outliers.
+For the data in Table 2.2, create a histogram using R, and speculate about whether values less than zero are outliers.
 
-```{r, echo = T}
-data <- read.csv(paste0(data.dir, "ibtable2_2_dat.txt"), header = F)
+```{r, echo = T, fig.width=8, fig.height=4}
+data <- data.table::fread(paste0(data.dir, "ibtable2_2_dat.txt"), fill = T)
+
+values <- data.table(value = as.vector(as.matrix(data)))
+values <- values[!is.na(values$value)]
+
+suppressWarnings({print(
+   ggplot(values, aes(value)) +
+      geom_histogram(aes(fill = ..count..), bins = 30)
+)})
 
 ```
 
+Below -45 & above 50 appear to be outliers.
+
 Then compare your answer to the result obtained using _outbox_.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+# MAD outliers
+
+values[ abs(values$value - median(values$value)) / mad(values$value) > 2.27 ]
+
+# Classical Outliers
+
+values[ abs(values$value - mean(values$value)) / sd(values$value) > 2]
+```
 
 ### 3.8
 
@@ -250,7 +275,7 @@ The heights of 30 male Egyptian skulls from 4,000 BC are reported by Thomson and
 121, 124, 129, 130, 130, 131, 131, 132, 132, 132, 133, 133, 134, 134, 134,
 134, 135, 136, 136, 136, 136, 137, 137, 138, 138, 138, 140, 143.
 
-```{r, echo = T}
+```{r, echo = T, fig.width=8, fig.height=4}
 x <- c(121, 124, 129, 129, 130, 130, 131, 131, 132, 132, 132, 133, 133, 134, 134, 134,
 134, 135, 136, 136, 136, 136, 136, 137, 137, 138, 138, 138, 140, 143)
 
@@ -258,17 +283,35 @@ n <- length(x)
 
 stopifnot(n == 30)
 
+ggplot(data.table(value = x), aes(x)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(fill = "darkorange", alpha = .35)
+
 ```
 
 Create a histogram.
 
 Find outliers with classic rule and MAD-median rule.
 
+```{r, echo = T}
+
+x[ abs(x - median(x)) / mad(x) > 2.27 ]
+
+# Classical Outliers
+
+x[ abs(x - mean(x)) / sd(x) > 2]
+
+```
+
 ### 3.9
 
-For the dta in the previous exercise, verify that the classic outlier detection rule, given by _2.6_, finds three outliers, which match the values flagged as outliers by the MAD-median rule.
+For the data in the previous exercise, verify that the classic outlier detection rule, given by _2.6_, finds three outliers, which match the values flagged as outliers by the MAD-median rule.
+
+_Confirmed 3 outliers with both rules_
 
 Despite this result, what are the concerns with the classic outlier detection rule?
+
+_There appears to be masking going on, as there are clearly more than 3 outliers._
 
 ### 3.10
 

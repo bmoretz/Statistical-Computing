@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  11 DEC 2019 17:07
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  11 DEC 2019 18:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**03_graphical-summaries.tex
-(./03_graphical-summaries.tex
+**04_probability.tex
+(./04_probability.tex
 LaTeX2e <2018-12-01>
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/report.cls
 Document Class: report 2018/09/03 v1.4i Standard LaTeX document class
@@ -997,8 +997,8 @@ LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
 ) (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/tuenc.def
 File: tuenc.def 2018/08/11 v2.0j Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding TU on input line 82.
-))) (./03_graphical-summaries.aux)
-\openout1 = `03_graphical-summaries.aux'.
+))) (./04_probability.aux)
+\openout1 = `04_probability.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 161.
 LaTeX Font Info:    ... okay on input line 161.
@@ -1081,9 +1081,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 161.
 LaTeX Info: Redefining \pageref on input line 161.
 LaTeX Info: Redefining \nameref on input line 161.
-(./03_graphical-summaries.out) (./03_graphical-summaries.out)
+(./04_probability.out) (./04_probability.out)
 \@outlinefile=\write4
-\openout4 = `03_graphical-summaries.out'.
+\openout4 = `04_probability.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
@@ -1097,261 +1097,209 @@ i-print.def
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
 )
-
-Package xcolor Warning: Incompatible color definition on input line 175.
-
-LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 177.
-
-Package xcolor Warning: Incompatible color definition on input line 188.
-
-
-Package xcolor Warning: Incompatible color definition on input line 188.
-
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 190.
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 170.
 
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 190.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 170.
 
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 190
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 170
 .
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 190
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 170
 .
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 190.
+(Font)              <12> on input line 170.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 190.
+(Font)              <8> on input line 170.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 190.
-LaTeX Font Info:    Try loading font information for U+msa on input line 190.
+(Font)              <6> on input line 170.
+LaTeX Font Info:    Try loading font information for U+msa on input line 170.
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 190.
+LaTeX Font Info:    Try loading font information for U+msb on input line 170.
 (c:/Users/bmore/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
-Package xcolor Warning: Incompatible color definition on input line 201.
+Package xcolor Warning: Incompatible color definition on input line 173.
+
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 175.
+
+Package xcolor Warning: Incompatible color definition on input line 180.
 
 
-Package xcolor Warning: Incompatible color definition on input line 213.
+Package xcolor Warning: Incompatible color definition on input line 180.
 
 
-Package xcolor Warning: Incompatible color definition on input line 213.
+Package xcolor Warning: Incompatible color definition on input line 204.
 
 
-Package xcolor Warning: Incompatible color definition on input line 227.
+Package xcolor Warning: Incompatible color definition on input line 211.
+
+
+Package xcolor Warning: Incompatible color definition on input line 211.
+
+
+Package xcolor Warning: Incompatible color definition on input line 226.
 
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 14.36246pt on input line 227.
+(Font)              scaled to size 14.36246pt on input line 235.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 14.36246pt on input line 227.
+(Font)              scaled to size 14.36246pt on input line 235.
 [1
 
 ]
 
-Package xcolor Warning: Incompatible color definition on input line 239.
+Package xcolor Warning: Incompatible color definition on input line 235.
 
 
-Package xcolor Warning: Incompatible color definition on input line 239.
+Package xcolor Warning: Incompatible color definition on input line 235.
 
 
 Package xcolor Warning: Incompatible color definition on input line 252.
 
 
-Package xcolor Warning: Incompatible color definition on input line 265.
+Package xcolor Warning: Incompatible color definition on input line 256.
 
 
-Package xcolor Warning: Incompatible color definition on input line 265.
+Package xcolor Warning: Incompatible color definition on input line 256.
 
 
-Package xcolor Warning: Incompatible color definition on input line 277.
+Package xcolor Warning: Incompatible color definition on input line 266.
 
 
-Package xcolor Warning: Incompatible color definition on input line 290.
+Package xcolor Warning: Incompatible color definition on input line 270.
 
 
-Package xcolor Warning: Incompatible color definition on input line 290.
+Package xcolor Warning: Incompatible color definition on input line 270.
 
 
-Package xcolor Warning: Incompatible color definition on input line 290.
+Package xcolor Warning: Incompatible color definition on input line 280.
+
+
+Package xcolor Warning: Incompatible color definition on input line 284.
+
+
+Package xcolor Warning: Incompatible color definition on input line 284.
 
 [2]
 
-Package xcolor Warning: Incompatible color definition on input line 290.
+Package xcolor Warning: Incompatible color definition on input line 299.
 
 
-Package xcolor Warning: Incompatible color definition on input line 290.
+Package xcolor Warning: Incompatible color definition on input line 307.
 
 
-Package xcolor Warning: Incompatible color definition on input line 300.
+Package xcolor Warning: Incompatible color definition on input line 307.
 
 
-Package xcolor Warning: Incompatible color definition on input line 309.
+Package xcolor Warning: Incompatible color definition on input line 328.
 
-
-Package xcolor Warning: Incompatible color definition on input line 309.
-
-File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-6-1.png Graphic f
-ile (type bmp)
-<03_graphical-summaries_files/figure-latex/unnamed-chunk-6-1.png>
-
-Package xcolor Warning: Incompatible color definition on input line 319.
-
-[3]
-
-Package xcolor Warning: Incompatible color definition on input line 331.
-
-
-Package xcolor Warning: Incompatible color definition on input line 331.
-
-File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-7-1.png Graphic f
-ile (type bmp)
-<03_graphical-summaries_files/figure-latex/unnamed-chunk-7-1.png>
 
 Package xcolor Warning: Incompatible color definition on input line 339.
 
 
-Package xcolor Warning: Incompatible color definition on input line 345.
+Package xcolor Warning: Incompatible color definition on input line 339.
 
 
-Package xcolor Warning: Incompatible color definition on input line 345.
+Package xcolor Warning: Incompatible color definition on input line 350.
+
+[3]
+
+Package xcolor Warning: Incompatible color definition on input line 359.
+
+
+Package xcolor Warning: Incompatible color definition on input line 359.
+
+
+Package xcolor Warning: Incompatible color definition on input line 371.
+
+
+Package xcolor Warning: Incompatible color definition on input line 376.
+
+
+Package xcolor Warning: Incompatible color definition on input line 376.
+
+
+Package xcolor Warning: Incompatible color definition on input line 382.
+
+
+Package xcolor Warning: Incompatible color definition on input line 386.
+
+
+Package xcolor Warning: Incompatible color definition on input line 386.
+
+
+Package xcolor Warning: Incompatible color definition on input line 398.
+
+
+Package xcolor Warning: Incompatible color definition on input line 407.
+
+
+Package xcolor Warning: Incompatible color definition on input line 407.
+
+
+Package xcolor Warning: Incompatible color definition on input line 421.
 
 [4]
 
-Package xcolor Warning: Incompatible color definition on input line 363.
+Package xcolor Warning: Incompatible color definition on input line 430.
 
 
-Package xcolor Warning: Incompatible color definition on input line 369.
+Package xcolor Warning: Incompatible color definition on input line 430.
 
 
-Package xcolor Warning: Incompatible color definition on input line 369.
+Package xcolor Warning: Incompatible color definition on input line 444.
 
 
-Package xcolor Warning: Incompatible color definition on input line 393.
+Package xcolor Warning: Incompatible color definition on input line 455.
 
 
-Package xcolor Warning: Incompatible color definition on input line 406.
+Package xcolor Warning: Incompatible color definition on input line 455.
 
-
-Package xcolor Warning: Incompatible color definition on input line 406.
-
-File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-9-1.png Graphic f
-ile (type bmp)
-<03_graphical-summaries_files/figure-latex/unnamed-chunk-9-1.png>
 [5]
 
-Package xcolor Warning: Incompatible color definition on input line 414.
-
-
-Package xcolor Warning: Incompatible color definition on input line 418.
-
-
-Package xcolor Warning: Incompatible color definition on input line 418.
-
-
-Package xcolor Warning: Incompatible color definition on input line 424.
-
-
-Package xcolor Warning: Incompatible color definition on input line 430.
-
-
-Package xcolor Warning: Incompatible color definition on input line 430.
+Package xcolor Warning: Incompatible color definition on input line 552.
 
 [6]
 
-Package xcolor Warning: Incompatible color definition on input line 464.
+Package xcolor Warning: Incompatible color definition on input line 558.
 
 
-Package xcolor Warning: Incompatible color definition on input line 470.
+Package xcolor Warning: Incompatible color definition on input line 558.
 
-
-Package xcolor Warning: Incompatible color definition on input line 470.
-
-
-Package xcolor Warning: Incompatible color definition on input line 474.
-
-
-Package xcolor Warning: Incompatible color definition on input line 478.
-
-
-Package xcolor Warning: Incompatible color definition on input line 478.
-
-
-Package xcolor Warning: Incompatible color definition on input line 513.
-
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 724.
 [7]
+Overfull \vbox (505.09935pt too high) has occurred while \output is active []
 
-Package xcolor Warning: Incompatible color definition on input line 518.
-
-
-Package xcolor Warning: Incompatible color definition on input line 518.
-
-
-Package xcolor Warning: Incompatible color definition on input line 522.
-
-
-Package xcolor Warning: Incompatible color definition on input line 526.
-
-
-Package xcolor Warning: Incompatible color definition on input line 526.
-
-
-Package xcolor Warning: Incompatible color definition on input line 559.
-
-
-Package xcolor Warning: Incompatible color definition on input line 576.
-
-
-Package xcolor Warning: Incompatible color definition on input line 576.
-
-File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-15-1.png Graphic 
-file (type bmp)
-<03_graphical-summaries_files/figure-latex/unnamed-chunk-15-1.png>
 [8]
-
-Package xcolor Warning: Incompatible color definition on input line 586.
-
-
-Package xcolor Warning: Incompatible color definition on input line 604.
-
-
-Package xcolor Warning: Incompatible color definition on input line 604.
-
-File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-16-1.png Graphic 
-file (type bmp)
-<03_graphical-summaries_files/figure-latex/unnamed-chunk-16-1.png>
-[9] [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 648.
-[11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 648.
-(./03_graphical-summaries.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 648.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 648.
-Package rerunfilecheck Info: File `03_graphical-summaries.out' has not changed.
-
-(rerunfilecheck)             Checksum: 4BBE5E1F179756C9108A17251CB1E46B.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 724.
+(./04_probability.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 724.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 724.
+Package rerunfilecheck Info: File `04_probability.out' has not changed.
+(rerunfilecheck)             Checksum: 7E6D68779160CD905F22B80113DD288F.
  ) 
 Here is how much of TeX's memory you used:
- 26979 strings out of 494894
- 496821 string characters out of 6175663
- 601715 words of memory out of 5000000
- 30601 multiletter control sequences out of 15000+600000
- 545248 words of font info for 65 fonts, out of 8000000 for 9000
+ 26993 strings out of 494894
+ 495974 string characters out of 6175663
+ 607297 words of memory out of 5000000
+ 30625 multiletter control sequences out of 15000+600000
+ 545240 words of font info for 64 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 53i,12n,116p,819b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 53i,12n,116p,811b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Error 1 (driver return code) generating output;
-file 03_graphical-summaries.pdf may not be valid.
+file 04_probability.pdf may not be valid.

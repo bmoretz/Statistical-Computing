@@ -1,0 +1,687 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Probability and Related Concepts}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 4}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Statistical Methods}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- "D:/Projects/Statistical-Computing/datasets/"
+
+setwd("D:/Projects/Statistical-Computing/RDS")
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+#### Chapter 4
+
+### 4.1
+
+If the possible values for x are 0, 1, 2, 3, 4, 5, and the corresponding values for $P(x)$ are 0.2, 0.2, 0.15, 0.3, 0.35, 0.2, 0.1, respectively, does $P(x)$ qualify as a probability function?
+
+```{r, echo = T}
+x <- c(0, 1, 2, 3, 4, 5)
+p <- c(0.2, 0.2, 0.15, 0.3, 0.35, 0.2, 0.1)
+
+sum(p)
+```
+
+_No. P > 1._
+
+### 4.2
+
+If the possible values for x are 2, 3, 4, and the corresponding values for $P(x)$ are 0.2, -0.1, 0.9, respectively, does $P(x)$ qualify as a probability function?
+
+_No. $0 \le x \le 1$_
+
+### 4.3
+
+If the possible values for x are 1, 2, 3, 4, and the corresponding values for $P(x)$ are 0.1, 0.15, 0.5, 0.25, respectively, does $P(x)$ qualify as a probability function?
+
+```{r, echo = T}
+x <- c(1, 2, 3, 4)
+p <- c(0.1, 0.15, 0.5, 0.25)
+
+sum(p)
+
+```
+
+Yes, this is a valid probability function.
+
+### 4.4
+
+If the possible values for x are 2, 3, 4, 5, and the corresponding values for $P(x)$ are 0.2, 0.3, 0.4, 0.1, respectively, what is the probability of observing a value less than or equal to 3.4?
+
+```{r, echo = T}
+x <- c(2, 3, 4, 5)
+p <- c(0.2, 0.3, 0.4, 0.1)
+
+stopifnot( sum(p) == 1 )
+
+prob <- sum( p[ x <= 3.4 ] )
+
+```
+
+Probability: __`r prob*100`%__
+
+### 4.5
+
+For the previous distribution, what is the probability of observing a 1?
+
+_Zero._
+
+### 4.6
+
+For the previous distribution, what is the probability of observing a value greater than 3?
+
+```{r, echo = T}
+prob <- sum( p[ x > 3 ])
+```
+
+Probability: __`r prob*100`%__
+
+### 4.7
+
+For the previous distribution, what is the probability of observing a value greater than or equal to 3?
+
+```{r, echo = T}
+prob <- sum( p[ x >= 3 ])
+```
+
+Probability: __`r prob*100`%__
+
+### 4.8
+
+If the probability of observing a value less than or equal to 6 is 0.3, what is the probability of observing a value greater than 6?
+
+```{r, echo = T}
+prob <- 1 - .3
+```
+
+Probability: __`r prob*100`%__
+
+### 4.9
+
+For the probability function:
+
+$x \ : \ 0, 1$
+
+$P(x) \ : 0.7, 0.3$
+ 
+Verify that the mean and variance are 0.3 and 0.21, respectively.
+
+```{r, echo = T}
+x <- c(0, 1)
+p <- c(0.7, 0.3)
+
+mu <- sum( x * p )
+variance <- sum( (x - mu)^2 * p)
+
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$
+
+What is the probability of getting a value less than the mean?
+
+_50%_
+
+### 4.10
+
+Imagine that an auto manufacturer wants to evaluate how potential customers will rate handling for a new car being considered for production. Also, suppose that if all potential customers were to rate handling on a four-point scale, 1 being poor and 4 being excellent, the corresponding probabilities associated with these ratings would be:
+
+$P(1) = 0.2, P(2) = 0.4, P(3) = 0.3, P(4) = 0.1$
+
+Determine the population mean, variance and standard deviation.
+
+```{r, echo = T}
+x <- 1:4
+p <- c(0.2, 0.4, 0.3, 0.1)
+
+stopifnot(sum(p) == 1)
+
+mu <- sum(x * p)
+variance <- sum( (x - mu)^2 * p)
+stdDev <- sqrt(variance)
+
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
+
+### 4.11
+
+If the possible values for x are 1, 2, 3, 4, 5, with probabilities 0.2, 0.1, 0.1, 0.5, 0.1, respectfully, what are the population mean, variance, and standard deviation?
+
+```{r, echo = T}
+x <- 1:5
+p <- c(0.2, 0.1, 0.1, 0.5, 0.1)
+
+mu <- sum( x * p )
+variance <- sum( (x - mu)^2 * p )
+sigma <- sqrt(variance)
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
+
+### 4.12
+
+In the previous exercise, determine the probability of getting a value within one standard deviation of the mean.
+
+That is, $\mu - \sigma \le x \le \mu + \sigma$
+
+```{r, echo = T}
+
+vals <- mu + c(-1, 1)*sigma
+round(vals, 4)
+
+sum( p[ x >= vals[1] & x <= vals[2] ] )
+
+```
+
+### 4.13
+
+If the possible values for x are 1, 2, 3, with probabilities 0.2, 0.6, and 0.2, respectively, what is the mean and standard deviation?
+
+```{r, echo = T}
+x <- 1:3
+p <- c(0.2, 0.6, 0.2)
+
+mu <- sum( x * p )
+variance <- sum( (x - mu)^2 * p)
+stdDev <- sqrt(variance)
+
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
+
+### 4.14
+
+In the previous excersize, suppose the possible values for x are now 0, 2, 4 with the same probabilities as before.
+
+Will the standard deviation increase, decrease or stay the same?
+
+_Increase._
+
+```{r, echo = T}
+x <- c(0, 2, 4)
+p <- c(0.2, 0.6, 0.2)
+
+mu <- sum( x * p )
+variance <- sum( (x - mu)^2 * p)
+stdDev <- sqrt(variance)
+
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
+
+### 4.15
+
+For the probability function:
+
+$x : 1, 2, 3, 4, 5$
+$P(x) : 0.15, 0.2, 0.3, 0.2, 0.15$
+
+Determine the mean, the variance, and the probability that a value is less than the mean.
+
+```{r, echo = T}
+x <- 1:5
+p <- c(0.15, 0.2, 0.3, 0.2, 0.15)
+
+mu <- sum( x * p)
+variance <- sum( ( x - mu)^2 * p )
+stdDev <- sqrt(variance)
+
+sum( p[x < mu] )
+```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
+
+### 4.16
+
+For the probability function:
+
+$x : 1, 2, 3, 4, 5$
+$P(x) : 0.1, 0.25, 0.3, 0.25, 0.1$
+
+Would you expect the variance to be larger or smaller than the previous pdf?
+
+_Larger._
+
+### 4.17
+
+For the probability function:
+
+$x : 1, 2, 3, 4, 5$
+$P(x) : 0.2, 0.2, 0.2, 0.2, 0.2$
+
+Would you expect the variance to be larger or smaller than the previous pdf?
+
+_Smaller._
+
+### 4.18
+
+For the following probabilities:
+
+\begin{center}
+ \begin{tabular}{||c c c c||}
+ \hline
+ \multicolumn{4}{|c|}{Income} \\ 
+ \hline
+ Age & High & Medium & Low \\ [0.5ex] 
+ \hline\hline
+ < 30 & 0.030 & 0.180 & 0.090 \\ 
+ \hline
+ 30-50 & 0.052 & 0.312 & 0.156 \\
+ \hline
+  Over 50 & 0.018 & 0.108 & 0.054 \\
+ \hline
+ \end{tabular}
+\end{center}
+
+a.) The probability that someone is under 30.
+
+_.03 + 0.18 + 0.09 = .30_
+
+b.) The probability that someone has a high income given that they are under 30.
+
+_.03 / .3 = .01_
+
+c.) The probability of someone having a low income given that they are under 30.
+
+_0.09 / .3 = 0.3_
+
+d.) The probability of a medium income given that they are over 50.
+
+_0.018 + 0.108 + 0.054 = .18_
+
+_.108 / .18 = .6_
+
+### 4.19
+
+For the previous data, are income and age independent?
+
+_Yes._
+
+### 4.20
+
+\begin{center}
+ \begin{tabular}{||c c c||}
+ \hline
+ \multicolumn{3}{|c|}{Attitude} \\ 
+ \hline
+ Member & 1 & 0 \\ [0.5ex] 
+ \hline\hline
+ Yes & 757 & 496 \\ 
+ \hline
+ No & 1,071 & 1,074 \\
+ \hline
+ \end{tabular}
+\end{center}
+
+```{r, echo = T}
+d <- matrix(c(757, 496, 1071, 1074), nrow = 2, byrow = T)
+
+prop.table(data.table(d))
+
+```
+
+a.) Probability of boy choosing "yes".
+
+.4
+
+b.) P(yes|1)
+
+.22
+
+c.) P(1|yes)
+
+.41
+
+d.) is yes independent of attitude?
+
+No, the probabilities are disproportionate
+
+### 4.21
+
+Let Y be the cost of a home and let X be a measure of the crime rate. If the variance of the cost of a home changes with X, does this mean that the cost of a home and the crime rate are dependent?
+
+_Yes, this can only happen when the conditional probabilites change when told X._
+
+### 4.22
+
+If the probability of Y < 6 is .4 given that X = 2, and if the probability of Y < 6 is .3 given that X = 4, does this mean that X and Y are dependent?
+
+_Yes._
+
+### 4.23
+
+If the range of possible Y values varies with X, does this mean that X and Y are dependent?
+
+_Absolutely._
+
+### 4.24
+
+```{r, echo = T}
+
+```
+
+### 4.25
+
+```{r, echo = T}
+
+```
+
+### 4.26
+
+```{r, echo = T}
+
+```
+
+### 4.27
+
+```{r, echo = T}
+
+```
+
+### 4.28
+
+```{r, echo = T}
+
+```
+
+### 4.29
+
+```{r, echo = T}
+
+```
+
+### 4.30
+
+```{r, echo = T}
+
+```
+
+
+### 4.31
+
+```{r, echo = T}
+
+```
+
+### 4.33
+
+```{r, echo = T}
+
+```
+
+### 4.34
+
+```{r, echo = T}
+
+```
+
+### 4.35
+
+```{r, echo = T}
+
+```
+
+### 4.36
+
+```{r, echo = T}
+
+```
+
+### 4.37
+
+```{r, echo = T}
+
+```
+
+### 4.38
+
+```{r, echo = T}
+
+```
+
+### 4.39
+
+```{r, echo = T}
+
+```
+
+### 4.40
+
+```{r, echo = T}
+
+```
+
+### 4.41
+
+```{r, echo = T}
+
+```
+
+### 4.42
+
+```{r, echo = T}
+
+```
+
+### 4.43
+
+```{r, echo = T}
+
+```
+
+### 4.44
+
+```{r, echo = T}
+
+```
+
+### 4.45
+
+```{r, echo = T}
+
+```
+
+### 4.46
+
+```{r, echo = T}
+
+```
+
+### 4.47
+
+```{r, echo = T}
+
+```
+
+### 4.48
+
+```{r, echo = T}
+
+```
+
+### 4.49
+
+```{r, echo = T}
+
+```
+
+### 4.50
+
+```{r, echo = T}
+
+```
+
+### 4.51
+
+```{r, echo = T}
+
+```
+
+### 4.52
+
+```{r, echo = T}
+
+```
+
+### 4.53
+
+```{r, echo = T}
+
+```
+
+### 4.54
+
+```{r, echo = T}
+
+```
+
+### 4.55
+
+```{r, echo = T}
+
+```
+
+### 4.56
+
+```{r, echo = T}
+
+```
+
+### 4.57
+
+```{r, echo = T}
+
+```
+
+### 4.58
+
+```{r, echo = T}
+
+```
+
+### 4.59
+
+```{r, echo = T}
+
+```
+
+### 4.60
+
+```{r, echo = T}
+
+```
+
+### 4.61
+
+```{r, echo = T}
+
+```
+
+### 4.62
+
+```{r, echo = T}
+
+```

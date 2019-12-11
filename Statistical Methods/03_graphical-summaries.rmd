@@ -134,7 +134,7 @@ stdDev <- sqrt(variance)
 
 ```
 
-$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+$\bar{X} = `r xbar`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.2
 
@@ -155,7 +155,7 @@ stdDev <- sqrt(variance)
 
 ```
 
-$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+$\bar{X} = `r xbar`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.3
 
@@ -176,7 +176,7 @@ stdDev <- sqrt(variance)
 
 ```
 
-$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+$\bar{X} = `r xbar`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.4
 
@@ -199,7 +199,7 @@ stdDev <- sqrt(variance)
 
 ``` 
 
-$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+$\bar{X} = `r xbar`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.5
 
@@ -221,7 +221,7 @@ stdDev <- sqrt(variance)
 
 ```
 
-$\bar{X} = `r xbar`$, $Var = `r variance`$, $\sigma = `r stdDev`$
+$\bar{X} = `r xbar`$, $\sigma^2 = `r variance`$, $\sigma = `r stdDev`$
 
 ### 3.6
 

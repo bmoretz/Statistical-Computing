@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  10 DEC 2019 19:21
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  11 DEC 2019 08:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1308,22 +1308,47 @@ Package xcolor Warning: Incompatible color definition on input line 525.
 
 Package xcolor Warning: Incompatible color definition on input line 525.
 
+
+Package xcolor Warning: Incompatible color definition on input line 558.
+
+
+Package xcolor Warning: Incompatible color definition on input line 575.
+
+
+Package xcolor Warning: Incompatible color definition on input line 575.
+
+File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-15-1.png Graphic 
+file (type bmp)
+<03_graphical-summaries_files/figure-latex/unnamed-chunk-15-1.png>
 [8]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 593.
-[9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 593.
+
+Package xcolor Warning: Incompatible color definition on input line 585.
+
+
+Package xcolor Warning: Incompatible color definition on input line 603.
+
+
+Package xcolor Warning: Incompatible color definition on input line 603.
+
+File: 03_graphical-summaries_files/figure-latex/unnamed-chunk-16-1.png Graphic 
+file (type bmp)
+<03_graphical-summaries_files/figure-latex/unnamed-chunk-16-1.png>
+[9] [10]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 647.
+[11]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 647.
 (./03_graphical-summaries.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 593.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 593.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 647.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 647.
 Package rerunfilecheck Info: File `03_graphical-summaries.out' has not changed.
 
 (rerunfilecheck)             Checksum: 4BBE5E1F179756C9108A17251CB1E46B.
  ) 
 Here is how much of TeX's memory you used:
- 26971 strings out of 494894
- 496367 string characters out of 6175663
- 601711 words of memory out of 5000000
- 30595 multiletter control sequences out of 15000+600000
+ 26979 strings out of 494894
+ 496821 string characters out of 6175663
+ 601715 words of memory out of 5000000
+ 30601 multiletter control sequences out of 15000+600000
  545248 words of font info for 65 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  53i,12n,116p,819b,450s stack positions out of 5000i,500n,10000p,200000b,80000s

@@ -376,7 +376,21 @@ How small? _x < -56.5_
 
 Use R to create both a boxplot and a plot of the relative frequencies using the film data in Table 3.1.
 
-```{r, echo = T}
+```{r, echo = T, fig.width=8, fig.height=4}
+data <- data.table::fread(paste0(data.dir, "film_dat.txt"), fill = T)
+
+values <- data.table(value = as.vector(as.matrix(data)))
+values <- values[!is.na(values$value)]
+
+p1 <- ggplot(values, aes(y = value)) +
+   geom_boxplot(fill = "cornflowerblue") +
+   labs(title = "Film Ratings")
+
+p2 <- ggplot(values, aes(x = value)) +
+   geom_bar(aes(y = ..prop..), fill = "cornflowerblue", width = 0.05) +
+   labs(title = "Film Ratings")
+
+grid.arrange(p1, p2, nrow = 2)
 
 ```
 
@@ -384,20 +398,47 @@ Use R to create both a boxplot and a plot of the relative frequencies using the 
 
 Use R to create a boxplot and a kernel density estimate using the data in table 3.2.
 
+```{r, echo = T, fig.width=8, fig.height=4}
+data <- data.table::fread(paste0(data.dir, "mismatch_dat.txt"), fill = T)
+
+values <- data.table(value = as.vector(as.matrix(data)))
+values <- values[!is.na(values$value)]
+
+p1 <- ggplot(values, aes(y = value)) +
+   geom_boxplot(fill = "cornflowerblue") +
+   labs(title = "T5 Mistmatch")
+
+p2 <- ggplot(values, aes(x = value)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(fill = "darkorange", alpha = .3) +
+   labs(title = "T5 Mistmatch Density")
+
+grid.arrange(p1, p2, nrow = 2)
+
+```
+
 ### 3.18
 
 Describe a situation where the sample histogram is likely to give a good indication of the population histogram based on 100 observations.
+
+_The population follows a symmetric distribution and outliers are rare._
 
 ### 3.19
 
 Comment generally on how large of a sample size is needed to ensure that the sample histogram will likely provide a good indication of the population histogram?
 
+_There are numerical estimators avalaible using bootstrapping techniques, however, a general rule of thumb is > 100._
+
 ### 3.20
 
 When trying to detect outliers, discuss the relative merits of using a histogram vs a boxplot.
+
+_A boxplot is generally better at showing outliers_.
 
 ### 3.21
 
 A sample histogram indicates that the data are highly skewed to the right.
 
 Is this a reliable indication that if all individuals of interest could be measured, the resulting histogram would also be highly skewed?
+
+_Not always. A population could be symetric and a given sample could be skewed._

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  10 DEC 2019 19:00
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  10 DEC 2019 19:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1272,21 +1272,49 @@ Package xcolor Warning: Incompatible color definition on input line 429.
 
 [6]
 
-Package xcolor Warning: Incompatible color definition on input line 478.
+Package xcolor Warning: Incompatible color definition on input line 463.
 
 
-Package xcolor Warning: Incompatible color definition on input line 483.
+Package xcolor Warning: Incompatible color definition on input line 469.
 
 
-Package xcolor Warning: Incompatible color definition on input line 483.
+Package xcolor Warning: Incompatible color definition on input line 469.
+
+
+Package xcolor Warning: Incompatible color definition on input line 473.
+
+
+Package xcolor Warning: Incompatible color definition on input line 477.
+
+
+Package xcolor Warning: Incompatible color definition on input line 477.
+
+
+Package xcolor Warning: Incompatible color definition on input line 512.
 
 [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 540.
+
+Package xcolor Warning: Incompatible color definition on input line 517.
+
+
+Package xcolor Warning: Incompatible color definition on input line 517.
+
+
+Package xcolor Warning: Incompatible color definition on input line 521.
+
+
+Package xcolor Warning: Incompatible color definition on input line 525.
+
+
+Package xcolor Warning: Incompatible color definition on input line 525.
+
 [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 540.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 593.
+[9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 593.
 (./03_graphical-summaries.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 540.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 540.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 593.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 593.
 Package rerunfilecheck Info: File `03_graphical-summaries.out' has not changed.
 
 (rerunfilecheck)             Checksum: 4BBE5E1F179756C9108A17251CB1E46B.

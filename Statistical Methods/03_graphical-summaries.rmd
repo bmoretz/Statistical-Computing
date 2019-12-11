@@ -317,15 +317,29 @@ _There appears to be masking going on, as there are clearly more than 3 outliers
 
 What do Exercises 6 and 7 suggest about using a histogram to detect outliers?
 
+_Histograms are not always useful in detecting outliers_
+
 ### 3.11
 
 Table 3.5 shows the exam scores for 27 students.
 
+```{r, echo = T}
+scores <- c(83, 69, 82, 72, 63, 88, 92, 81, 54,
+            57, 79, 84, 99, 74, 86, 71, 94, 71,
+            80, 51, 68, 81, 84, 92, 63, 99, 91)
+```
+
 Create a stem-and-leaf display.
+
+```{r, echo = T}
+stem(scores)
+```
 
 ### 3.12
 
 If the leaf is the hundredths digit, what is the stem for the number 34.679?
+
+_34.6_
 
 ### 3.13
 
@@ -340,19 +354,31 @@ x <- c(5.134, 5.532, 5.869, 5.809, 5.268, 5.495, 5.142, 5.483,
 
 ```
 
+There would only be one stem:
+
+```{r, echo = T}
+stem(x, scale = 1/10)
+```
+
 ### 3.14
 
-For the boxplot in Figure _3.11_, determine approximately, the quartiles, the interquartile range, and the median.
+For the boxplot in Figure _3.11_, determine approximately, the quartiles, the interquartile range, and the median. _M = 80, Q1/Q2 = 50/121, IQR = 71_
 
-Approximately how large is the largest value not declared an outlier?
+Approximately how large is the largest value not declared an outlier? _215_
 
 ### 3.15
 
-In Figure _3.11_, about how large must a value be to be declared an outlier? How small?
+In Figure _3.11_, about how large must a value be to be declared an outlier? _x > 227.5_
+
+How small? _x < -56.5_
 
 ### 3.16
 
 Use R to create both a boxplot and a plot of the relative frequencies using the film data in Table 3.1.
+
+```{r, echo = T}
+
+```
 
 ### 3.17
 

@@ -459,8 +459,36 @@ _Absolutely._
 
 ### 4.24
 
-```{r, echo = T}
+For a binomial with n = 10 and p = .4, use Table B.2 in Appendix B to determine:
 
+a.) $P(0)$
+
+```{r, echo = T}
+dbinom(0, size = 10, prob = .4)
+```
+
+b.) $P(X \le 3)$
+
+```{r, echo = T}
+pbinom(3, size = 10, prob = .4)
+```
+
+c.) $P(X < 3)$
+
+```{r, echo = T}
+pbinom(2, size = 10, prob = .4)
+```
+
+d.) $P(X > 4)$
+
+```{r, echo = T}
+1 - pbinom(4, size = 10, prob = .4)
+```
+
+e.) $P(2 \le X \le 5)$
+
+```{r, echo = T}
+pbinom(5, size = 10, prob = .4) - pbinom(1, size = 10, prob = .4)
 ```
 
 ### 4.25

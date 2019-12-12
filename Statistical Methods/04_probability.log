@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  12 DEC 2019 12:30
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  12 DEC 2019 13:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1492,16 +1492,153 @@ Package xcolor Warning: Incompatible color definition on input line 954.
 
 Package xcolor Warning: Incompatible color definition on input line 954.
 
+
+Package xcolor Warning: Incompatible color definition on input line 965.
+
 [12]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1075.
+
+Package xcolor Warning: Incompatible color definition on input line 971.
+
+
+Package xcolor Warning: Incompatible color definition on input line 971.
+
+
+Package xcolor Warning: Incompatible color definition on input line 975.
+
+
+Package xcolor Warning: Incompatible color definition on input line 979.
+
+
+Package xcolor Warning: Incompatible color definition on input line 979.
+
+
+Package xcolor Warning: Incompatible color definition on input line 987.
+
+
+Package xcolor Warning: Incompatible color definition on input line 991.
+
+
+Package xcolor Warning: Incompatible color definition on input line 991.
+
+
+Package xcolor Warning: Incompatible color definition on input line 999.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1003.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1003.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1011.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1015.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1015.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1027.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1035.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1035.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1046.
+
 [13]
-Overfull \vbox (43.72873pt too high) has occurred while \output is active []
+
+Package xcolor Warning: Incompatible color definition on input line 1050.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1050.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1058.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1062.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1062.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1070.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1074.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1074.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1082.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1087.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1087.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1093.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1098.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1098.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1111.
 
 [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1075.
+
+Package xcolor Warning: Incompatible color definition on input line 1115.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1115.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1123.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1127.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1127.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1135.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1139.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1139.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1147.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1151.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1151.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1227.
+[15]
+Overfull \vbox (43.72873pt too high) has occurred while \output is active []
+
+[16]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1227.
 (./04_probability.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1075.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1075.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1227.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1227.
 
 Package rerunfilecheck Info: File `04_probability.out' has not changed.
 (rerunfilecheck)             Checksum: AB2C6D5DD5FD922A21B93D57FA0F43A0.

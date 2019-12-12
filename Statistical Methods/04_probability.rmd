@@ -684,16 +684,35 @@ pbinom(q = 3, size = 5, prob = .25)
 
 If for a binomial distribution p = 0.4 and n = 25, determine:
 
+```{r, echo = T}
+n <- 25
+p <- .4
+q <- 1 - p
+
+```
+
 a.) $P(X < 11)$
+
+```{r, echo = T}
+pbinom(10, size = n, prob = p)
+```
 
 b.) $P(X \le 11)$
 
+```{r, echo = T}
+pbinom(11, size = n, prob = p)
+```
+
 c.) $P(X > 9)$
+
+```{r, echo = T}
+pbinom(9, size = n, prob = p, lower.tail = F)
+```
 
 d.) $P(X \ge 9)$
 
 ```{r, echo = T}
-
+pbinom(8, size = n, prob = p, lower.tail = F)
 ```
 
 ### 4.37
@@ -702,7 +721,14 @@ In the previous problem, determine the mean of X, the variance of X, the mean of
 
 ```{r, echo = T}
 
+mu <- n * p
+variance <- mu * q
+
+phat <- p
+v <- p*q/n
 ```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$, $\hat{p} = `r phat`$, $\sigma^2 = `r v`$
 
 ### 4.38
 
@@ -710,14 +736,30 @@ Given that Z has a standard normal distribution, determine:
 
 a.) $P(Z \ge 1.5)$
 
+```{r, echo = T}
+pnorm(1.5, lower.tail = F)
+```
+
 b.) $P(Z \le -2.5)$
 
+```{r, echo = T}
+pnorm(-2.5)
+```
+
 c.) $P(Z < -2.5)$
+
+```{r, echo = T}
+pnorm(-2.5)
+```
 
 d.) $P(-1 \le Z \le 1)$
 
 ```{r, echo = T}
+# P(Z > -1) - P(Z > 1)
+pnorm(-1, lower.tail = F) - pnorm(1, lower.tail = F)
 
+# 1 - 2*tail_area
+1 - 2 * pnorm(1, lower.tail = F)
 ```
 
 ### 4.39
@@ -726,14 +768,26 @@ If Z has a standard normal distribution, determine:
 
 a.) $P(Z \le 0.5)$
 
-b.) $P(Z > 1.25)$
+```{r, echo = T}
+pnorm(0.5)
+```
 
-c.) $P(-1.2 \le Z \le 1.2)$
+b.) $P(Z > -1.25)$
+
+```{r, echo = T}
+pnorm(-1.25, lower.tail = F)
+```
+
+c.) $P(-1.2 < Z < 1.2)$
+
+```{r, echo = T}
+1 - 2 *pnorm(1.2, lower.tail = F)
+```
 
 d.) $P(-1.8 \le Z \le 1.8)$
 
 ```{r, echo = T}
-
+pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 ```
 
 ### 4.40

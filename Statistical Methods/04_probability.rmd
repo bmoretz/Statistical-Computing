@@ -459,7 +459,7 @@ _Absolutely._
 
 ### 4.24
 
-For a binomial with n = 10 and p = .4, use Table B.2 in Appendix B to determine:
+For a binomial with n = 10 and p = .4, determine:
 
 a.) $P(0)$
 
@@ -493,42 +493,138 @@ pbinom(5, size = 10, prob = .4) - pbinom(1, size = 10, prob = .4)
 
 ### 4.25
 
-```{r, echo = T}
+For a binomial with n = 15 and p = 0.3, determine.
 
+a.) $P(0)$
+
+```{r, echo = T}
+dbinom(x = 0, prob = .3, size = 15)
+```
+
+b.) $P( X \le 3 )$
+
+```{r, echo = T}
+pbinom( q = 3, prob = .3, size = 15)
+```
+
+c.) $P(X < 3)$
+
+```{r, echo = T}
+pbinom(2, size = 15, prob = .3)
+```
+
+d.) $P(X > 4)$
+
+```{r, echo = T}
+pbinom(4, size = 15, prob = .3, lower.tail = F)
+```
+
+e.) $P(2 \le X \le 5)$
+
+```{r, echo = T}
+pbinom(5, size = 15, prob = .3) - pbinom(1, size = 15, prob = .3)
 ```
 
 ### 4.26
 
-```{r, echo = T}
+For a binomial with n = 15, p = 0.6 determine the probability of exactly 10 successes.
 
+```{r, echo = T}
+dbinom(10, size = 15, prob = .6)
 ```
 
 ### 4.27
 
-```{r, echo = T}
+For a binomial with n = 7 and p = 0.35, what is the probability of exactly 2 successes?
 
+```{r, echo = T}
+dbinom(2, size = 7, p = .35)
 ```
 
 ### 4.28
 
+For a binomial with n = 18 and p = 0.6, determine the mean, variance of X, the total number of successes.
+
 ```{r, echo = T}
+n <- 18
+p <- 0.6
+q <- 1 - p
+
+mu <- n * p
+variance <- mu * q
 
 ```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$
 
 ### 4.29
 
-```{r, echo = T}
+For a binomial with n = 22 and p = .2, determine the mean and variance of X, the total number of successes.
 
+```{r, echo = T}
+n <- 22
+p <- .2
+q <- 1 - p
+
+mu <- n * p
+variance <- mu * q
 ```
+
+$\mu = `r mu`$, $\sigma^2 = `r variance`$
 
 ### 4.30
 
+For a binomial with n = 20 and p = .7, determine the mean and variance of $\hat{p}$, the proportion of observed success.
+
+```{r, echo = T}
+n <- 20
+p <- .7
+q <- 1 - p
+
+mu <- n * p
+variance <- mu * q
+```
+
+### 4.31
+
+For a binomial with n = 30 and p = 0.3, determine the mean and variance of $\hat{p}$.
+
+```{r, echo = T}
+n <- 30
+p <- .3
+q <- 1 - p
+
+phat <- p / n
+variance <- p*q / n
+```
+
+$\hat{p} = `r phat`$, $\sigma^2 = `r variance`$
+
+### 4.32
+
+For a binomial with n = 10 and p = 0.8, determine:
+
+```{r, echo = T}
+n <- 10
+p <- 0.8
+q <- 1 - p
+
+variance <- p*q / n
+```
+
+a.) the probability that $\hat{p}$ is less than or equal to 0.7.
+
 ```{r, echo = T}
 
 ```
 
+b.) the probability that $\hat{p}$ is greater than or equal to 0.8.
 
-### 4.31
+```{r, echo = T}
+
+```
+
+c.) the probability that $\hat{p}$ is exactly equal to 0.8.
 
 ```{r, echo = T}
 
@@ -536,23 +632,65 @@ pbinom(5, size = 10, prob = .4) - pbinom(1, size = 10, prob = .4)
 
 ### 4.33
 
+A coin is rigged so that when it is flipped, the probability of a head is 0.7. If the coin is flipped three times, which is the more likely outcome, exactly three heads or two heads and a tail?
+
 ```{r, echo = T}
+
+dbinom(3, 3, .7) # 3 heads
+
+dbinom(2, 3, .7) # 2 heads 1 tail
 
 ```
 
+_Two heads, 1 tail._
+
 ### 4.34
 
-```{r, echo = T}
+Imagine that the probability of heads when flipping a coin is given by the binomial probability function with p = 0.5.
 
+If you flip the coin nine times and get nine heads, what is the probability of a head on the 10th flip?
+
+```{r, echo = T}
+# independent events.
+dbinom(1, 1, .5)
 ```
 
 ### 4.35
 
+The Department of Agriculture of the United States reports that 75% of all people who invest in the futures market lose money. Based on the binomial probability function, with n = 5, determine:
+
+a.) the probability that all 5 lose money.
+
+$P(x) = 0$
+
 ```{r, echo = T}
+dbinom(5, size = 5, prob = .75)
+```
+
+b.) the probability that all five make money.
+
+```{r, echo = T}
+dbinom(5, size = 5, prob = .25)
 
 ```
 
+c.) the probability that at least two lose money.
+
+```{r, echo = T}
+pbinom(q = 3, size = 5, prob = .25)
+```
+
 ### 4.36
+
+If for a binomial distribution p = 0.4 and n = 25, determine:
+
+a.) $P(X < 11)$
+
+b.) $P(X \le 11)$
+
+c.) $P(X > 9)$
+
+d.) $P(X \ge 9)$
 
 ```{r, echo = T}
 
@@ -560,17 +698,39 @@ pbinom(5, size = 10, prob = .4) - pbinom(1, size = 10, prob = .4)
 
 ### 4.37
 
+In the previous problem, determine the mean of X, the variance of X, the mean of $\hat{p}$, and the variance of $\hat{p}$.
+
 ```{r, echo = T}
 
 ```
 
 ### 4.38
 
+Given that Z has a standard normal distribution, determine:
+
+a.) $P(Z \ge 1.5)$
+
+b.) $P(Z \le -2.5)$
+
+c.) $P(Z < -2.5)$
+
+d.) $P(-1 \le Z \le 1)$
+
 ```{r, echo = T}
 
 ```
 
 ### 4.39
+
+If Z has a standard normal distribution, determine:
+
+a.) $P(Z \le 0.5)$
+
+b.) $P(Z > 1.25)$
+
+c.) $P(-1.2 \le Z \le 1.2)$
+
+d.) $P(-1.8 \le Z \le 1.8)$
 
 ```{r, echo = T}
 

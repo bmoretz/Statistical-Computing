@@ -848,86 +848,86 @@ qnorm( (1 + 0.2358) / 2)
 
 ### 4.42
 
-If X has a standard normal distribution with, determine:
+If Z has a standard normal distribution with, determine:
 
 a.) $P(Z > c) = 0.0764$
 
 ```{r, echo = T}
-
+qnorm(0.0764, lower.tail = F)
 ```
 
 b.) $P(Z > c) = 0.5040$
 
 ```{r, echo = T}
-
+qnorm(0.504, lower.tail = F)
 ```
 
 c.) $P(-c \le Z \le c) = 0.9108$
 
 ```{r, echo = T}
-
+qnorm((1 + 0.9108)/2)
 ```
 
 d.) $P(-c \le Z \le c) = 0.8$
 
 ```{r, echo = T}
-
+qnorm((1+.8)/2)
 ```
 
 ### 4.43
 
 If X has a normal distribution with mean $\mu = 50$ and standard deviation $\sigma = 9$
 
-a.) $P(x \le 40)$
+a.) $P(X \le 40)$
 
 ```{r, echo = T}
-
+pnorm(40, mean = 50, sd = 9)
 ```
 
 b.) $P(X < 55)$
 
 ```{r, echo = T}
-
+1 - pnorm(55, mean = 50, sd = 9, lower.tail = F)
 ```
 
 c.) $P(X > 60)$
 
 ```{r, echo = T}
-
+pnorm(60, mean = 50, sd = 9, lower.tail = F)
 ```
 
 d.) $P(40 \le X \le 60)$
 
 ```{r, echo = T}
-
+pnorm(60, mean = 50, sd = 9) - pnorm(40, mean = 50, sd = 9)
 ```
 
 ### 4.44
 
 If X has a normal distribution with $\mu = 20$ and $\sigma = 9$, determine:
 
-a.) $P(x < 22)$
+a.) $P(X < 22)$
 
 ```{r, echo = T}
-
+1 - pnorm(22, mean = 20, sd = 9, lower.tail = F)
 ```
 
 b.) $P(X > 17)$
 
 ```{r, echo = T}
-
+pnorm(17, mean = 20, sd = 9, lower.tail = F)
 ```
 
 c.) $P(X > 15)$
 
 ```{r, echo = T}
-
+pnorm(15, mean = 20, sd = 9, lower.tail = F)
 ```
 
 d.) $P(2 \le X \le 38)$
 
 ```{r, echo = T}
-
+pnorm(38, mean = 20, sd = 5) - pnorm(2, mean = 20, sd = 9)
 ```
 
 ### 4.45
@@ -937,13 +937,13 @@ If X has a normal distribution with mean $\mu = .75$ and standard deviation $\si
 a.) $P(0.5 < X < 1)$
 
 ```{r, echo = T}
-
+pnorm(1, mean = .75, sd = .5) - pnorm(.5, mean = .75, sd = .5)
 ```
 
 b.) $P(0.25 < X < 1.25)$
 
 ```{r, echo = T}
-
+pnorm(1.25, mean = .75, sd = .5) - pnorm(.25, mean = .75, sd = .5)
 ```
 
 ### 4.46
@@ -953,7 +953,7 @@ If X has a normal distribution, determine _c_ such that:
 $P(\mu - c\sigma < X < \mu + c\sigma) = .95$
 
 ```{r, echo = T}
-
+qnorm((1 +.95)/2)
 ```
 
 ### 4.47
@@ -963,15 +963,15 @@ If X has a normal distribution, determine _c_ such that:
 $P(\mu - c\sigma < X < \mu + c\sigma) = .8$
 
 ```{r, echo = T}
-
+qnorm((1 +.8)/2)
 ```
 
 ### 4.48
 
-Assuming that the scores on a math achievement test are normally distributed with $\mu = 69$ and standard deviation $\sigma = 10$, what is the probability of getting a score greater than 78?
+Assuming that the scores on a math achievement test are normally distributed with $\mu = 68$ and standard deviation $\sigma = 10$, what is the probability of getting a score greater than 78?
 
 ```{r, echo = T}
-
+pnorm(78, mean = 68, sd = 10, lower.tail = F)
 ```
 
 ### 4.49
@@ -981,17 +981,17 @@ In the previous problem, how high must someone score to be in the top 5%?
 That is, determine _c_ such that $P(X > c) = 0.05$
 
 ```{r, echo = T}
-
+qnorm(1 - 0.05, mean = 68, sd = 10)
 ```
 
 ### 4.50
 
 A manufacturer of car batteries claims that the life of their batteries is normally distributed with mean $\mu = 58$ and $\sigma = 3$.
 
-Determien the probability that a randomly selected battery will last at least 62 months.
+Determine the probability that a randomly selected battery will last at least 62 months.
 
 ```{r, echo = T}
-
+pnorm(62, mean = 58, sd = 3, lower.tail = F) # more than 62
 ```
 
 ### 4.51
@@ -1001,7 +1001,7 @@ Assume that the income of pediatricials is normally distributed with mean $\mu =
 Determine the probability of observing an income between $85,000 and $115,000.
 
 ```{r, echo = T}
-
+pnorm(1.15, mean = 1, sd = .1) - pnorm(.85, mean = 1, sd = .1)
 ```
 
 ### 4.52
@@ -1011,7 +1011,7 @@ Suppose the winnings of gamblers at Las Vegas are normally distributed with $\mu
 Determine the probability that a gambler does not lose any money.
 
 ```{r, echo = T}
-
+pnorm(0, mean = -300, sd = 100, lower.tail = F)
 ```
 
 ### 4.53
@@ -1021,59 +1021,69 @@ A large computer company claims that their salaries are normally distributed wit
 What is the probability of observing an income between $40,000 and $60,000?
 
 ```{r, echo = T}
-
+pnorm(6, mean = 5, sd = 1) - pnorm(4, mean = 5, sd = 1)
 ```
 
 ### 4.54
 
-```{r, echo = T}
+Suppose the daily amount of solar radiation in Los Angeles is normally distributed with mean 450 and sd 50.
 
+Determine the probability that for a given day the radiation is between 350 and 550.
+
+```{r, echo = T}
+pnorm(5.5, mean = 4.5, sd = .5) - pnorm(3.5, mean = 4.5, sd = .5)
 ```
 
 ### 4.55
 
-```{r, echo = T}
+If the cholesterol levels of adults are normally distributed with mean 230 and standard deviation 25, what is the probability that a randomly sampled adult has a cholesterol level greater than 260?
 
+```{r, echo = T}
+pnorm(2.6, mean = 2.3, sd = .25, lower.tail = F)
 ```
 
 ### 4.56
 
-```{r, echo = T}
+If after 1 year, the annual mileage of privately owned cars is normally distributed with mean 14,000 miles and sd 3,500, what is the probability a car has greater than 20,000 miles?
 
+```{r, echo = T}
+pnorm(20, mean = 14, sd = 3.5, lower.tail = F)
 ```
 
 ### 4.57
 
-```{r, echo = T}
+Can small changes in the tails of a distribution result in large changes in the population mean, $\mu$, relative to the changes in median?
 
-```
+_Yes, the mean is heavly influenced by the tails, where as the median is not._
 
 ### 4.58
 
-```{r, echo = T}
+Explain in what sense the population variance is sensitive to small changes in a distribution.
 
-```
+_The variance is sensetive to small changes in the tail._
 
 ### 4.59
 
-```{r, echo = T}
+For normal random variables, the probability of being within one standard deviation of the mean is .68. That is, $P(\mu - \sigma \le X \le \mu + \sigma) = .68$, if X has a normal distribution.
 
-```
+For nonnormal distribution, is it safe to assume that this probability is again .68?
+
+_No. The AUC (and therefore the mean/variance relationship) for a distribution is defined by its pdf, $P(X) = F_x$, which will be unique per distribution._
 
 ### 4.60
 
-```{r, echo = T}
+If a distribution appears to be bell-shaped and symmetric about its mean, can we assume that the probability of being within one sd of the mean is .68?
 
-```
+_No._
 
 ### 4.61
 
-```{r, echo = T}
+Can two distribution differ by a large amount yet have equal means and variances?
 
-```
+_Yes._
 
 ### 4.62
 
-```{r, echo = T}
+If a distribution is skewed, is it possible that the mean exceedes the .85 quantile?
 
-```
+_Yes._

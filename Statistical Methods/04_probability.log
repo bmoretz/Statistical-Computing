@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  12 DEC 2019 13:31
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2019.7.28)  14 DEC 2019 10:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1630,15 +1630,86 @@ Package xcolor Warning: Incompatible color definition on input line 1151.
 
 Package xcolor Warning: Incompatible color definition on input line 1151.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1227.
-[15]
-Overfull \vbox (43.72873pt too high) has occurred while \output is active []
 
-[16]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1227.
+Package xcolor Warning: Incompatible color definition on input line 1164.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1168.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1168.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1176.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1180.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1180.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1188.
+
+[15]
+
+Package xcolor Warning: Incompatible color definition on input line 1192.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1192.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1200.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1204.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1204.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1217.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1221.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1221.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1229.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1233.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1233.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1241.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1245.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1245.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1253.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1257.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1257.
+
+[16] [17]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1406.
+[18] [19]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1406.
 (./04_probability.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1227.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1227.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1406.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1406.
 
 Package rerunfilecheck Info: File `04_probability.out' has not changed.
 (rerunfilecheck)             Checksum: AB2C6D5DD5FD922A21B93D57FA0F43A0.

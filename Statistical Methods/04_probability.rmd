@@ -792,17 +792,83 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.40
 
-```{r, echo = T}
+If Z has a standard normal distribution, determine:
 
+a.) $P(Z < -.5)$
+
+```{r, echo = T}
+1 - pnorm(-.5, lower.tail = F)
+```
+
+b.) $P(Z < 1.2)$
+
+```{r, echo = T}
+1 - pnorm(1.2, lower.tail = F)
+```
+
+c.) $P(Z > 2.1)$
+
+```{r, echo = T}
+pnorm(2.1, lower.tail = F)
+```
+
+d.) $P(-.28 < Z < 0.28)$
+
+```{r, echo = T}
+pnorm(-.28, lower.tail = F) - pnorm(.28, lower.tail = F)
 ```
 
 ### 4.41
 
+If Z has a standard normal distribution, find _c_ such that:
+
+a.) $P(Z \le c) = 0.0099$
+
+```{r, echo = T}
+qnorm(0.0099)
+```
+
+b.) $P(Z < c) = .9732$
+
+```{r, echo = T}
+qnorm(.9732)
+```
+
+c.) $P(Z > c) = 0.5691$
+
+```{r, echo = T}
+qnorm(.5691, lower.tail = F)
+```
+
+d.) $P(-c \le Z \le c) = 0.2358$
+
+```{r, echo = T}
+qnorm( (1 + 0.2358) / 2)
+```
+
+### 4.42
+
+If X has a standard normal distribution with, determine:
+
+a.) $P(Z > c) = 0.0764$
+
 ```{r, echo = T}
 
 ```
 
-### 4.42
+b.) $P(Z > c) = 0.5040$
+
+```{r, echo = T}
+
+```
+
+c.) $P(-c \le Z \le c) = 0.9108$
+
+```{r, echo = T}
+
+```
+
+d.) $P(-c \le Z \le c) = 0.8$
 
 ```{r, echo = T}
 
@@ -810,11 +876,55 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.43
 
+If X has a normal distribution with mean $\mu = 50$ and standard deviation $\sigma = 9$
+
+a.) $P(x \le 40)$
+
+```{r, echo = T}
+
+```
+
+b.) $P(X < 55)$
+
+```{r, echo = T}
+
+```
+
+c.) $P(X > 60)$
+
+```{r, echo = T}
+
+```
+
+d.) $P(40 \le X \le 60)$
+
 ```{r, echo = T}
 
 ```
 
 ### 4.44
+
+If X has a normal distribution with $\mu = 20$ and $\sigma = 9$, determine:
+
+a.) $P(x < 22)$
+
+```{r, echo = T}
+
+```
+
+b.) $P(X > 17)$
+
+```{r, echo = T}
+
+```
+
+c.) $P(X > 15)$
+
+```{r, echo = T}
+
+```
+
+d.) $P(2 \le X \le 38)$
 
 ```{r, echo = T}
 
@@ -822,11 +932,25 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.45
 
+If X has a normal distribution with mean $\mu = .75$ and standard deviation $\sigma = 0.5$, determine:
+
+a.) $P(0.5 < X < 1)$
+
+```{r, echo = T}
+
+```
+
+b.) $P(0.25 < X < 1.25)$
+
 ```{r, echo = T}
 
 ```
 
 ### 4.46
+
+If X has a normal distribution, determine _c_ such that:
+
+$P(\mu - c\sigma < X < \mu + c\sigma) = .95$
 
 ```{r, echo = T}
 
@@ -834,11 +958,17 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.47
 
+If X has a normal distribution, determine _c_ such that:
+
+$P(\mu - c\sigma < X < \mu + c\sigma) = .8$
+
 ```{r, echo = T}
 
 ```
 
 ### 4.48
+
+Assuming that the scores on a math achievement test are normally distributed with $\mu = 69$ and standard deviation $\sigma = 10$, what is the probability of getting a score greater than 78?
 
 ```{r, echo = T}
 
@@ -846,11 +976,19 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.49
 
+In the previous problem, how high must someone score to be in the top 5%?
+
+That is, determine _c_ such that $P(X > c) = 0.05$
+
 ```{r, echo = T}
 
 ```
 
 ### 4.50
+
+A manufacturer of car batteries claims that the life of their batteries is normally distributed with mean $\mu = 58$ and $\sigma = 3$.
+
+Determien the probability that a randomly selected battery will last at least 62 months.
 
 ```{r, echo = T}
 
@@ -858,17 +996,29 @@ pnorm(1.8, lower.tail = T) - pnorm(-1.8)
 
 ### 4.51
 
+Assume that the income of pediatricials is normally distributed with mean $\mu = \$100,000$ and $\sigma = 10,000$.
+
+Determine the probability of observing an income between $85,000 and $115,000.
+
 ```{r, echo = T}
 
 ```
 
 ### 4.52
 
+Suppose the winnings of gamblers at Las Vegas are normally distributed with $\mu = -300$ and $\sigma = 100$.
+
+Determine the probability that a gambler does not lose any money.
+
 ```{r, echo = T}
 
 ```
 
 ### 4.53
+
+A large computer company claims that their salaries are normally distributed with $\mu = \$50,000$ and $\sigma = \$10,000$.
+
+What is the probability of observing an income between $40,000 and $60,000?
 
 ```{r, echo = T}
 

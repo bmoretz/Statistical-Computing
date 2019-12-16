@@ -96,8 +96,6 @@ theme_update(axis.text.x = element_text(size = 10),
 
 data.dir <- "D:/Projects/Statistical-Computing/datasets/"
 
-setwd("D:/Projects/Statistical-Computing/RDS")
-
 ```
 
 ```{r pander_setup, include = FALSE}

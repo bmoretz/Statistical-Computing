@@ -96,8 +96,6 @@ theme_update(axis.text.x = element_text(size = 10),
 
 data.dir <- "D:/Projects/Statistical-Computing/datasets/"
 
-setwd("D:/Projects/Statistical-Computing/RDS")
-
 ```
 
 ```{r pander_setup, include = FALSE}
@@ -115,3 +113,137 @@ panderOptions('keep.trailing.zeros', TRUE)
 #### Chapter 5
 
 ### 5.1
+
+For a binomial with $n = 25$ and $p = 0.5$, determine:
+
+a.) $P(\hat{p} \le 15/25)$
+
+```{r, echo = T}
+pbinom(25 * 15/25, size = 25, prob = .5)
+```
+
+b.) $P(\hat{p} > 15/25)$
+
+```{r, echo = T}
+pbinom(15/25 * 25, size = 25, prob = .5, lower.tail = F)
+```
+
+c.) $P(10/25 \le \hat{p} \le 15/25)$
+
+```{r, echo = T}
+pbinom(25 * 15/25, size = 25, prob = .5) - pbinom(25 * 10/25, size = 25, prob = .5)
+```
+
+### 5.2
+
+Many research teams intend to conduct a study regarding the proportion of people who have colon cancer. If a random sample of 10 individuals could be obtained, and if the probability of having colon cancer is 0.05, what is the probability that a research team will get $\hat{p} = 0.1$?
+
+```{r, echo = T}
+dbinom( 10 * .1, size = 10, prob = 0.05)
+```
+
+### 5.3
+
+In the previous problem, what is the probability of $\hat{p} = 0.05$?
+
+```{r, echo = T}
+dbinom( 10 * .05, size = 10, prob = 0.05)
+```
+
+### 5.4
+
+Someone claims that the probability of losing money, when using an investment strategy for buying and selling commodities, is 0.1. If this claim is correct, what is the probability of getting $\hat{p} \le 0.05$ based on a random sample of 25 investments?
+
+```{r, echo = T}
+pbinom( 25 * .05, size = 25, prob = .1)
+```
+
+### 5.5
+
+You interview a married couple and ask the wife whether she supports the current leader of their country. Her husband is asked the same question. Describe why it might be unreasonable to view these two responses as a random sample.
+
+_The liklihood of the two married people having the same political views is high._
+
+### 5.6
+
+Inagine that 1,000 research teams draw a random sample from a binomial distribution with $p = 0.4$, with each study based on a sample size of 30. So, this would result in 1,000 $\hat{p}$ values. If these 1,000 values were averages, what, approximately, would be the result?
+
+```{r, echo = T}
+p <- .4
+n <- 30
+
+N <- 1e3
+result <- numeric(N)
+for( i in 1:N )
+{
+   result[i] <- mean( rbinom(n, size = 1, prob = p) )
+}
+
+mean(result)
+
+```
+
+### 5.7
+
+In the previous problem, if you computed the sample variance of the $\hat{p}$ values, what, approximatley, would be the result?
+
+```{r, echo = T}
+N <- 1e3
+result <- numeric(N)
+for( i in 1:N )
+{
+   result[i] <- mean( rbinom(n, size = 1, prob = p) )
+}
+
+var(result) # estimated
+
+(p * (1 - p)) / n # exact
+```
+
+### 5.8
+
+Suppose $n = 16, \sigma = 2, \mu = 30$.
+
+Assume normality and determine:
+
+a.) $P(\bar{X} \le 29)$
+
+```{r, echo = T}
+pnorm( 29, mean = 30, sd = sqrt(2^2 / 16))
+```
+
+b.) $P(\bar{X} \ge 30.5)$
+
+```{r, echo = T}
+pnorm( 30.5, mean = 30, sd = sqrt(2^2 / 16), lower.tail = F)
+```
+
+c.) $P( 29 \le \bar{X} \le 31)$
+
+```{r, echo = T}
+pnorm(31, mean = 30, sd = sqrt(2^2 / 16)) - pnorm( 29, mean = 30, sd = sqrt(2^2 / 16))
+```
+
+### 5.9
+
+Suppose $n = 25, \sigma = 5, \mu = 5$
+
+Assume normality and determine:
+
+a.) $P(\bar{X} \le 4)$
+
+```{r, echo = T}
+
+```
+
+b.) $P(\bar{X} \le 7)$
+
+```{r, echo = T}
+
+```
+
+c.) $P(3 \le \bar{X} \le 7)$
+
+```{r, echo = T}
+
+```

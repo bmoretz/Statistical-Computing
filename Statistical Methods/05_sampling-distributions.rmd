@@ -233,17 +233,151 @@ Assume normality and determine:
 a.) $P(\bar{X} \le 4)$
 
 ```{r, echo = T}
-
+pnorm(4, mean = 5, sd = sqrt(5^2 / 25))
 ```
 
 b.) $P(\bar{X} \le 7)$
 
 ```{r, echo = T}
-
+pnorm(7, mean = 5, sd = sqrt(5^2 / 25), lower.tail = F)
 ```
 
 c.) $P(3 \le \bar{X} \le 7)$
 
 ```{r, echo = T}
+pnorm(7, mean = 5, sd = sqrt(5^2 / 25)) - pnorm(3, mean = 5, sd = sqrt(5^2 / 25))
+```
+
+### 5.10
+
+Someone claims that within a certain neighborhood, the average cost of a house is $\mu = \$100,000$ with a standard deviation $\sigma = \$10,000$. Suppose that based on n = 16 homes, you find that the average cost of a house is $\bar{X} = \$95,000$. Assuming normality, what is the probability of getting a sample mean this low or lower if the claims about the mean and standard deviation are true?
+
+```{r, echo = T}
+pnorm(95e3, mean = 1e5, 1e4 / sqrt(16) )
+```
+
+### 5.11
+
+In the previous problem, what is the probabiility of getting a sample mean between $97,500 and $102,500?
+
+```{r, echo = T}
+pnorm(1025e2, mean = 1e5, 1e4 / sqrt(16), lower.tail = T) - pnorm(975e2, mean = 1e5, 1e4 / sqrt(16))
+```
+
+### 5.12
+
+A company claims that the premiums paid by its clients for auto insurance has a normal distribution with mean $\mu = \$750$ dollars and standard deviation $\sigma = 100$.
+
+Assuming normality, what is the probability that for $n = 9$ randomly sampled clients, the sample mean will have a value between $700 and $800?
+
+```{r, echo = T}
+s <- 100 / sqrt(9)
+
+pnorm(800, mean = 750, sd = s) - pnorm(700, mean = 750, sd = s)
+```
+
+### 5.13
+
+Imagine you are a health professional interested in the effects of medication on the diastolic blood pressure of adult women. For a particular drug being investigated, you find that for $n = 9$ women, the sample mean is $\bar{X} = 85$ and the sample variance is $s^2 = 160.78$.
+
+Estimate the standard error of the sample mean, assuming random sampling.
+
+```{r, echo = T}
+sqrt(160.78 / 9)
+```
+
+### 5.14
+
+You randomly sample 16 observations from a discrete distribution with mean $\mu = 36$ and variance $\sigma^2 = 25$.
+
+```{r, echo = T}
+n <- 16; mu <- 36; variance <- 25
+
+s <- sqrt(variance / n)
 
 ```
+
+Use the central limit therom to determine:
+
+a.) $P(\bar{X} \le 34)$
+
+```{r, echo = T}
+pnorm(34, mean = mu, sd = s)
+```
+
+b.) $P(\bar{X} \le 37)$
+
+```{r, echo = T}
+pnorm(37, mean = mu, sd = s)
+```
+
+c.) $P(\bar{X} \ge 33)$
+
+```{r, echo = T}
+pnorm(33, mean = mu, sd = s, lower.tail = F)
+```
+
+d.) $P(34 \le \bar{X} \le 37)$
+
+```{r, echo = T}
+pnorm(37, mean = mu, sd = s) - pnorm(34, mean = mu, sd = s)
+```
+
+### 5.15
+
+You sample 25 observations from a nonnormal distribution with mean $\mu = 25$ and variance $\sigma^2 = 9$.
+
+Use the central limit therom to determine:
+
+a.) $P(\bar{X} \le 24)$
+
+```{r, echo = T}
+```
+
+b.) $P(\bar{X} \le 26)$
+
+```{r, echo = T}
+```
+
+c.) $P(\bar{X} \le 24)$
+
+```{r, echo = T}
+```
+
+d.) $P(24 \le \bar{X} \le 26)$
+
+```{r, echo = T}
+```
+
+### 5.16
+
+Describe a situation where reliance on the central limit theorm to determine $P(\bar{X} \le 24)$ might be unsatisfactory.
+
+### 5.17
+
+Describe situations where a normal distribution provides a good approximation of the sampling distribution of the mean.
+
+### 5.18
+
+For the values 4, 8, 23, 43, 12, 11, 32, 15, 6, 29, verify that the McKean-Schrader estimate of the standard error of the mean is 7.57.
+
+### 5.19
+
+In the previous exercise, how would you argue that the method used to estimate the standard error of the median is a reasonable approach?
+
+### 5.20
+
+For the values 5, 7, 2, 3, 4, 5, 2, 6, 7, 3, 4, 6, 1, 7, 4, verify that the McKean-Schrader estimate of the standard error of the median is 0.97.
+
+### 5.21
+
+In the previous excersize, how would you argue that the method used to estimate the standard error of th median might be highly inaccurate?
+
+### 5.22
+
+In Exercise 20, would it be advisable to approximate $P(M \le 4)$, the probability that the sample median is less than or equal to 4, using Equation (5.7)?
+
+### 5.23
+
+For the values, 2, 3, 5, 6, 8, 12, 14, 18, 19, 22, 201, why would you suspect that the McKean-Schrader estiamte of the standard error of the median will be smaller than the standard error of the mean?
+

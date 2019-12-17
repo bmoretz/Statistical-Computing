@@ -437,6 +437,8 @@ sqrt(var(x) / length(x))
 
 Summarize when it would and would not be reasonable to assume that the sampling distribution of M, the sample median, is normal.
 
+_When the distribution is not symetric the sampling distribution of M will not be normal._
+
 ### 5.25
 
 For the values:
@@ -448,4 +450,67 @@ Estimate the standard error of the 20% trimmed mean.
 ```{r, echo = T}
 x <- c(59, 106, 174, 207, 219, 237, 313, 365, 485, 497, 515, 529, 557, 615, 625, 645, 973, 1065, 3215)
 
+winsorize <- function( x, trim = .2) {
+   n <- length(x)
+   
+   o <- sort(x)
+   g <- floor(trim*n)
+   
+   o[1:(g+1)] <- o[(g+1)]
+   o[(n-g):n] <- o[n-g]
+   
+   o
+}
+
+n <- length(x)
+
+sqrt( var(winsorize(x)) / ( .36 * n ) )
+
+```
+
+### 5.26
+
+For the data in Exercise 25, why would you suspect that the standard error of the sample mean will be larger than the standard error of the 20% trimmed mean?
+
+_Because the mean doesn't drop any of the larger observations._
+
+```{r, echo = T}
+sd(x) / sqrt(n)
+```
+
+Verify this speculation.
+
+### 5.27
+
+The ideal estimator of location would have a smaller standard error than any other estimator we might use. Explain why such an estimator does not exist.
+
+_There are going to be tradeoffs involved in any approach. If there wasn't, we would just have a universal estimator._
+
+### 5.28
+
+Under normality, the sample mean has a smaller standard error than the 20% trimmed mean or median. If observations are sampled from a distribution that appears to be normal, does this suggest that the mean should be preferred over the trimmed mean and median?
+
+_It depends on the tail behavior and symmetry._
+
+### 5.29
+
+If the sample mean and 20% trimmed mean are nearly identical, it might be thought that for future studies, it will make little difference which measure of location is used. Comment on why this is not the case.
+
+_This situation is completely concidental, future studies are not reflective of past studies._
+
+### 5.30
+
+Observations can be generated from the distribution in Figure 5.4a using the R command rlnorm. for example, rlnorm(25) would generate 25 observations. Indicate the R commands for determining the sampling distribution of the sample median, M. In particular, how would you determine the probability that M will have a value less than 1.5?
+
+```{r, echo = T}
+N <- 1e4
+results <- numeric(N)
+
+for( i in 1:N )
+{
+   sample <- rlnorm(25)
+   results[i] <- median(sample)
+}
+
+mean(results < 1.5)
 ```

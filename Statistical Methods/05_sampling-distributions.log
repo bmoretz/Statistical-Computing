@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (MiKTeX 2.9.7250 64-bit) (preloaded format=xelatex 2019.12.15)  16 DEC 2019 17:43
+This is XeTeX, Version 3.14159265-2.6-0.999991 (MiKTeX 2.9.7250 64-bit) (preloaded format=xelatex 2019.12.15)  16 DEC 2019 18:07
 entering extended mode
 **./05_sampling-distributions.tex
 (05_sampling-distributions.tex
@@ -1357,13 +1357,13 @@ LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
 (Font)              scaled to size 17.28pt on input line 242.
 [1
 
-] [2] [3] [4] [5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 622.
-[6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 622.
+] [2] [3] [4] [5] [6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 711.
+[7]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 711.
 (05_sampling-distributions.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 622.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 622.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 711.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 711.
  ) 
 Here is how much of TeX's memory you used:
  31874 strings out of 427265
@@ -1374,4 +1374,4 @@ Here is how much of TeX's memory you used:
  1348 hyphenation exceptions out of 8191
  55i,11n,118p,826b,451s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on 05_sampling-distributions.pdf (6 pages).
+Output written on 05_sampling-distributions.pdf (7 pages).

@@ -327,57 +327,125 @@ pnorm(37, mean = mu, sd = s) - pnorm(34, mean = mu, sd = s)
 
 You sample 25 observations from a nonnormal distribution with mean $\mu = 25$ and variance $\sigma^2 = 9$.
 
+```{r, echo = T}
+n <- 25; mu <- 25; var <- 9
+
+s <- sqrt(var / n)
+```
+
 Use the central limit therom to determine:
 
 a.) $P(\bar{X} \le 24)$
 
 ```{r, echo = T}
+pnorm(24, mean = mu, sd = s)
 ```
 
 b.) $P(\bar{X} \le 26)$
 
 ```{r, echo = T}
+pnorm(26, mean = mu, sd = s)
 ```
 
-c.) $P(\bar{X} \le 24)$
+c.) $P(\bar{X} \ge 24)$
 
 ```{r, echo = T}
+pnorm(24, mean = mu, sd = s, lower.tail = F)
 ```
 
 d.) $P(24 \le \bar{X} \le 26)$
 
 ```{r, echo = T}
+pnorm(26, mean = mu, sd = s) - pnorm(24, mean = mu, sd = s)
 ```
 
 ### 5.16
 
 Describe a situation where reliance on the central limit theorm to determine $P(\bar{X} \le 24)$ might be unsatisfactory.
 
+_Skewed, heavy-tailed distributions (mixed normal)._
+
 ### 5.17
 
 Describe situations where a normal distribution provides a good approximation of the sampling distribution of the mean.
+
+_Symetric, light-tailed distributions._
 
 ### 5.18
 
 For the values 4, 8, 23, 43, 12, 11, 32, 15, 6, 29, verify that the McKean-Schrader estimate of the standard error of the mean is 7.57.
 
+```{r, echo = T}
+x <- c(4, 8, 23, 43, 12, 11, 32, 15, 6, 29)
+
+msmedse <- function(x) {
+   n <- length(x)
+   vals <- sort(x)
+   
+   k <- floor( (n + 1)/2 - 2.5758*sqrt(n/4) )
+   m <- ((vals[n - k + 1] - vals[k]) / 5.1517)^2
+   
+   sqrt(m)
+}
+
+msmedse(x)
+```
+
 ### 5.19
 
 In the previous exercise, how would you argue that the method used to estimate the standard error of the median is a reasonable approach?
+
+_There are not any tied values._
 
 ### 5.20
 
 For the values 5, 7, 2, 3, 4, 5, 2, 6, 7, 3, 4, 6, 1, 7, 4, verify that the McKean-Schrader estimate of the standard error of the median is 0.97.
 
+```{r, echo = T}
+x <- c(5, 7, 2, 3, 4, 5, 2, 6, 7, 3, 4, 6, 1, 7, 4)
+msmedse(x)
+```
+
 ### 5.21
 
 In the previous excersize, how would you argue that the method used to estimate the standard error of th median might be highly inaccurate?
+
+_Several tied values._
 
 ### 5.22
 
 In Exercise 20, would it be advisable to approximate $P(M \le 4)$, the probability that the sample median is less than or equal to 4, using Equation (5.7)?
 
+_No, there are ties._
+
 ### 5.23
 
-For the values, 2, 3, 5, 6, 8, 12, 14, 18, 19, 22, 201, why would you suspect that the McKean-Schrader estiamte of the standard error of the median will be smaller than the standard error of the mean?
+For the values, 2, 3, 5, 6, 8, 12, 14, 18, 19, 22, 201, why would you suspect that the McKean-Schrader estimate of the standard error of the median will be smaller than the standard error of the mean?
 
+_There is an outlier._
+
+```{r, echo = T}
+x <- c(2, 3, 5, 6, 8, 12, 14, 18, 19, 22, 201)
+
+msmedse(x)
+
+sqrt(var(x) / length(x))
+
+```
+
+### 5.24
+
+Summarize when it would and would not be reasonable to assume that the sampling distribution of M, the sample median, is normal.
+
+### 5.25
+
+For the values:
+
+59, 106, 174, 207, 219, 237, 313, 365, 485, 497, 515, 529, 557, 615, 625, 645, 973, 1065, 3215
+
+Estimate the standard error of the 20% trimmed mean.
+
+```{r, echo = T}
+x <- c(59, 106, 174, 207, 219, 237, 313, 365, 485, 497, 515, 529, 557, 615, 625, 645, 973, 1065, 3215)
+
+```

@@ -379,39 +379,173 @@ Rats are subjected to a drug that might affect aggression. Suppose that for a ra
 
 Compute a 0.95 confidence interval for the mean assuming the scores are from a normal distribution.
 
+```{r, echo = T}
+x <- c(5, 12, 23, 24, 18, 9, 18, 11, 36, 15)
+
+xbar <- mean(x); n <- length(x)
+
+xbar + qt(conf(.95), df = n - 1) * sd(x)/sqrt(n)
+```
+
 ### 6.16
 
 Suppose $M = 34$ and the McKean-Schrader estimate of the standard error of M is $S_M = 3$.
 
 Compute a .95 confidence interval for the population median.
 
+```{r, echo = T}
+34 + qnorm(conf(.95)) * 3
+```
+
 ### 6.17
+
+For the data in E14, the McKean-Schrader estimate of the standard error of _M_ is $S_M = 77.8$ and the sample median is 262.
+
+Compute a .99 confidence interval for the population median.
+
+```{r, echo = T}
+x <- c(77,87,88,114,151,210,219,246,253,262,296,299,306,376,428,515, 666,1310,2611)
+M <- median(x); n <- length(x)
+
+M + qnorm(conf(.99)) * 77.8
+```
 
 ### 6.18
 
+If $n = 10$ and a confidence interval for the median is computed using $(X_k, X_{n-k})$ as described in 6.3.4, what is the probability coverage if $k=2$?
+
+```{r, echo = T}
+1 - 2*pbinom(1, size = 10, prob = .5)
+```
+
 ### 6.19
+
+From the previous, what is the probability coverage when  $n = 15$ and $k = 4$?
+
+```{r, echo = T}
+1 - 2*pbinom(3, size = 15, prob = .5)
+```
 
 ### 6.20
 
+For the data in E14, if you use (88, 515) as a confidence interval for the median, what is the probability this interval contains the population median?
+
+```{r, echo = T}
+x <- c(77, 87, 88, 114, 151, 210, 219, 246, 253, 262, 296, 299, 306, 376, 428, 515, 666, 1310, 2611)
+
+k <- 3
+
+1 - 2*pbinom(k, size = n - k - 1, prob = .5)
+```
+
 ### 6.21
+
+You observe the following successes and failures:
+
+1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+Compute a .95 confidence interval for $p$ using E6.15, as well as the Agresti-Coull method.
+
+```{r, echo = T}
+x <- c(1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+n <- length(x)
+
+alpha <- 0.05
+
+phat <- sum(x) / n
+
+phat + qnorm(conf(1 - alpha)) * sqrt(phat*(1 - phat)/n)
+
+c <- qnorm(1 - alpha/2)
+nhat <- n + c^2
+xhat <- sum(x) + c^2/2
+phat <- xhat / nhat
+
+c(Lower = phat - c * sqrt(phat*(1 - phat)/nhat),
+  Upper = phat + c * sqrt(phat*(1 - phat)/nhat))
+```
 
 ### 6.22
 
+Given the following results for a sample from a binomial distribution, compute the squared standard error of $\hat{p}$.
+
+a.) $n = 25, X = 5$
+
+```{r, echo = T}
+n <- 25; success <- 5
+phat <- success/n
+
+phat*(1 - phat)/n
+```
+
+b.) $n = 48, X = 12$
+
+```{r, echo = T}
+n <- 48; success <- 12
+phat <- success/n
+
+phat*(1 - phat)/n
+```
+
+c.) $n = 100, X = 80$
+
+```{r, echo = T}
+n <- 100; success <- 80
+phat <- success/n
+
+phat*(1 - phat)/n
+```
+
+d.) $n = 300, X = 160$
+
+```{r, echo = T}
+n <- 300; success <- 160
+phat <- success/n
+
+phat*(1 - phat)/n
+```
+
 ### 6.23
+
+Among 100 randomly sampled adults, 10 were found to be unemployed.
+
+Compute a 0.95 confidence interval for the percentage of adults unemployed using E6.15.
+
+Compare this result to the Agresti-Coull confidence interval.
 
 ### 6.24
 
+A sample of 1,000 fishes was obtained from a lake. It was found that 290 were members of the bass family.
+
+Compute a 0.95 confidence interval for the percenttage of bass in the lake using E6.15.
+
 ### 6.25
+
+Among a random sample of 1,000 adults, 60 reported never having any legal problems. Use Equation 6.15 to compute the .95 confidence interval for the percentage of adults who have never had legal problems.
 
 ### 6.26
 
+Among a sample of 600 items, only one was found to be defective. Explain why E6.15 might be unsatisfactory when computing a confidence interval for the probability that an item is defective.
+
 ### 6.27
+
+In the previous exercise, compute a 0.90 confidence interval for the probability that an item is defective.
 
 ### 6.28
 
+One-fourth of 300 persons in a large city stated that they are opposed to a certain political issue favored by the mayor.
+
+Using E6.15, calculate a .99 confidence interval for the fraction of individuals opposed to this issue.
+
 ### 6.29
 
+Consider a method for detecting a type of cancer that is highly accurate but very expensive and invasive, resulting in a great deal of discomfort for the patient. An alternative test to detect this type of cancer has been developed, and it is of interest to know the probability of a false-negative indication, meaning that the test fails to detect cancer when it is present. The test is conducted on 250 patients known to have cancer, and 5 tests fail to show its presence. Use equation 6.15 to determine a 0.95 confidence interval for the probability of a false-negative indication.
+
 ### 6.30
+
+In the previous exercise, imagine that 0 false-negative indications were found.
+
+Determine a .99 confidence interval for the probability of a false-negative indication.
 
 ### 6.31
 

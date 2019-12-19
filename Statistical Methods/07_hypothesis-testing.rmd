@@ -116,3 +116,106 @@ panderOptions('keep.trailing.zeros', TRUE)
 #### Chapter 7
 
 ### 7.1
+
+Given that $\bar{X} = 78, \sigma^2 =25, n = 10, \alpha = 0.05$ test $H_0 : \mu \ge 80$, assuming that observations are randomly sampled from a normal distribution.
+
+```{r, echo = T}
+xbar <- 78; sigma <- 5; n <- 10
+mu <- 80; alpha <- 0.05
+
+# mu > 80 = left tail test
+
+crit <- qnorm(alpha)
+
+Z <- sqrt(n)*(xbar - mu)/sigma
+
+ifelse(Z > crit, "Fail to reject the null", "Reject the null")
+
+```
+
+### 7.2
+
+Repeat the previous exercise, but test $H_0 : \mu = 80$
+
+```{r, echo = T}
+xbar <- 78; sigma <- 5; n <- 10
+mu <- 80; alpha <- 0.05
+
+# mu = 80, two-tailed test
+
+crit <- qnorm(1 - alpha/2)
+
+Z <- sqrt(n)*(xbar - mu)/sigma
+
+ifelse(abs(Z) <= crit, "Fail to reject the null", "Reject the null")
+
+```
+
+### 7.3
+
+For the data in Exercise 1, compute a 0.95 confidence interval and verify that this interval is consistent with y our decision about whether to reject the null hypothesis $H_0 : \mu = 80$.
+
+```{r, echo = T}
+xbar <- 78; sigma <- 5; n <- 10
+mu <- 80; alpha <- 0.05
+
+xbar + qnorm(c(Lower = alpha/2, Upper = 1 - (alpha/2))) * sigma/sqrt(n)
+```
+
+_80_ is in the confidence interval, so fail to reject.
+
+### 7.4
+
+For exercise 1, determine the p-value.
+
+### 7.5
+
+For exercise 2, determine the p-value.
+
+### 7.6
+
+Given that $\bar{X} = 120, \sigma = 5, n = 49, \alpha = 0.05$, test $H_0 : \mu \ge 130$, assuming that observations are randomly sampled from a normal distribution.
+
+### 7.7
+
+Repeat the previous exercise but test $H_0 : \mu = 130$.
+
+### 7.8
+
+For the previous exercise, compute a 0.95 confidence interval and compare the result with your decision about whether to reject $H_0$.
+
+### 7.9
+
+If $\bar{X} = 23$ and $\alpha = 0.025$, can you make a decision about whether to reject $H_0 : \mu \le 25$ without knowing $\sigma$?
+
+### 7.10
+### 7.11
+### 7.12
+### 7.13
+### 7.14
+### 7.15
+### 7.16
+### 7.17
+### 7.18
+### 7.19
+
+### 7.20
+### 7.21
+### 7.22
+### 7.23
+### 7.24
+### 7.25
+### 7.26
+### 7.27
+### 7.28
+### 7.29
+
+### 7.30
+### 7.31
+### 7.32
+### 7.33
+### 7.34
+### 7.35
+### 7.36
+### 7.37
+

@@ -71,6 +71,7 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(formattable, quietly = TRUE, warn.conflicts = FALSE)
 library(grid, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(WRS, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -97,6 +98,7 @@ theme_update(axis.text.x = element_text(size = 10),
 
 data.dir <- "D:/Projects/Statistical-Computing/datasets/"
 
+install.packages("WRS")
 ```
 
 ```{r pander_setup, include = FALSE}
@@ -509,27 +511,72 @@ phat*(1 - phat)/n
 
 Among 100 randomly sampled adults, 10 were found to be unemployed.
 
+```{r, echo = T}
+n <- 100; success <- 10
+phat <- success/n
+
+phat + qnorm(conf(.95))*sqrt(phat*(1-phat)/n)
+```
+
 Compute a 0.95 confidence interval for the percentage of adults unemployed using E6.15.
 
 Compare this result to the Agresti-Coull confidence interval.
+
+```{r, echo = T}
+alpha <- .05
+
+c <- qnorm(1 - alpha/2)
+nhat <- n + c^2
+xhat <- success + c^2/2
+phat <- xhat / nhat
+
+c(Lower = phat - c * sqrt(phat*(1 - phat)/nhat),
+  Upper = phat + c * sqrt(phat*(1 - phat)/nhat))
+```
 
 ### 6.24
 
 A sample of 1,000 fishes was obtained from a lake. It was found that 290 were members of the bass family.
 
-Compute a 0.95 confidence interval for the percenttage of bass in the lake using E6.15.
+Compute a 0.95 confidence interval for the percentage of bass in the lake using E6.15.
+
+```{r, echo = T}
+n <- 1000; success <- 290
+phat <- success/n
+
+phat + qnorm(conf(.95))*sqrt(phat*(1-phat)/n)
+```
 
 ### 6.25
 
 Among a random sample of 1,000 adults, 60 reported never having any legal problems. Use Equation 6.15 to compute the .95 confidence interval for the percentage of adults who have never had legal problems.
 
+```{r, echo = T}
+n <- 1000; success <- 60
+
+phat <- success/n
+phat + qnorm(conf(.95))*sqrt(phat*(1-phat)/n)
+```
+
 ### 6.26
 
 Among a sample of 600 items, only one was found to be defective. Explain why E6.15 might be unsatisfactory when computing a confidence interval for the probability that an item is defective.
 
+_When the probability is very low (or high) the equation in 6.15 performs poorly._
+
 ### 6.27
 
 In the previous exercise, compute a 0.90 confidence interval for the probability that an item is defective.
+
+```{r, echo = T}
+n <- 600; success <- 1
+phat <- success / n
+
+alpha <- .10
+
+round(c(Lower = 1 - (1 - alpha/2)^(success/n),
+      Upper = 1 - (alpha/2)^(success/n)), 5)
+```
 
 ### 6.28
 
@@ -537,9 +584,23 @@ One-fourth of 300 persons in a large city stated that they are opposed to a cert
 
 Using E6.15, calculate a .99 confidence interval for the fraction of individuals opposed to this issue.
 
+```{r, echo = T}
+n <- 300; success <- n * .25
+phat <- success/n
+
+phat + qnorm(conf(.99)) * sqrt(phat*(1-phat)/n)
+```
+
 ### 6.29
 
 Consider a method for detecting a type of cancer that is highly accurate but very expensive and invasive, resulting in a great deal of discomfort for the patient. An alternative test to detect this type of cancer has been developed, and it is of interest to know the probability of a false-negative indication, meaning that the test fails to detect cancer when it is present. The test is conducted on 250 patients known to have cancer, and 5 tests fail to show its presence. Use equation 6.15 to determine a 0.95 confidence interval for the probability of a false-negative indication.
+
+```{r, echo = T}
+n <- 250; success <- 5
+phat <- success/n
+
+phat + qnorm(conf(.95)) * sqrt(phat*(1-phat)/n)
+```
 
 ### 6.30
 
@@ -547,26 +608,220 @@ In the previous exercise, imagine that 0 false-negative indications were found.
 
 Determine a .99 confidence interval for the probability of a false-negative indication.
 
+```{r, echo = T}
+n <- 250;
+
+alpha <- 0.01
+
+phat <- 1 - alpha^(1/250)
+
+phat
+
+round(c(Lower = 1 - (1 - alpha/2)^(success/n),
+      Upper = 1 - (alpha/2)^(success/n)), 5)
+```
+
 ### 6.31
 
+A cosmetic company found that 180 of 1,000 randomly selected women in New York city have seen the company's latest television ad. Use E6.15 to compute a .95 confidence interval for the percentage of women in New York city who have seen the ad.
+
+```{r, echo = T}
+n <- 1000; success <- 180
+phat <- success/n
+
+phat + qnorm(conf(.95)) * sqrt(phat*(1-phat)/n)
+```
+
 ### 6.32
+
+Describe in general terms how nonnormality can affect Student's T distribution.
+
+_The actual probability coverage can be substantially over or understated depending on the skewness._
 
 ### 6.33
 
 ### 6.34
 
+Listed here are the average LSAT scores for the 1973 entering class of 15 American law schools.
+
+545,555,558,572,575,576,578,580,
+594,605,635,651,653,661,666
+
+The .95 confidence interval for the population mean $\mu$ is (577.1, 623.4).
+
+Use a boxplot to verify that there are not outliers and that the data appear have a skewed distribution.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+x <- c(545,555,558,572,575,576,578,580,594,605,635,651,653,661,666)
+
+data <- data.table(values = x)
+
+ggplot(data, aes(y  = values, group = "")) +
+   geom_boxplot(fill = "cornflowerblue") +
+   geom_hline(yintercept = 577.1, color = "darkred") +
+   geom_hline(yintercept = 623.4, color = "darkred")
+
+```
+
 ### 6.35
+
+Compute a 0.95 confidence interval for the 20% trimmed mean. if:
+
+a.) $n = 24, s^2_w = 12, \bar{X}_t = 52$
+
+```{r, echo = T}
+xbar <- 52; wt <- 12; n <- 24
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.95), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
+
+b.) $n = 36, s^2_w = 30, \bar{X}_t = 10$
+
+```{r, echo = T}
+xbar <- 10; wt <- 30; n <- 36
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.95), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
+
+c.) $n = 12, s^2_w = 9, \bar{X}_t = 16$
+
+```{r, echo = T}
+xbar <- 16; wt <- 9; n <- 12
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.95), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
 
 ### 6.36
 
+Repeat with .99 confidence.
+
+a.) $n = 24, s^2_w = 12, \bar{X}_t = 52$
+
+```{r, echo = T}
+xbar <- 52; wt <- 12; n <- 24
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.99), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
+
+b.) $n = 36, s^2_w = 30, \bar{X}_t = 10$
+
+```{r, echo = T}
+xbar <- 10; wt <- 30; n <- 36
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.99), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
+
+c.) $n = 12, s^2_w = 9, \bar{X}_t = 16$
+
+```{r, echo = T}
+xbar <- 16; wt <- 9; n <- 12
+
+g <- floor(n * .2)
+
+xbar + qt(conf(.99), df = n - 2*g - 1) * sqrt(wt) / (.6*sqrt(n))
+```
+
 ### 6.37
+
+The last example at the end of Section 6.3.1 used data from a study of self-awareness. In another portion of the study, a group of participants had the follow values.
+
+59, 106, 174, 207, 219, 237, 313, 365, 458, 497, 515, 529, 557, 615, 625,
+645, 973, 1065, 3215
+
+Compute a .95 confidence interval for both the population mean and 20% trimmed mean.
+
+```{r, echo = T}
+x <- c(59, 106, 174, 207, 219, 237, 313, 365, 458, 497, 515, 529, 557, 615, 625,
+645, 973, 1065, 3215)
+
+xbar <- mean(x); n <- length(x)
+
+xbar + qt(conf(.95), df = n - 1) * sqrt(sd(x) / n)
+
+g <- floor(n * .2)
+
+xt <- x[g:n-g]
+
+xtbar <- mean(xt); nt <- length(xt)
+
+xtbar + qt(conf(.95), df = nt - 1) * sd(xt) / sqrt(nt)
+```
 
 ### 6.38
 
+The ideal method for computing a confidence interval for the mean would have a shorter length than any other method that might be used. Explain why such a method does not exist even when sampling from a perfectly symetric distribution.
+
+_Because outliers._
+
 ### 6.39
+
+For the values:
+
+5, 60, 43, 56, 32, 43, 47, 79, 39, 41
+
+compute a .95 confidence interval for the 20% trimmed mean and compare the results to the .95 confidence interval for the mean.
+
+```{r, echo = T}
+x <- c(5, 60, 43, 56, 32, 43, 47, 79, 39, 41)
+
+xbar <- mean(x); n <- length(x)
+xbar + qt(conf(.95), df = n - 1) * sqrt(sd(x)/n)
+
+g <- floor(n * .2)
+
+x <- sort(x)
+x <- x[g:n-g]
+
+xbar <- mean(x); n <- length(x)
+xbar + qt(conf(.95), df = n - 1) * sqrt(sd(x)/n)
+
+```
 
 ### 6.40
 
+In the previous exercise, the confidence interval for the 20% trimmed mean is shorter than the confidence interval for the mean.
+
+```{r, echo = T}
+outbox(x)
+```
+
+Explain why this is not suprising.
+
 ### 6.41
 
+The following code for estimating the distribution of Student's T when data are sampled from a skewed, light-tailed distribution that has a population mean $\mu = 1.649$:
+
+```{r, echo = T}
+t.vals <- NULL
+for(study in 1:1000) {
+   x <- rlnorm(25)
+   suppressMessages({
+      t.vals[study] <- trimciv2(x, tr=0, null.value=1.649)$test.stat})
+}
+```
+
 ### 6.42
+
+Modify the previous code to use actual data from a study to compute a confidence interval.
+
+```{r, echo = T, fig.width=8, fig.height=3}
+t.vals=NULL
+for(i in 1:1000){
+z=sample(x,25,replace=T)
+t.vals[i]=trimci(z,tr=0,null.value=mean(x),pr=F)$test.stat
+}
+
+ggplot(data.table(values = x), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(fill = "darkorange", alpha = .3)
+```

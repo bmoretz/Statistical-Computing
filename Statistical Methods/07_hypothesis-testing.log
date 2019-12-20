@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  19 DEC 2019 17:29
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  20 DEC 2019 18:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1556,57 +1556,122 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 Package xcolor Warning: Incompatible color definition on input line 155.
 
-
-Package xcolor Warning: Incompatible color definition on input line 160.
-
-
-Package xcolor Warning: Incompatible color definition on input line 160.
-
-
-Package xcolor Warning: Incompatible color definition on input line 167.
-
-
-Package xcolor Warning: Incompatible color definition on input line 172.
-
-
-Package xcolor Warning: Incompatible color definition on input line 172.
-
-
-Package xcolor Warning: Incompatible color definition on input line 181.
-
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 186.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 162.
 
-Package xcolor Warning: Incompatible color definition on input line 188.
+Package xcolor Warning: Incompatible color definition on input line 168.
 
 
-Package xcolor Warning: Incompatible color definition on input line 188.
+Package xcolor Warning: Incompatible color definition on input line 168.
+
+
+Package xcolor Warning: Incompatible color definition on input line 179.
+
+
+Package xcolor Warning: Incompatible color definition on input line 189.
+
+
+Package xcolor Warning: Incompatible color definition on input line 189.
+
+
+Package xcolor Warning: Incompatible color definition on input line 202.
+
+
+Package xcolor Warning: Incompatible color definition on input line 206.
+
+
+Package xcolor Warning: Incompatible color definition on input line 206.
+
+
+Package xcolor Warning: Incompatible color definition on input line 219.
 
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 14.36246pt on input line 215.
+(Font)              scaled to size 14.36246pt on input line 219.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 14.36246pt on input line 215.
+(Font)              scaled to size 14.36246pt on input line 219.
 [1
 
 ]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 315.
+
+Package xcolor Warning: Incompatible color definition on input line 223.
+
+
+Package xcolor Warning: Incompatible color definition on input line 223.
+
+
+Package xcolor Warning: Incompatible color definition on input line 234.
+
+
+Package xcolor Warning: Incompatible color definition on input line 238.
+
+
+Package xcolor Warning: Incompatible color definition on input line 238.
+
+
+Package xcolor Warning: Incompatible color definition on input line 251.
+
+
+Package xcolor Warning: Incompatible color definition on input line 262.
+
+
+Package xcolor Warning: Incompatible color definition on input line 262.
+
+
+Package xcolor Warning: Incompatible color definition on input line 273.
+
+
+Package xcolor Warning: Incompatible color definition on input line 282.
+
+
+Package xcolor Warning: Incompatible color definition on input line 282.
+
+
+Package xcolor Warning: Incompatible color definition on input line 294.
+
 [2]
-Overfull \vbox (258.26894pt too high) has occurred while \output is active []
+
+Package xcolor Warning: Incompatible color definition on input line 298.
+
+
+Package xcolor Warning: Incompatible color definition on input line 298.
+
+
+Package xcolor Warning: Incompatible color definition on input line 343.
+
+
+Package xcolor Warning: Incompatible color definition on input line 356.
+
+
+Package xcolor Warning: Incompatible color definition on input line 356.
+
+
+Package xcolor Warning: Incompatible color definition on input line 356.
 
 [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 315.
+
+Package xcolor Warning: Incompatible color definition on input line 356.
+
+
+Package xcolor Warning: Incompatible color definition on input line 356.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 443.
+[4]
+Overfull \vbox (225.2609pt too high) has occurred while \output is active []
+
+[5]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 443.
 (./07_hypothesis-testing.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 315.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 315.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 315.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 443.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 443.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 443.
  ) 
 Here is how much of TeX's memory you used:
- 28927 strings out of 494988
- 516706 string characters out of 6178637
- 737882 words of memory out of 5000000
- 32474 multiletter control sequences out of 15000+600000
- 533836 words of font info for 61 fonts, out of 8000000 for 9000
+ 28932 strings out of 494988
+ 516793 string characters out of 6178637
+ 736917 words of memory out of 5000000
+ 32477 multiletter control sequences out of 15000+600000
+ 533844 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 54i,11n,117p,10430b,341s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 54i,11n,117p,10430b,377s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 07_hypothesis-testing.pdf (3 pages).
+Output written on 07_hypothesis-testing.pdf (5 pages).

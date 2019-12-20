@@ -120,17 +120,16 @@ panderOptions('keep.trailing.zeros', TRUE)
 Given that $\bar{X} = 78, \sigma^2 =25, n = 10, \alpha = 0.05$ test $H_0 : \mu \ge 80$, assuming that observations are randomly sampled from a normal distribution.
 
 ```{r, echo = T}
-xbar <- 78; sigma <- 5; n <- 10
-mu <- 80; alpha <- 0.05
+xbar <- 78; var <- 25; n <- 10
+alpha <- 0.05; h0 <- 80
 
-# mu > 80 = left tail test
+# greater than = left tail test
 
 crit <- qnorm(alpha)
 
-Z <- sqrt(n)*(xbar - mu)/sigma
+Z <- sqrt(n) * (xbar - h0) / sqrt( var )
 
-ifelse(Z > crit, "Fail to reject the null", "Reject the null")
-
+ifelse(Z < crit, "Reject the null", "Cannot reject null")
 ```
 
 ### 7.2
@@ -138,16 +137,14 @@ ifelse(Z > crit, "Fail to reject the null", "Reject the null")
 Repeat the previous exercise, but test $H_0 : \mu = 80$
 
 ```{r, echo = T}
-xbar <- 78; sigma <- 5; n <- 10
-mu <- 80; alpha <- 0.05
 
-# mu = 80, two-tailed test
+# equals = two-tailed test
 
-crit <- qnorm(1 - alpha/2)
+crit <- qnorm(alpha/2)
 
-Z <- sqrt(n)*(xbar - mu)/sigma
+Z <- sqrt(n) * (xbar - h0) / sqrt( var )
 
-ifelse(abs(Z) <= crit, "Fail to reject the null", "Reject the null")
+ifelse(Z < crit || crit > Z, "Reject the null", "Cannot reject the null")
 
 ```
 
@@ -156,10 +153,9 @@ ifelse(abs(Z) <= crit, "Fail to reject the null", "Reject the null")
 For the data in Exercise 1, compute a 0.95 confidence interval and verify that this interval is consistent with y our decision about whether to reject the null hypothesis $H_0 : \mu = 80$.
 
 ```{r, echo = T}
-xbar <- 78; sigma <- 5; n <- 10
-mu <- 80; alpha <- 0.05
 
-xbar + qnorm(c(Lower = alpha/2, Upper = 1 - (alpha/2))) * sigma/sqrt(n)
+xbar + qnorm(c(alpha/2, 1 - alpha/2)) * sqrt( var / n )
+      
 ```
 
 _80_ is in the confidence interval, so fail to reject.
@@ -168,27 +164,91 @@ _80_ is in the confidence interval, so fail to reject.
 
 For exercise 1, determine the p-value.
 
+```{r, echo = T}
+pnorm(Z)
+```
+
 ### 7.5
 
 For exercise 2, determine the p-value.
+
+```{r, echo = T}
+2 * (1 - pnorm(Z, lower.tail = F))
+```
 
 ### 7.6
 
 Given that $\bar{X} = 120, \sigma = 5, n = 49, \alpha = 0.05$, test $H_0 : \mu \ge 130$, assuming that observations are randomly sampled from a normal distribution.
 
+```{r, echo = T}
+xbar <- 120; sigma <- 5; n <- 49
+alpha <- 0.05; h0 <- 130
+
+crit <- qnorm(alpha)
+
+Z <- sqrt(n) * (xbar - h0) / sigma
+
+ifelse( Z < crit, "Reject null hypothesis", "Cannot reject null")
+```
+
 ### 7.7
 
 Repeat the previous exercise but test $H_0 : \mu = 130$.
+
+```{r, echo = T}
+h0 <- 130
+
+# two tailed test
+crit <- qnorm(c(alpha/2, 1 - alpha/2))
+
+ifelse(Z < crit[1] || Z > crit[2], "Reject null hypothesis", "Cannot Reject Null")
+```
 
 ### 7.8
 
 For the previous exercise, compute a 0.95 confidence interval and compare the result with your decision about whether to reject $H_0$.
 
+```{r, echo = T}
+xbar + qnorm(c(Lower = alpha/2, Upper = 1 - alpha/2)) * sigma/sqrt(n)
+```
+
+130 is not in the confidence region, reject null-hypothesis.
+
 ### 7.9
 
 If $\bar{X} = 23$ and $\alpha = 0.025$, can you make a decision about whether to reject $H_0 : \mu \le 25$ without knowing $\sigma$?
 
+_Yes, the hypothesis is consistent with the sample mean._
+
 ### 7.10
+
+An electronics firm mass-produces a component for which there is a standard measure of quality. Based on testing vast numbers of these components, the company has found that the average quality is $\mu = 232, \sigma = 4$.
+
+However, in recent years, the quality has not been checked, so management asks you to check their claim with the goal of being reasonable certain that an average quality of less than 232 can be ruled out. That is, assume that the quality is poor and in fact less than 232 with the goal of empirically establishing that this assumption is unlikely.
+
+You get $\bar{X} = 240$ based on a sample of $n = 25$ components, and you want the probability of a Type I error to be less than 0.01.
+
+State the null hypothesis and perform the appropriate test, assuming normality.
+
+#### Hypothesis:
+
+$H_0 : \mu \le 232$
+
+$H_A : \mu \ge 232$
+
+```{r, echo = T}
+xbar <- 240; sigma <- 4; n <- 25
+alpha <- 0.01; h0 <- 232
+
+# less than = upper-tailed test
+
+crit <- qnorm(1 - alpha)
+
+Z <- sqrt(n) * ( xbar - h0 ) / sigma
+
+ifelse(Z > crit, "Reject the null", "Cannot reject the null")
+```
+
 ### 7.11
 ### 7.12
 ### 7.13

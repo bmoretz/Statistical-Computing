@@ -645,23 +645,85 @@ t.test(x, alternative = 'greater', conf.level = 1 - alpha, mu = h0)
 
 ### 7.30
 
-Assuming 20% trimming, test the hypothesis $H_0 : \mu = 42, \alpha = 0.05, n = 20$ given the following values for $\bar{X}$ and $s_w$:
+Assuming 20% trimming, test the hypothesis $H_0 : \mu = 42, \alpha = 0.05, n = 20$ given the following values for $\bar{X}_t$ and $s_w$:
 
 a.) $\bar{X}_t = 44, s_w = 9$ 
 
+```{r, echo = T}
+xbar <- 44; s <- 9; n <- 20
+alpha <- 0.05; h0 <- 42
+
+g <- floor(.2*n)
+
+df <- n - g*2 - 1
+
+crit <- qt(1 - alpha/s, df)
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject the null", "Cannot reject null")
+```
+
 b.) $\bar{X}_t = 43, s_w = 9$
 
+```{r, echo = T}
+xbar <- 43; s <- 9;
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject the null", "Cannot reject null")
+```
+
 c.) $\bar{X}_t = 43, s_w = 3$
+
+```{r, echo = T}
+xbar <- 43; s <- 3;
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject the null", "Cannot reject null")
+```
 
 ### 7.31
 
-Repeat the previous exercise, only test the hypothesis $H_0 : \mu_t \le 42, \alpha = 0.05$
+Repeat the previous exercise, only test the hypothesis $H_0 : \mu_t \le 42, \alpha = 0.05, n = 16$
 
-a.) $\bar{X}_t = 44, s_w = 9$ 
+a.) $\bar{X}_t = 44, s_w = 9$
+
+```{r, echo = T}
+xbar <- 44; s <- 9; n <- 16
+alpha <- 0.05
+
+g <- floor(.2*n)
+
+df <- n - g*2 - 1
+
+crit <- qt(1 - alpha, df)
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "Reject the null", "Cannot reject null")
+```
 
 b.) $\bar{X}_t = 43, s_w = 9$
 
+```{r, echo = T}
+xbar <- 43; s <- 9;
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "Reject the null", "Cannot reject null")
+```
+
 c.) $\bar{X}_t = 43, s_w = 3$
+
+```{r, echo = T}
+xbar <- 43; s <- 3;
+
+Tval <- .6 * (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "Reject the null", "Cannot reject null")
+```
 
 ### 7.32
 
@@ -670,8 +732,43 @@ For the data in Exercise 24, the 20% trimmed mean is $\bar{X}_t = 42.17$ with a 
 Test the hypothesis that the population trimmed mean is 45 with $\alpha = 0.05$
 
 ### 7.33
+
+A standard measure of aggression in 7-year-old children has been found to have a 20% trimmed mean of 4.8 based on years of experience. A psychologiest wants to know whether the trimmed mean for children with divorced parents is greater than or less than 4.8.
+
+Suppose $\bar{X}_t = 5.1, s_w = 7$ based on $n = 25$
+
+Test $H_0 : \mu_t = 4.8, \alpha = 0.01$
+
+```{r, echo = T}
+
+```
+
 ### 7.34
+
+Summarize the relative merits of using a percentile bootstrap method.
+
+```{r, echo = T}
+
+```
+
 ### 7.35
+
+For the data in R variable _x_, imagine that you want to compute Z with the goal of testing the hypothesis that $\mu = 6$. Assuming that the R variable _null.value_ contains the hypothesized value and that _sigma_ contains the standard deviation, indicate the R command for computing Z.
+
+test <- (mean(x) - null.value) / sigma * length(x)
+
 ### 7.36
+
+R has a built-in data set called _ToothGrowth_. Information about the data can be obtained with the R command ?ToothGrowth. The first column contains measures of tooth growth in guinea pigs and the third column indicates the dose levels of vitaime C that were used in the experiment.
+
+Consider the claim that the typical growth is 8 when the vitamine C level is 0.5 mg. Using R, verify that with Student's T and $\alpha = 0.05$, it would be decided that the population mean is larger than 8.
+
+Verify that no decision would be made based on the Tukey-McLaughlin method with a 20% trimmed mean.
+
+Plot the data and comment why the two methods give different results.
+
 ### 7.37
 
+Based on the results for the previous exercise, speculate about whether you would reject using a median or MOM.
+
+Use R to check your speculation.

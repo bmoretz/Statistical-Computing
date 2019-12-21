@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  20 DEC 2019 18:53
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  20 DEC 2019 19:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1654,21 +1654,48 @@ Package xcolor Warning: Incompatible color definition on input line 356.
 
 Package xcolor Warning: Incompatible color definition on input line 356.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 443.
+
+Package xcolor Warning: Incompatible color definition on input line 372.
+
+
+Package xcolor Warning: Incompatible color definition on input line 385.
+
+
+Package xcolor Warning: Incompatible color definition on input line 385.
+
+
+Package xcolor Warning: Incompatible color definition on input line 398.
+
+
+Package xcolor Warning: Incompatible color definition on input line 402.
+
+
+Package xcolor Warning: Incompatible color definition on input line 402.
+
+
+Package xcolor Warning: Incompatible color definition on input line 408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 412.
+
+
+Package xcolor Warning: Incompatible color definition on input line 412.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 498.
 [4]
-Overfull \vbox (225.2609pt too high) has occurred while \output is active []
+Overfull \vbox (159.24481pt too high) has occurred while \output is active []
 
 [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 443.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 498.
 (./07_hypothesis-testing.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 443.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 443.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 443.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 498.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 498.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 498.
  ) 
 Here is how much of TeX's memory you used:
  28932 strings out of 494988
  516793 string characters out of 6178637
- 736917 words of memory out of 5000000
+ 739917 words of memory out of 5000000
  32477 multiletter control sequences out of 15000+600000
  533844 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191

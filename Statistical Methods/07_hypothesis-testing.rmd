@@ -250,8 +250,39 @@ ifelse(Z > crit, "Reject the null", "Cannot reject the null")
 ```
 
 ### 7.11
+
+An antipollution device for cars is claimed to have an average effectiveness of exactly 546. Based on a test of 20 such devices, you find that $\bar{X} = 565$.
+
+Assuming normality and that $\sigma = 40$, would you rule out the claim with a Type I error probability of 0.05?
+
+```{r, echo = T}
+xbar <- 565; sigma <- 40; n <- 20
+alpha <- 0.05; h0 <- 546
+
+# equality = two tailed
+
+crit <- qnorm(c(alpha/2, 1 - alpha/2))
+
+Z <- sqrt(n) * (xbar - h0) / sigma
+
+ifelse(Z < crit[1] || Z > crit[2], "Reject the null", "Cannot reject the null")
+```
+
 ### 7.12
+
+Comment on the relative merits of using a 0.95 confidence interval for addressing the effectiveness of the antipollution device in the previous exercise rather than test the hypothesis: $H_0 : \mu = 232$
+
+```{r, echo = T}
+xbar + qnorm(c(alpha/2, 1 - alpha/2)) * sigma/sqrt(n)
+
+2 * ( 1 - pnorm(Z) )
+```
+
+The hypothesised value doesn't fall within the confidence interval, however the formalized test gives us a degree of strength on which we can reject the null. Here our p-value is .03, so we reject with confidence.
+
 ### 7.13
+
+
 ### 7.14
 ### 7.15
 ### 7.16

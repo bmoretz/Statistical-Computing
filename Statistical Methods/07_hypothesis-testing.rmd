@@ -278,32 +278,397 @@ xbar + qnorm(c(alpha/2, 1 - alpha/2)) * sigma/sqrt(n)
 2 * ( 1 - pnorm(Z) )
 ```
 
-The hypothesised value doesn't fall within the confidence interval, however the formalized test gives us a degree of strength on which we can reject the null. Here our p-value is .03, so we reject with confidence.
+The hypothesised value doesn't fall within the confidence interval, however the formalized test gives us a degree of strength on which we can reject the null. Here our p-value is .03, so we reject with slight confidence.
+
+\newpage
 
 ### 7.13
 
+For $n = 25, \alpha = 0.01, \sigma = 5, H_0 : \mu \ge 60$, verify that power is .95 when $\mu = 56$
+
+```{r, echo = T}
+
+mu <- 56; sigma <- 5; n <- 25
+alpha <- 0.01; h0 <- 60
+
+# is mu greater than 60? gt = lower tail test
+
+crit <- qnorm(alpha)
+
+Z <- sqrt(n) * ( mu - h0) / sigma
+
+pnorm(crit - Z) # power
+```
 
 ### 7.14
+
+For $n = 36, \alpha = 0.025, \sigma = 8, H_0 : \mu \le 100$, verify that power is .61 when $\mu = 103$
+
+```{r, echo = T}
+mu <- 103; sigma <- 8; n <- 36
+alpha <- 0.025; h0 <- 100
+
+# less than, upper tailed test
+
+crit <- qnorm(alpha, lower.tail = F)
+
+Z <- sqrt(n) * (mu - h0) / sigma
+
+ifelse( Z < crit, "Reject null", "Cannot reject null")
+
+pnorm(crit - Z, lower.tail = F) # power
+```
+
+\newpage
+
 ### 7.15
+
+For $n = 49, \alpha = 0.05, \sigma = 10, H_0 : \mu = 50$, verify that power is approximately .56 when $\mu = 47$
+
+```{r, echo = T}
+mu <- 47; sigma <- 10; n <- 49
+alpha <- 0.05; h0 <- 50
+
+# mu = 50? two-tailed test
+
+crit <- qnorm(c(Lower = alpha/2, Upper = 1 - alpha/2))
+
+Z <- sqrt(n) * (mu - h0) / sigma
+
+ifelse( Z < crit[1] || Z > crit[2], "Reject null hypothesis", "Cannot reject null")
+
+as.vector(pnorm(crit[1] - Z) + pnorm(crit[2] - Z, lower.tail = F)) # power
+```
+
 ### 7.16
+
+A manufacturer of medication for migraine headaches knows that their product can damage the stomach if taken too often. Imagine that by a standard measuring process, the average damage is $\mu = 48$. A modification of their product is being contemplated, and based on 10 trials, it is found that $\bar{X} = 46$. Assuming $\sigma = 5$ they test $H_0 : \mu \ge 48$, the idea being that if they reject, there is convincing evidence that the average amount of damage is less than 48. Then,
+
+$Z = \frac{46 - 48}{5/\sqrt10} = -1.3$
+
+With $\alpha = 0.05$, the critical value is -1.645, so they do not reject Z is less than the critical value.
+
+What might be wrong with accepting $H_0$ and concluding that the modificaiton results in an average amount of damage greater than or equal to 48?
+
+```{r, echo = T}
+mu <- 46; sigma <- 5; n <- 10
+alpha <- 0.05; h0 <- 48
+
+crit <- qnorm(alpha)
+
+Z <- (mu - h0) / sigma * sqrt(n)
+
+pnorm(crit - Z)
+```
+
+Low power in the test, might commit a Type II error.
+
 ### 7.17
+
+For the previous exercise, verify that the power is 0.35 if $\mu = 46$
+
+```{r, echo = T}
+pnorm(crit - Z)
+```
+
 ### 7.18
+
+The previous exercise indicates that power is relatively low with only $n = 10$ observations. Imagine that you want power to be at least .8. One way of getting more power is to increase the sample size, _n_.
+
+Verify that for sample sizes of 20, 30 and 40, power is .56, 0.71, and .81, respectively.
+
+```{r, echo = T}
+n <- c(20, 30, 40)
+
+Z <- (mu - h0) / sigma * sqrt(n)
+
+pnorm(crit - Z)
+```
+
 ### 7.19
 
+For the previous exercise, rather than increase the sample size, what else might you do to increase the power? What is the negative consequence for this strategy?
+
+_An alternative to increasing the sample size is to increase alpha, which will increase the probability of a type I error._
+
 ### 7.20
+
+Given the following values for $\bar{X}$ and s:
+
+test the hypothesis $H_0 : \mu = 42, \alpha = 0.05, n = 25$
+
+a.) $\bar{X} = 44, s = 10$
+
+```{r, echo = T}
+xbar <- 44; s <- 10; n <- 25
+alpha <- 0.05; h0 <- 42
+
+crit <- qt(c(alpha/2, 1 - alpha/2), df = n - 1)
+
+Z <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Z < crit[1] || Z > crit[2], "Reject the null", "Cannot reject the null")
+```
+
+b.) $\bar{X} = 43, s = 10$
+
+```{r, echo = T}
+xbar <- 43; s <- 10; n <- 25
+alpha <- 0.05; h0 <- 42
+
+crit <- qt(c(alpha/2, 1 - alpha/2), df = n - 1)
+
+Z <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Z < crit[1] || Z > crit[2], "Reject the null", "Cannot reject the null")
+```
+
+c.) $\bar{X} = 43, s = 2$
+
+```{r, echo = T}
+xbar <- 43; s <- 2; n <- 25
+alpha <- 0.05; h0 <- 42
+
+crit <- qt(c(alpha/2, 1 - alpha/2), df = n - 1)
+
+Z <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Z < crit[1] || Z > crit[2], "Reject the null", "Cannot reject the null")
+```
+
 ### 7.21
+
+For part b of the last exercise, you fail to reject but you reject for the situation in part c. What does this illustrate about power?
+
+_Power is higher with smaller variance._
+
 ### 7.22
+
+Test the hypothesis $H_0 : \mu \le 42$ with $\alpha = 0.05, n = 16$ for the following values of $\bar{X}$ and s:
+
+a.) $\bar{X} = 44, s = 10$
+
+```{r, echo = T}
+xbar <- 44; s <- 10; n <- 16
+alpha <- 0.05; h0 <- 42
+
+# less than, upper tailed test
+crit <- qt(alpha, df = n - 1, lower.tail = F)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse( Tval > crit, "reject the null", "fail to reject")
+```
+
+b.) $\bar{X} = 43, s = 10$
+
+```{r, echo = T}
+xbar <- 43; s <- 10
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse( Tval > crit, "reject the null", "fail to reject")
+```
+
+c.) $\bar{X} = 43, s = 2$
+
+```{r, echo = T}
+xbar <- 43; s <- 2
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "reject the null", "fail to reject")
+```
+
 ### 7.23
+
+Repeat the previous for $H_0 : \mu \ge 42$
+
+a.) $\bar{X} = 44, s = 10$
+
+```{r, echo = T}
+xbar <- 44; s <- 10
+h0 <- 42
+
+# greater than, lower tailed test
+crit <- qt(alpha, df = n - 1)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse( Tval < crit, "reject the null", "fail to reject null")
+```
+
+b.) $\bar{X} = 43, s = 10$
+
+```{r, echo = T}
+xbar <- 43; s <- 10
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse( Tval < crit, "reject the null", "fail to reject null")
+```
+
+c.) $\bar{X} = 43, s = 2$
+
+```{r, echo = T}
+xbar <- 43; s <- 2
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse( Tval < crit, "reject the null", "fail to reject null")
+```
+
 ### 7.24
+
+A company claims that on average, when their toothpaste is used, 45% of all bacteria related to gingivitus is killed.
+
+For 10 individuals, it is found that the percentages of bacteria killed are 38, 44, 62, 72, 43, 40, 43, 42, 39, 41.
+
+The mean and standard deviation of these values are $\bar{X} = 46.4, s = 11.27$, respectively.
+
+Assuming normality, test the hypothesis that the average percentage is 45 with $\alpha = 0.05$
+
+```{r, echo = T}
+x <- c(38, 44, 62, 72, 43, 40, 43, 42, 39, 41)
+
+xbar <- mean(x); s <- sd(x); n <- length(x)
+alpha <- 0.05; h0 <- 45
+
+crit <- qt(1 - alpha/2, df = n - 1)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject the null", "Fail to reject the null")
+
+pt(Tval, df = n - 1) # p-value
+```
+
+\newpage
+
 ### 7.25
+
+A portion of a study by Wechsler (1958) reports that for 100 males taking the Wechsler Adult Intelligent Scale (WAIS), the sample mean and variance on picture completion are $\bar{X} = 9.79$ and $s = 2.72$, respectively.
+
+Test the hypothesis $H_0 : \mu \ge 10.5, \alpha = 0.025$
+
+```{r, echo = T}
+xbar <- 9.79; s <- 2.72; n <- 100
+alpha <- 0.025; h0 <- 10.5
+
+crit <- qt(alpha, df = n - 1)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval < crit, "reject the null", "fail to reject")
+
+pt(Tval, df = n - 1) # p-value
+```
+
 ### 7.26
+
+Given that $n = 16, \bar{X} = 40, and s = 4$, test that $H_0 : \mu \le 38, \alpha = 0.01$
+
+```{r, echo = T}
+xbar <- 40; s <- 4; n <- 16
+alpha <- 0.01; h0 <- 38
+
+crit <- qt(alpha, df = n - 1, lower.tail = F)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "Reject null", "Fail to reject null")
+
+pt(Tval, df = n - 1)
+```
+
 ### 7.27
+
+Given that $n = 9, \bar{X} = 33, s = 4$ test $H_0 : \mu = 32, \alpha = 0.05$
+
+```{r, echo = T}
+xbar <- 33; s <- 4; n <- 9
+alpha <- 0.05; h0 <- 32
+
+crit <- qt(1 - alpha/2, df = n - 1)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject null", "Cannot reject null")
+```
+
 ### 7.28
+
+An engineer believes it takes an average of 150 man-hours to assemble a portion of an automobile. As a check, the time to assemble 10 such parts was ascertained, yielding $\bar{X} = 146, s = 2.5$.
+
+Test the engineer's belief with $\alpha = 0.05$
+
+```{r, echo = T}
+xbar <- 146; s <- 2.5; n <- 10
+alpha <- 0.05; h0 <- 150
+
+crit <- qt(1 - alpha/2, df = n - 1)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(abs(Tval) > crit, "Reject the null", "Fail to Reject")
+```
+
 ### 7.29
 
+In a study of court administration, the following times to disposition were determined for 20 cases and found to be:
+
+42, 90, 84, 87, 119, 95, 86, 99, 93, 92, 121, 71, 66, 98, 79, 102, 60, 112, 105, 98
+
+Test the hypothesis that the average time to disposition is less than or equal to 80 at $\alpha = 0.01$.
+
+```{r, echo = T}
+x <- c(42, 90, 84, 87, 119, 95, 86, 99, 93, 92, 121, 71, 66, 98, 79, 102, 60, 112, 105, 98)
+
+xbar <- mean(x); s <- sd(x); n <- length(x)
+alpha <- 0.01; h0 <- 80
+
+crit <- qt(alpha, df = n - 1, lower.tail = F)
+
+Tval <- (xbar - h0) / s * sqrt(n)
+
+ifelse(Tval > crit, "Reject the null", "Cannot reject the null")
+
+pt(Tval, df = n - 1, lower.tail = F) # p-value
+
+```
+
+Or, simply:
+
+```{r, echo = T}
+t.test(x, alternative = 'greater', conf.level = 1 - alpha, mu = h0)
+```
+
 ### 7.30
+
+Assuming 20% trimming, test the hypothesis $H_0 : \mu = 42, \alpha = 0.05, n = 20$ given the following values for $\bar{X}$ and $s_w$:
+
+a.) $\bar{X}_t = 44, s_w = 9$ 
+
+b.) $\bar{X}_t = 43, s_w = 9$
+
+c.) $\bar{X}_t = 43, s_w = 3$
+
 ### 7.31
+
+Repeat the previous exercise, only test the hypothesis $H_0 : \mu_t \le 42, \alpha = 0.05$
+
+a.) $\bar{X}_t = 44, s_w = 9$ 
+
+b.) $\bar{X}_t = 43, s_w = 9$
+
+c.) $\bar{X}_t = 43, s_w = 3$
+
 ### 7.32
+
+For the data in Exercise 24, the 20% trimmed mean is $\bar{X}_t = 42.17$ with a Winsorized standard deviation of $S_w = 1.73$
+
+Test the hypothesis that the population trimmed mean is 45 with $\alpha = 0.05$
+
 ### 7.33
 ### 7.34
 ### 7.35

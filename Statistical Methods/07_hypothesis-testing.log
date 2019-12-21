@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  21 DEC 2019 14:48
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  21 DEC 2019 15:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2034,21 +2034,90 @@ Package xcolor Warning: Incompatible color definition on input line 1143.
 
 Package xcolor Warning: Incompatible color definition on input line 1143.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1174.
+
+Package xcolor Warning: Incompatible color definition on input line 1159.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1176.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1176.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1194.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
 [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1174.
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1209.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1245.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1250.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1250.
+
+[16]
+
+Package xcolor Warning: Incompatible color definition on input line 1281.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1285.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1285.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1315.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1319.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1319.
+
+File: 07_hypothesis-testing_files/figure-latex/unnamed-chunk-44-1.png Graphic f
+ile (type bmp)
+<07_hypothesis-testing_files/figure-latex/unnamed-chunk-44-1.png>
+[17]
+
+Package xcolor Warning: Incompatible color definition on input line 1335.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1340.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1340.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1353.
+[18]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1353.
 (./07_hypothesis-testing.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1174.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1174.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1174.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1353.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1353.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1353.
  ) 
 Here is how much of TeX's memory you used:
- 28932 strings out of 494988
- 516793 string characters out of 6178637
+ 28939 strings out of 494988
+ 517065 string characters out of 6178637
  738931 words of memory out of 5000000
- 32477 multiletter control sequences out of 15000+600000
+ 32480 multiletter control sequences out of 15000+600000
  533844 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  54i,11n,117p,10430b,459s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 07_hypothesis-testing.pdf (15 pages).
+Output written on 07_hypothesis-testing.pdf (18 pages).

@@ -96,9 +96,8 @@ theme_update(axis.text.x = element_text(size = 10),
                                          colour = "lightgray"), 
              plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
 
-data.dir <- "D:/Projects/Statistical-Computing/datasets/"
+data.dir <- paste0(here::here(), "/datasets/")
 
-install.packages("WRS")
 ```
 
 ```{r pander_setup, include = FALSE}
@@ -116,13 +115,128 @@ panderOptions('keep.trailing.zeros', TRUE)
 #### Chapter 8
 
 ### 8.1
+
+For the following data, use R to verify that the least squares regresion line is $\hat{Y} = 1.8X - 8.5$
+
+X: 5, 8, 9, 7, 14
+Y: 3, 1, 6, 7, 19
+
+```{r, echo = T}
+dat <- data.table(
+   X = c(5, 8, 9, 7, 14),
+   Y = c(3, 1, 6, 7, 19))
+
+lm(Y ~ X, data = dat)
+```
+
+Also verify that the Theil-Sen estimator, the slope is estimated to be 1.746 and the intercept is estimated to be -7.968.
+
+```{r, echo = T}
+tsreg(dat$X, dat$Y)$coef
+```
+
 ### 8.2
+
+Using the R function _lsfit_, compute the residuals using the data in E1,
+
+Verify that if you square and sum the residusls, you get 46.585.
+
+```{r, echo = T}
+res <- lsfit(dat$X, dat$Y)$resid
+
+sum(res^2)
+```
+
 ### 8.3
+
+Verify that for the data in E1, if you use $\hat{Y} = 2X - 9$, the sum of the squared residuals is greater than 46.584.
+
+```{r, echo = T}
+Yhat <- 2*dat$X - 9
+res <- sum( (dat$Y - Yhat)^2 )
+stopifnot(res > 46.583)
+res
+
+```
+
+Why would you expect a value greater than 46.584?
+
+_The x coefficent increased._
+
 ### 8.4
+
+Suppose that based on $n = 25$ values, $s^2_x = 12$ and $\sum(X_i - \bar{X})(Y_i - \bar{Y}) = 144$.
+
+What is the slope of the least squares regression?
+
+$A = 144, C = (n - 1)s^2_x = 288, b_1 = A / C = 144/288 = .5$
+
 ### 8.5
+
+The following table reports breast cancer rates plus levels of solar radiation (in calories per day) for various cities in the United States. The data are stored in the file cancer_rate_dat.txt.
+
+```{r, echo =T}
+
+dat <- data.table::fread(paste0(data.dir, "cancer_rate_dat.txt"), fill = T, sep = "&")
+
+dat
+```
+
+Fit a OLS regression to predict cancer rates and comment on what this suggests.
+
+```{r, echo = T}
+fit <- lm(Rate ~ calories, data = dat)
+
+plot(fit)
+```
+
 ### 8.6
+
+For the following data, use R to compute the least squares regresion line for predicting GPA given SAT.
+
+SAT: 500, 530, 590, 660, 610, 700, 570, 640
+GPA: 2.3, 3.1, 2.6, 3.0, 2.4, 3.3, 2.6, 3.5
+
+```{r, echo = T}
+dat <- data.table(
+   SAT = c(500, 530, 590, 660, 610, 700, 570, 640),
+   GPA = c(2.3, 3.1, 2.6, 3.0, 2.4, 3.3, 2.6, 3.5)
+)
+
+fit <- lm(GPA ~ SAT, data = dat)
+coef(fit)
+```
+
 ### 8.7
+
+Compute the residuals for the data used in the previous problem and verify that sum to zero.
+
+```{r, echo = T}
+round(sum((dat$GPA - fit$fitted.values)), 5)
+```
+
 ### 8.8
+
+For the following data, use R to compute the least squares regression line for predicting Y from X.
+
+X: 40, 41, 42, 43, 44, 45, 46
+Y: 1.62, 1.63, 1.90, 2.64, 2.05, 2.13, 1.94
+
+```{r, echo = T}
+dat <- data.table(
+   X = c(40, 41, 42, 43, 44, 45, 46),
+   Y = c(1.62, 1.63, 1.90, 2.64, 2.05, 2.13, 1.94)
+)
+
+summary(fit <- lm(Y ~ X, data = dat))
+```
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+ggplot(dat, aes(X, Y)) +
+   geom_point() +
+   geom_smooth(method = "lm")
+```
+
 ### 8.9
 ### 8.10
 

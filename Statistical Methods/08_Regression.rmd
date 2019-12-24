@@ -238,6 +238,26 @@ ggplot(dat, aes(X, Y)) +
 ```
 
 ### 8.9
+
+In exercise 5, what would be the least squares estimate of the cancer rate given a solar radiation of 600?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table::fread(paste0(data.dir, "cancer_rate_dat.txt"), fill = T, sep = "&")
+
+ggplot(dat, aes(calories, Rate)) +
+   geom_point() +
+   geom_smooth(method = "lm")
+
+fit <- lm(Rate ~ calories, data = dat)
+
+coef(fit)
+
+39.99 -0.037*600
+```
+Why might this be unreasonable?
+
+_Because 600 is outside of the bounds of seen values (extrapolation)._
+
 ### 8.10
 
 ### 8.21

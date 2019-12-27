@@ -260,6 +260,98 @@ _Because 600 is outside of the bounds of seen values (extrapolation)._
 
 ### 8.10
 
+Maximal oxygen uptake (MOU) is a measure of an individual's physical fitness. You want to know how MOU is related to how fast someone can run a mile. Suppose you randomly sample six athletes and get:
+
+MOU (kl/kg): 63.3, 60.1, 53.6, 58.8, 67.5, 62.5
+Time (seconds): 241.5, 249.8, 246.1, 232.4, 237.2, 238.4
+
+Compute the least squres regression line and comment on what the results suggest.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table(
+   MOU = c(63.3, 60.1, 53.6, 58.8, 67.5, 62.5),
+   Time = c(241.5, 249.8, 246.1, 232.4, 237.2, 238.4)
+)
+
+fit <- lm(Time ~ MOU, data = dat)
+
+ggplot(dat, aes(MOU, Time)) +
+   geom_point() +
+   geom_smooth(method = "lm") +
+   labs(title = "Time vs. MOU")
+
+```
+
+Generally, time decreases as MOU increases.
+
+### 8.11
+
+Verify that for the following pairs of points, the least squares regression line has a slope of zero. Plot the points and comment on the assumption that the regression line is straight.
+
+X: 1, 2, 3, 4, 5, 6
+Y: 1, 4, 7, 7, 4, 1
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table(
+   X = c(1, 2, 3, 4, 5, 6),
+   Y = c(1, 4, 7, 7, 4, 1)
+)
+
+fit <- lm(Y ~ X, data = dat)
+
+coef(fit)
+```
+
+### 8.12
+
+Repeat the last exercise, only for points:
+
+X: 1, 2, 3, 4, 5, 6
+Y: 4, 5, 6, 7, 8, 2
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table(
+   X = c(1, 2, 3, 4, 5, 6),
+   Y = c(4, 5, 6, 7, 8, 2)
+)
+
+fit <- lm(Y ~ X, data = dat)
+
+coef(fit)
+```
+
+### 8.13
+
+Vitamin A is required for good health. However, one bite of polar bear liver results in death becasue it contains a high concentration of vitamin A.
+
+Comment on this fact in terms of extrapolation.
+
+_Vitaim A as a function of health is a bounded variable. Predicting a response when the independent variables are far from what has been observed can lead to undefined results (death)._
+
+### 8.14
+
+Socket et al. (1987) report data related to patterns of residual insulin secretion in children. A portion of the study was concerned with whether age can be used to predict the logarithm of C-peptide concentrations at diagnosis. The observed values are (data file):
+
+Replicate the _LOESS_ smoothed curve in fig 8.4.1.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table::fread(paste0(data.dir, "diabetes_sockett_dat.txt"), fill = T)
+
+ggplot(dat, aes(age, pep)) +
+   geom_point() +
+   geom_smooth(method = "loess")
+
+```
+
+### 8.15
+
+
+### 8.16
+### 8.17
+### 8.18
+### 8.19
+### 8.20
+
 ### 8.21
 ### 8.22
 ### 8.23

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  27 DEC 2019 11:40
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  27 DEC 2019 15:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1835,22 +1835,170 @@ Package xcolor Warning: Incompatible color definition on input line 749.
 
 Package xcolor Warning: Incompatible color definition on input line 749.
 
+
+Package xcolor Warning: Incompatible color definition on input line 763.
+
+
+Package xcolor Warning: Incompatible color definition on input line 772.
+
+
+Package xcolor Warning: Incompatible color definition on input line 772.
+
+
+Package xcolor Warning: Incompatible color definition on input line 778.
+
+
+Package xcolor Warning: Incompatible color definition on input line 784.
+
+
+Package xcolor Warning: Incompatible color definition on input line 784.
+
+
+Package xcolor Warning: Incompatible color definition on input line 791.
+
+
+Package xcolor Warning: Incompatible color definition on input line 799.
+
+
+Package xcolor Warning: Incompatible color definition on input line 799.
+
+
+Package xcolor Warning: Incompatible color definition on input line 807.
+
 [13]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 840.
+
+Package xcolor Warning: Incompatible color definition on input line 813.
+
+
+Package xcolor Warning: Incompatible color definition on input line 813.
+
+
+Package xcolor Warning: Incompatible color definition on input line 828.
+
+
+Package xcolor Warning: Incompatible color definition on input line 837.
+
+
+Package xcolor Warning: Incompatible color definition on input line 837.
+
+
+Package xcolor Warning: Incompatible color definition on input line 843.
+
+
+Package xcolor Warning: Incompatible color definition on input line 849.
+
+
+Package xcolor Warning: Incompatible color definition on input line 849.
+
+
+Package xcolor Warning: Incompatible color definition on input line 864.
+
+
+Package xcolor Warning: Incompatible color definition on input line 871.
+
+
+Package xcolor Warning: Incompatible color definition on input line 871.
+
 [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 840.
+
+Package xcolor Warning: Incompatible color definition on input line 890.
+
+
+Package xcolor Warning: Incompatible color definition on input line 898.
+
+
+Package xcolor Warning: Incompatible color definition on input line 898.
+
+
+Package xcolor Warning: Incompatible color definition on input line 914.
+
+
+Package xcolor Warning: Incompatible color definition on input line 927.
+
+
+Package xcolor Warning: Incompatible color definition on input line 927.
+
+
+Package xcolor Warning: Incompatible color definition on input line 936.
+
+
+Package xcolor Warning: Incompatible color definition on input line 949.
+
+
+Package xcolor Warning: Incompatible color definition on input line 949.
+
+
+Package xcolor Warning: Incompatible color definition on input line 949.
+
+[15]
+
+Package xcolor Warning: Incompatible color definition on input line 949.
+
+
+Package xcolor Warning: Incompatible color definition on input line 949.
+
+
+Package xcolor Warning: Incompatible color definition on input line 965.
+
+
+Package xcolor Warning: Incompatible color definition on input line 978.
+
+
+Package xcolor Warning: Incompatible color definition on input line 978.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+[16]
+
+Package xcolor Warning: Incompatible color definition on input line 1020.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1020.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1026.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1030.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1030.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1042.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1049.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1049.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1056.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1060.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1060.
+
+[17]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1138.
+[18]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1138.
 (./08_Regression.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 840.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 840.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 840.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1138.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1138.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1138.
  ) 
 Here is how much of TeX's memory you used:
  28965 strings out of 494988
  518414 string characters out of 6178637
- 738828 words of memory out of 5000000
+ 739828 words of memory out of 5000000
  32500 multiletter control sequences out of 15000+600000
  533836 words of font info for 61 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  54i,12n,117p,10422b,461s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 08_Regression.pdf (14 pages).
+Output written on 08_Regression.pdf (18 pages).

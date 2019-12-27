@@ -94,9 +94,7 @@ theme_update(axis.text.x = element_text(size = 10),
                                          colour = "lightgray"), 
              plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
 
-data.dir <- "D:/Projects/Statistical-Computing/datasets/"
-
-setwd("D:/Projects/Statistical-Computing/RDS")
+data.dir <- paste0(here::here(), "/datasets/")
 
 ```
 

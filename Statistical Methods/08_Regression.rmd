@@ -37,7 +37,7 @@ header-includes:
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  pdf_document:
+  pdf_document: 
     fig_caption: yes
     latex_engine: xelatex
 editor_options: 
@@ -322,19 +322,15 @@ coef(fit)
 
 ### 8.13
 
-Vitamin A is required for good health. However, one bite of polar bear liver results in death becasue it contains a high concentration of vitamin A.
-
-Comment on this fact in terms of extrapolation.
+Vitamin A is required for good health. However, one bite of polar bear liver results in death becasue it contains a high concentration of vitamin A. Comment on this fact in terms of extrapolation.
 
 _Vitaim A as a function of health is a bounded variable. Predicting a response when the independent variables are far from what has been observed can lead to undefined results (death)._
 
 ### 8.14
 
-Socket et al. (1987) report data related to patterns of residual insulin secretion in children. A portion of the study was concerned with whether age can be used to predict the logarithm of C-peptide concentrations at diagnosis. The observed values are (data file):
+Socket et al. (1987) report data related to patterns of residual insulin secretion in children. A portion of the study was concerned with whether age can be used to predict the logarithm of C-peptide concentrations at diagnosis. The observed values are (data file), Replicate the _LOESS_ smoothed curve in fig 8.4.1.
 
-Replicate the _LOESS_ smoothed curve in fig 8.4.1.
-
-```{r, echo = T, fig.width=8, fig.height=3.5}
+```{r, echo = T, fig.width=8, fig.height=2.5}
 dat <- data.table::fread(paste0(data.dir, "diabetes_sockett_dat.txt"), fill = T)
 
 ggplot(dat, aes(age, pep)) +
@@ -344,23 +340,132 @@ ggplot(dat, aes(age, pep)) +
 ```
 
 ### 8.15
+   
+For the data in the last exercise, use R to verify that a least squares regression line using only X values (age) less than or equal to 7 yields a p-value equal to 0.026 when using the R function _olsch4_. Also verify that the p-value, when using the Theil-Sen estimator, is 0.0233.
 
+```{r, echo = T}
+dat2 <- dat[age <= 7]
+
+WRS::olshc4(dat2$age, dat2$pep)
+
+WRS::regci(dat2$age, dat2$pep)
+```
 
 ### 8.16
+
+For the reading data in Table 8.5, verify that the R function spearci returns a p-value equal to 0.014 and that scorci returns a p-value equal to 0.002. Based on the plot returned by scorci, why is it not suprising that these two function give similar results?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+dat <- data.table::fread(paste0(data.dir, "read_dat.txt"), fill = T, skip = 13)
+
+spearci( dat[,4], dat[,8])
+
+scorciMC( dat[,4], dat[,8])
+
+```
+
 ### 8.17
+
+Given that $b_1 = -1.5, n = 10, s^2_{y,x} = 35, \sum(X_i - \bar{X})^2 = 140$, assume normality and homosecedasiticy and compute a 0.95 confidence interval for slope, $\beta_1$.
+
+```{r, echo = T}
+b1 <- -1.5; n <- 10; se <- sqrt(35 / 140)
+alpha <- .05
+
+b1 + qt(c(Lower = alpha/2, Upper = 1 - alpha/2), df = n - 2) * se
+```
+
 ### 8.18
+
+Repeat the previous problem, only compute a 0.98 confidence interval.
+
+```{r, echo = T}
+b1 <- -1.5; n <- 10; se <- sqrt(35 / 140)
+alpha <- 1 - .98
+
+b1 + qt(c(Lower = alpha/2, Upper = 1 - alpha/2), df = n - 2) * se
+```
+
 ### 8.19
+
+Based on results convered in the previous chapters, speculate about why the confidence intervals computed in the last two problems might be inaccurate.
+
+_Least squares regression can be negatively impacted by non-normality, heteroscedasticity and outliers._
+
 ### 8.20
 
+Assume normality and homoscedasticity and suppose $n = 30, \sum{(X_i)} = 15, \sum(Y_i) = 30, \sum(X_i - \bar{X})(Y_i - \bar{Y}) = 30, \sum(X_i - \bar{X})^2 = 10$
+
+```{r, echo = T}
+n <- 30; A <- 30; C <- 10;
+xbar <- 15 / 30; ybar <- 30 / 30
+
+slope <- A / C
+intercept <- ybar - xbar*slope
+
+```
+
+Determine the least squares estimates of the slope and intercept.
+
+$\beta_1 = `r slope`, \beta_0 = `r intercept`$
+
 ### 8.21
+
+Assume normality and homoscedasticity and suppose $n = 38, \bar{Y} = 20, \sum{X^2_i} = 1,922, \bar{X} = 7, \sum{(X_i - \bar{X})(Y_i - \bar{Y})} = 180, \sum{X_i - \bar{X}^2} = 60, s^2_{X, Y} = 121.$
+
+a.) Determine the least squares estimate of the slope and intercept.
+
+```{r, echo = T}
+```
+
+b.) Test the hypothesis $H_0 : \beta_0 = 0, \alpha = 0.05$
+
+```{r, echo = T}
+```
+
+c.) Compute a 0.9 confidence interval for $\beta_1$
+
+```{r, echo = T}
+```
+
 ### 8.22
+
+Assume normality and homoscedasticity and suppose $n = 41, \bar{Y} = 10, \bar{X} = 12, \sum(X_i - \bar{X})(Y_i - \bar{Y}) = 100, \sum(X_i - \bar{X})^2 = 400, s^2_{Y.X} = 144$.
+
+a.) Determine the least squares regression line
+
+b.) Compute a .9 confidence interval for $\beta_1$
+
 ### 8.23
+
+Assume normality and homoscedasticity and suppose $n = 18, \beta_1 = 3.1, \sum{(X_i - \bar{X}})^2 = 144, s^2_{X.Y} = 36$.
+
+Compute a 0.95 confidence interval for $\beta_1$.
+
+Would you conclude $\beta_1$ > 2?
+
 ### 8.24
+
+Assume normality and homoscedasticity and suppose $n = 20, \beta_0 = 6, \sum{X^2_i} = 169, S^2_{Y.X} = 25, \sum{(X_i - \bar{X}})^2 = 90$.
+
+Compute a .95 confidence interval for $\beta_0$.
+
 ### 8.25
+
+Given the following quantities, find the sample correlation coefficent, r, and test $H_0 : \rho = 0$ at the indicated value for $\alpha$.
+
+a.) $n = 27, \sum{(Y_i - \bar{Y})}^2 = 100, \sum{(X_i - \bar{X})^2} = 625, \sum(X_i -\bar{X})(Y_i - \bar{Y})^2 = 200, \alpha = 0.01$
+
+b.) $n = 5, \sum{(Y_i - \bar{Y})}^2 = 16, \sum{(X_i - \bar{X})^2} = 25, \sum(X_i -\bar{X})(Y_i - \bar{Y})^2 = 10, \alpha = 0.05$
+
 ### 8.26
+
 ### 8.27
+
 ### 8.28
+
 ### 8.29
+
 ### 8.30
 
 ### 8.31

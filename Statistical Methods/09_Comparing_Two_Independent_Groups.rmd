@@ -112,6 +112,191 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-#### Chapter 9
+### Chapter 9
 
-### 9.1
+#### 9.1
+
+Suppose that the sample means and variances are $\bar{X}_1 = 15, \bar{X}_2 = 12, s^2_1 = 8, s^2_2 = 24, n_1 = 20, n_2 = 10$
+
+Verify that $s^2_p = 13.14, T = 2.14$ and that Student's T test rejects the hypothesis of equal means with $\alpha = 0.05$.
+
+```{r, echo = T}
+xbar1 <- 15; xbar2 <- 12; s1sq <- 8; s2sq <- 24
+n1 <- 20; n2 <- 10
+alpha <- 0.05
+
+variance <- ( (n1 - 1)*s1sq + (n2 - 1)*s2sq ) / ( n1 + n2 - 2 )
+variance
+
+t.stat <- (xbar1 - xbar2) / sqrt( variance*(1/n1 + 1/n2) )
+t.stat
+
+crit <- qt(alpha/2, df = n1 + n2 - 2)
+
+ifelse(abs(t.stat) >= crit, "Reject Null", "Fail to Reject")
+```
+
+#### 9.2
+
+For two independent groups of subjects, $\bar{X}_1 = 45, \bar{X}_2 = 36, s^2_1 = 4, s^2_2 = 16, n_1 = 20, n_2 = 30$. Assume that the population variances of the two groups are equal and verify that the estimate of this common variance is 11.25.
+
+```{r, echo = T}
+xbar1 <- 45; xbar2 <- 36; s1sq <- 4; s2sq <- 16
+n1 <- 20; n2 <- 30
+
+variance <- ( (n1 - 1)*s1sq + (n2 - 1)*s2sq ) / ( n1 + n2 - 2)
+
+stopifnot(variance == 11.25)
+```
+
+#### 9.3
+
+Still assuming equal variances, test the hypothesis of equal means using Student's T test and the data in the last exercise. Use $\alpha = 0.05$
+
+```{r, echo = T}
+alpha <- 0.05
+
+t.stat <- (xbar1 - xbar2 ) / sqrt( variance * (1/n1 + 1/n2) )
+
+crit <- qt(alpha/2, df = (n1 + n2 - 2))
+
+ifelse(abs(t.stat) >= crit, "Reject null", "Fail to Reject")
+```
+
+#### 9.4
+
+Repeat the last problem, only use Welch's test for comparing means.
+
+```{r, echo = T}
+w.stat <- (xbar1 - xbar2) / sqrt(s1sq/n1 + s2sq/n2)
+
+q1 <- s1sq/n1; q2 <- s2sq/n2
+df <- (q1 + q2)^2 / ( q1^2/(n1 - 1) + q2^2/(n2 - 1) )
+
+crit <- qt(1 - alpha/2, df)
+
+ifelse(abs(w.stat) >= crit, "Reject Null", "Fail to Reject")
+```
+
+#### 9.5
+
+Comparing the results for the last two problems, what do they suggest regarding the power of Welch's test compared to STudent's T test when the sample variances differ sufficiently.
+
+```{r, echo = T}
+t.stat
+w.stat
+```
+
+_Roughtly, the W statistic has more power because it is larger than the T statistic._
+
+#### 9.6
+
+For two independent groups $\bar{X}_1 = 86, \bar{X}_2 = 80, s^2_1 = s^2_2 = 25, n_1 = n_2 = 20$. Assume that the population variances of the two groups are equal and verify that Student's T rejects with $\alpha = 0.01$.
+
+```{r, echo = T}
+xbar1 <- 86; xbar2 <- 80; s1sq <- s2sq <- 25
+n1 <- n2 <- 20; alpha <- 0.01
+
+t.stat <- (xbar1 - xbar2) / sqrt(2 * s1sq/n1 )
+
+crit <- qt(alpha/2, df = n1 + n2 - 2)
+
+ifelse(abs(t.stat) >= crit, "Reject", "Fail to Reject")
+```
+
+#### 9.7
+
+Repeat the last exercise using Welch's method.
+
+```{r, echo = T}
+
+w.stat <- (xbar1 - xbar2) / sqrt( 2 * s1sq/n1 )
+
+q1 <- s1sq/n1; q2 <- s2sq/n2
+
+df <- (q1 + q2)^2 / ( q1^2/(n1 - 1) + q2^2/(n2 - 1))
+
+crit <- qt(alpha/2, df = 38)
+
+ifelse(abs(w.stat) >= crit, "Reject", "Fail to Reject")
+```
+
+#### 9.8
+
+Comparing the results of the last two problems, what do they suggest about using Student's T versus Welch's method when the sample variances are approximately equal?
+
+```{r, echo = T}
+t.stat
+w.stat
+```
+
+_With equal sample variances, Student's T and Welch give exactly the same result, suggesting that when the sample variances are approximately equal, the choice between T and W makes little difference._
+
+#### 9.9
+
+For $\bar{X}_1 = 10, \bar{X}_2 = 5, s^2_1 = 21, s^2_2 = 29, n_1 = n_2 = 16$, compute a 0.95 conffidence interval for the difference between the means using Welch's method and state whether a decision can be made about which group has the larger popluation mean.
+
+```{r, echo = T}
+xbar1 <- 10; xbar2 <- 5; s1sq <- 21; s2sq <- 29
+n1 <- n2 <- 16; alpha <- 0.05
+
+q1 <- s1sq/n1; q2 <- s2sq/n2
+df <- (q1 + q2)^2 / (q1^2 / (n1 - 1) + q2^2 / (n2 -1) )
+
+variance <- sqrt(s1sq/n1 + s2sq/n2)
+
+(xbar1 - xbar2) + qt(c(Lower = alpha/2, Upper = 1 - alpha/2), df)*variance
+```
+
+#### 9.10
+
+Repeat the last problem, only use Student's T instead.
+
+```{r, echo = T}
+sqp <- (s1sq+s2sq) / 2
+
+(xbar1 - xbar2) + qt(c(Lower = alpha/2, Upper = 1 - alpha/2), n1 + n2 - 2) * sqrt(sqp * (1/n1 + 1/n2))
+```
+
+#### 9.11
+
+Two methods for training accountants are to be compared. Students are randomly assigned to one of the two methods. At the end of the course, each student is asked to prepare a tax return for the same individual. The amounts of the refund reported by the students are:
+
+M1: 132, 204, 603, 50, 125, 90, 185, 134
+M2: 92, -42, 121, 63, 182, 101, 294, 36
+
+Using Welch's test would you conclude that the methods differ in terms of the average return? Use $\alpha = 0.05$.
+
+```{r, echo = T}
+
+```
+
+#### 9.12
+
+Responses to stress are govered by the hypothalamus. Imagine you have two randomly sampled groups of individuals between the ages of 60 and 65. The first shows signs of heart disease and the other does not. You want to determine whether the groups differ in terms of some measure associated with the hypothalamus. For the first group of subjects with no heart disease, the measures are:
+
+11.1, 12.2, 15.5, 17.6, 13.0, 7.5, 9.1, 6.6, 9.5, 18.0, 12.6
+
+For the other group with heart disease, the kmeasures are:
+
+18.2, 14.1, 13.8, 12.1, 34.1, 12.0, 14.1, 14.5, 12.6, 12.5, 19.8, 13.4, 16.8, 14.1, 12.9
+
+Determine whether the groups differ based on Welch's test. Use $\alpha = 0.05$.
+
+```{r, echo = T}
+
+```
+
+#### 9.13
+
+The 0.95 confidence interval for the difference between the means, using Student's T, is (2.2, 20.5).
+
+What are the practical concerns with this confidence interval?
+
+### 10.14
+
+For the first of two binomial distributions, there are 15 successes amoung 24 observations. For the second, there are 23 successes among 42 observations.
+
+Test $H_0 : p_1 = p_2$ with a Type I error probability of 0.05 using the Storer-Kim method, followed by Beal's method.
+
+Note the p-values and comment on what this suggests in terms of power.

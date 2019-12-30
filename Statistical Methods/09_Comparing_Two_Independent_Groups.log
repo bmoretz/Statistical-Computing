@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  29 DEC 2019 17:00
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  29 DEC 2019 17:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1709,22 +1709,183 @@ Package xcolor Warning: Incompatible color definition on input line 408.
 
 Package xcolor Warning: Incompatible color definition on input line 408.
 
+
+Package xcolor Warning: Incompatible color definition on input line 429.
+
+
+Package xcolor Warning: Incompatible color definition on input line 437.
+
+
+Package xcolor Warning: Incompatible color definition on input line 437.
+
 [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 469.
+
+Package xcolor Warning: Incompatible color definition on input line 476.
+
+
+Package xcolor Warning: Incompatible color definition on input line 482.
+
+
+Package xcolor Warning: Incompatible color definition on input line 482.
+
+
+Package xcolor Warning: Incompatible color definition on input line 490.
+
+
+Package xcolor Warning: Incompatible color definition on input line 494.
+
+
+Package xcolor Warning: Incompatible color definition on input line 494.
+
 [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 469.
+
+Package xcolor Warning: Incompatible color definition on input line 536.
+
+
+Package xcolor Warning: Incompatible color definition on input line 541.
+
+
+Package xcolor Warning: Incompatible color definition on input line 541.
+
+
+Package xcolor Warning: Incompatible color definition on input line 557.
+
+
+Package xcolor Warning: Incompatible color definition on input line 562.
+
+
+Package xcolor Warning: Incompatible color definition on input line 562.
+
+[6]
+
+Package xcolor Warning: Incompatible color definition on input line 593.
+
+
+Package xcolor Warning: Incompatible color definition on input line 598.
+
+
+Package xcolor Warning: Incompatible color definition on input line 598.
+
+
+Package xcolor Warning: Incompatible color definition on input line 614.
+
+
+Package xcolor Warning: Incompatible color definition on input line 619.
+
+
+Package xcolor Warning: Incompatible color definition on input line 619.
+
+[7]
+
+Package xcolor Warning: Incompatible color definition on input line 647.
+
+
+Package xcolor Warning: Incompatible color definition on input line 654.
+
+
+Package xcolor Warning: Incompatible color definition on input line 654.
+
+
+Package xcolor Warning: Incompatible color definition on input line 688.
+
+
+Package xcolor Warning: Incompatible color definition on input line 695.
+
+
+Package xcolor Warning: Incompatible color definition on input line 695.
+
+
+Package xcolor Warning: Incompatible color definition on input line 703.
+
+
+Package xcolor Warning: Incompatible color definition on input line 707.
+
+
+Package xcolor Warning: Incompatible color definition on input line 707.
+
+[8]
+
+Package xcolor Warning: Incompatible color definition on input line 723.
+
+
+Package xcolor Warning: Incompatible color definition on input line 727.
+
+
+Package xcolor Warning: Incompatible color definition on input line 727.
+
+
+Package xcolor Warning: Incompatible color definition on input line 757.
+
+
+Package xcolor Warning: Incompatible color definition on input line 761.
+
+
+Package xcolor Warning: Incompatible color definition on input line 761.
+
+
+Package xcolor Warning: Incompatible color definition on input line 790.
+
+[9]
+
+Package xcolor Warning: Incompatible color definition on input line 794.
+
+
+Package xcolor Warning: Incompatible color definition on input line 794.
+
+
+Package xcolor Warning: Incompatible color definition on input line 829.
+
+
+Package xcolor Warning: Incompatible color definition on input line 833.
+
+
+Package xcolor Warning: Incompatible color definition on input line 833.
+
+[10]
+
+Package xcolor Warning: Incompatible color definition on input line 849.
+
+
+Package xcolor Warning: Incompatible color definition on input line 853.
+
+
+Package xcolor Warning: Incompatible color definition on input line 853.
+
+
+Package xcolor Warning: Incompatible color definition on input line 889.
+
+
+Package xcolor Warning: Incompatible color definition on input line 893.
+
+
+Package xcolor Warning: Incompatible color definition on input line 893.
+
+[11]
+
+Package xcolor Warning: Incompatible color definition on input line 976.
+
+[12]
+
+Package xcolor Warning: Incompatible color definition on input line 982.
+
+
+Package xcolor Warning: Incompatible color definition on input line 982.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1010.
+[13]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1010.
 (./09_Comparing_Two_Independent_Groups.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 469.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 469.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 469.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1010.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1010.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1010.
  ) 
 Here is how much of TeX's memory you used:
- 28904 strings out of 494988
- 516612 string characters out of 6178637
- 739323 words of memory out of 5000000
- 32451 multiletter control sequences out of 15000+600000
- 533836 words of font info for 61 fonts, out of 8000000 for 9000
+ 28924 strings out of 494988
+ 516879 string characters out of 6178637
+ 739782 words of memory out of 5000000
+ 32469 multiletter control sequences out of 15000+600000
+ 533844 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 54i,11n,117p,10444b,379s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 54i,12n,117p,10444b,461s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 09_Comparing_Two_Independent_Groups.pdf (5 pages).
+Output written on 09_Comparing_Two_Independent_Groups.pdf (13 pages).

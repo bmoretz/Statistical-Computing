@@ -47,8 +47,13 @@ editor_options:
 
 ```{r knitr_setup, include = FALSE}
 
-# DO NOT ADD OR REVISE CODE HERE
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
 options(knitr.table.format = "latex")
 
 ```

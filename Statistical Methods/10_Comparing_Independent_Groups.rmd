@@ -47,8 +47,13 @@ editor_options:
 
 ```{r knitr_setup, include = FALSE}
 
-# DO NOT ADD OR REVISE CODE HERE
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
 options(knitr.table.format = "latex")
 
 ```
@@ -147,7 +152,12 @@ sum(sds)/ncol(data)
 For the previous data, use R to test the hypothesis of equal means using the ANOVA F test with $\alpha = 0.05$.
 
 ```{r}
-anova1(data)
+anova <- anova1(data)
+
+anova
+
+ifelse(anova$p.value < 0.05, "Reject", "Fail to Reject")
+
 ```
 
 #### 10.3
@@ -164,13 +174,128 @@ assertthat::are_equal(round(test$nu2, 2), 13.4)
 ```
 
 #### 10.4
+
+Using R, test the hypothesis of equal means using the ANOVA F test for the following data:
+
+Group 1: 15, 17, 22
+
+Group 2: 9, 12, 15
+
+Group 3: 17, 20, 23
+
+Group 4: 13, 12, 17
+
+```{r}
+g1 <- c(15, 17, 22)
+g2 <- c(9, 12, 15)
+g3 <- c(17, 20, 23)
+g4 <- c(13, 12, 17)
+
+data <- data.table(g1, g2, g3, g4)
+
+anova <- anova1(data)
+
+ggplot(stack(data)) +
+   geom_boxplot(aes(ind, values, fill = ind))
+
+anova
+
+ifelse(anova$p.value < 0.05, "Reject Null", "Fail to Reject")
+```
+
 #### 10.5
+
+Using the previous data, compute the common assumed variance.
+
+```{r}
+mean( apply(data, 2, var) )
+```
+
 #### 10.6
+
+Use R to verify the p-value for the previous data based on Welch's test is 0.124.
+
+```{r}
+w <- t1way(data)
+
+assertthat::are_equal(round(w$p.value, 3), 0.124)
+```
+
 #### 10.7
+
+For the data in E4, explain why you would get the same result using a 20% trimmed mean.
+
+_Sample size would not reduce with 3 values_
+
 #### 10.8
+
+Why would you not recommend the strategy of testing for equal variances, and if not significant, using kthe ANOVA F test rather than the Welch's method?
+
+_Don't know when power is high enough._
+
 #### 10.9
+
+Five independent groups are compared with n = 15 observations for each group, SSBG = 20 and SSWG = 150.
+
+Perform the ANOVA F test with $\alpha = 0.05$
+
+```{r}
+n <- 15; j <- 5
+SSBG <- 20; SSWG <- 150
+
+MSBG <- SSBG / (j -1); MSWG <- SSWG / (n * j - j)
+
+f.stat <- MSBG / MSWG
+
+v1 <- j - 1; v2 <- j *n - j
+crit.val <- qf(1 - 0.05, v1, v2)
+
+ifelse(f.stat > crit.val, "Reject", "Fail to Reject")
+
+vals <- data.table(x = seq(0, 10, by = .001))
+vals[, y := df(vals$x, v1, v2)]
+
+ggplot(vals, aes(x, y)) +
+   geom_point(size = .7) +
+   geom_vline(xintercept = crit.val, col = "darkred") +
+   geom_vline(xintercept = f.stat, col = "cornflowerblue")
+
+
+```
+
 #### 10.10
+
+Use the R function anova1 to verify that for the following data, MSGB = 14.4 and MSGW = 12.59.
+
+G1: 9, 10, 15
+
+G2: 16, 8, 13, 6
+
+G3: 7, 6, 9
+
+```{r}
+g1 <- c(9, 10, 15)
+g2 <- c(16, 8, 13, 6)
+g3 <- c(7, 6, 9)
+
+data <- list(g1, g2, g3)
+
+anova1(data)
+```
+
 #### 10.11
+
+Consider five groups (J = 5) with population means 3, 4, 5, 6 and 7, and a common variance $\sigma^2_p = 2$. If the number of observations in each group is 10 (n = 10), indicate what is being estimated by MSBG, and based on the information given, determine its value. That is, if the population means and common variance were known, what is the value being estimated by MSBG?
+
+MSBG estimates $\sigma^2_p + n\sigma^2_\mu$, the variation among the population means.
+
+```{r}
+var(c(3, 4, 5, 6, 7))
+```
+
+How does this differ from the value estimated by MSBG?
+
+
 #### 10.12
 #### 10.13
 #### 10.15

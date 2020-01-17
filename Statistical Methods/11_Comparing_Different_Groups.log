@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  17 JAN 2020 15:07
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  16 JAN 2020 14:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**10_Comparing_Independent_Groups.tex
-(./10_Comparing_Independent_Groups.tex
+**11_Comparing_Different_Groups.tex
+(./11_Comparing_Different_Groups.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 3 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
@@ -1143,8 +1143,8 @@ LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
 ) (/usr/share/texlive/texmf-dist/tex/latex/base/tuenc.def
 File: tuenc.def 2017/04/05 v2.0i Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding TU on input line 82.
-))) (./10_Comparing_Independent_Groups.aux)
-\openout1 = `10_Comparing_Independent_Groups.aux'.
+))) (./11_Comparing_Different_Groups.aux)
+\openout1 = `11_Comparing_Different_Groups.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 103.
 LaTeX Font Info:    ... okay on input line 103.
@@ -1452,9 +1452,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 103.
 LaTeX Info: Redefining \pageref on input line 103.
 LaTeX Info: Redefining \nameref on input line 103.
-(./10_Comparing_Independent_Groups.out) (./10_Comparing_Independent_Groups.out)
+(./11_Comparing_Different_Groups.out) (./11_Comparing_Different_Groups.out)
 \@outlinefile=\write3
-\openout3 = `10_Comparing_Independent_Groups.out'.
+\openout3 = `11_Comparing_Different_Groups.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1503,63 +1503,30 @@ LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
 (Font)              scaled to size 11.96872pt on input line 106.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
 (Font)              scaled to size 11.96872pt on input line 106.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.41483pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.97688pt on input line 120.
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 120.
-
-(/usr/share/texmf/tex/latex/lm/omllmm.fd
-File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.00018pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.41495pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.97696pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99982pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.41469pt on input line 120.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.97679pt on input line 120.
-LaTeX Font Info:    Try loading font information for U+msa on input line 120.
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
-File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
-)
-LaTeX Font Info:    Try loading font information for U+msb on input line 120.
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
-File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 248.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 195.
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 14.36246pt on input line 248.
+(Font)              scaled to size 14.36246pt on input line 195.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 14.36246pt on input line 248.
+(Font)              scaled to size 14.36246pt on input line 195.
 [1
 
 ]
-Overfull \vbox (104.75285pt too high) has occurred while \output is active []
+Overfull \vbox (222.78502pt too high) has occurred while \output is active []
 
 [2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 248.
-(./10_Comparing_Independent_Groups.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 248.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 248.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 248.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 195.
+(./11_Comparing_Different_Groups.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 195.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 195.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 195.
  ) 
 Here is how much of TeX's memory you used:
- 28471 strings out of 494988
- 509984 string characters out of 6178637
- 728853 words of memory out of 5000000
- 32028 multiletter control sequences out of 15000+600000
- 533828 words of font info for 60 fonts, out of 8000000 for 9000
+ 28378 strings out of 494988
+ 507101 string characters out of 6178637
+ 724837 words of memory out of 5000000
+ 31973 multiletter control sequences out of 15000+600000
+ 530996 words of font info for 42 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 54i,11n,117p,10440b,340s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 51i,11n,117p,10438b,340s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 10_Comparing_Independent_Groups.pdf (2 pages).
+Output written on 11_Comparing_Different_Groups.pdf (2 pages).

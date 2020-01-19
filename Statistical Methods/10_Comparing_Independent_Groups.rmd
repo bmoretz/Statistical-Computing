@@ -293,25 +293,120 @@ MSBG estimates $\sigma^2_p + n\sigma^2_\mu$, the variation among the population 
 var(c(3, 4, 5, 6, 7))
 ```
 
-How does this differ from the value estimated by MSBG?
-
-
 #### 10.12
-#### 10.13
-#### 10.15
-#### 10.16
-#### 10.17
-#### 10.18
-#### 10.19
-#### 10.20
-#### 10.21
-#### 10.22
-#### 10.23
-#### 10.24
-#### 10.25
-#### 10.26
-#### 10.27
-#### 10.28
-#### 10.29
-#### 10.30
 
+For the following data, verify that ANOVA F test does not reject with $\alpha = 0.05$, but Welch's test _does reject_.
+
+Group 1: 10, 11, 12, 9, 8, 7
+
+Group 2: 10, 66, 15, 32, 22, 51
+
+Group 3: 1, 12, 42, 31, 55, 19
+
+```{r}
+g1 <- c(10, 11, 12, 9, 8, 7)
+g2 <- c(10, 66, 15, 32, 22, 51)
+g3 <- c(1, 12, 42, 31, 55, 19)
+
+data <- list(g1,g2,g3)
+
+anova1(data) # p-value 0.082, fail to reject
+
+t1way(data, tr=0) # p-value 0.046, reject
+```
+
+
+#### 10.13
+
+Using the ANOVA F test, you see that $v_1 = 5$, and $v_2 = 8$. Verify that the number of groups is $J = 4$ and the total number of observations is $N = 12$.
+
+$v_1$ = J - 1, J = 4
+
+$v_2$ = N - J = 13
+
+#### 10.14
+
+A researacher reports a p-value of 0.001 with the ANOVA F test. Describe what conclusions are reasonable based upon this result.
+
+_The distributions differ, suggesting that in particular the means differ._
+
+#### 10.15
+
+Summarize the reasons you might fail to reject with the ANOVA F test.
+
+_Low power due to outliers, violating the equal variance assumption_
+
+#### 10.16
+
+Someone tests for equal variances and fails to reject. Does this justify the use of the ANOVA F test?
+
+_No, this depends on power._
+
+#### 10.17
+
+A researcher reports that a test for normality was performed and that based on this test, no evidence of nonnormality was found. Why might it be unreasonable to assume normality despite this result?
+
+_Unclear whether the test has enough power to detect a departure from normality._
+
+#### 10.18
+
+Outline how you might construct an example where sampling is from normal distributions, Welch's test rejects, but the ANOVA F test does not.
+
+_Generate data so that groups have unequal variances._
+
+#### 10.19
+
+Consider a 2-by-2 design with population means:
+
+$\mu_1 = 110, \mu_2 = 70$
+
+$\mu_3 = 80, \mu_4 = 40$
+
+```{r}
+vals <- matrix(c(110, 70, 80, 40), nrow = 2, byrow = F)
+
+apply(vals, 2, sum) # main effect
+
+apply(vals, 1, sum) # interaction effect
+```
+
+#### 10.20
+
+Consider a 2-by-2 design with population means.
+
+$\mu_1 = 10, \mu_2 = 20$
+
+$\mu_3 = 40, \mu_4 = 10$
+
+```{r}
+vals <- matrix(c(10, 20, 40, 10), nrow = 2, byrow = F)
+
+apply(vals, 2, sum) # main effect
+
+apply(vals, 1, sum) # interaction effect
+```
+
+#### 10.21
+
+For the data in the last example of 10.1, use med1way to test hyhpothesis that population medians are equal.
+
+```{r}
+x=list()
+x[[1]]=c( 7, 9, 8, 12, 8, 7, 4, 10, 9, 6)
+x[[2]]=c(10, 13, 9, 11, 5, 9, 8, 10, 8, 7)
+x[[3]]=c(12, 11, 15, 7, 14, 10, 12, 12, 13, 14)
+
+med1way(x)
+```
+
+p < 0.05, reject
+
+#### 10.22
+
+Repeat previous with Qanvoa:
+
+```{r}
+Qanova(x)
+```
+
+p < 0.01, reject

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  17 JAN 2020 15:09
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  19 JAN 2020 14:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -919,6 +919,32 @@ Package: geometry 2010/09/12 v5.6 Page Geometry
 \Gm@layouthoffset=\dimen157
 \Gm@layoutvoffset=\dimen158
 \Gm@dimlist=\toks22
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: xetex.def on input line 147.
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2017/06/24 v5.0h Graphics/color driver for xetex
+)) (/usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+Package: fancyvrb 2008/02/07
+
+Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
+<2008/02/07> (tvz)
+\FV@CodeLineNo=\count279
+\FV@InFile=\read2
+\FV@TabBox=\box45
+\c@FancyVerbLine=\count280
+\FV@StepNumber=\count281
+\FV@OutFile=\write3
+) (/usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip53
+\fb@frw=\dimen159
+\fb@frh=\dimen160
+\FrameRule=\dimen161
+\FrameSep=\dimen162
 ) (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
@@ -929,11 +955,9 @@ Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: xetex.def on input line 99.
-(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def
-File: xetex.def 2017/06/24 v5.0h Graphics/color driver for xetex
-))
-\Gin@req@height=\dimen159
-\Gin@req@width=\dimen160
+)
+\Gin@req@height=\dimen163
+\Gin@req@width=\dimen164
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grffile.sty
 Package: grffile 2017/06/30 v1.18 Extended file name support for graphics (HO)
 Package grffile Info: Option `multidot' is set to `true'.
@@ -945,90 +969,83 @@ Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
 (/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2016/05/22 v1.7-166 caption3 kernel (AR)
 Package caption3 Info: TeX engine: e-TeX on input line 67.
-\captionmargin=\dimen161
-\captionmargin@=\dimen162
-\captionwidth=\dimen163
-\caption@tempdima=\dimen164
-\caption@indent=\dimen165
-\caption@parindent=\dimen166
-\caption@hangindent=\dimen167
+\captionmargin=\dimen165
+\captionmargin@=\dimen166
+\captionwidth=\dimen167
+\caption@tempdima=\dimen168
+\caption@indent=\dimen169
+\caption@parindent=\dimen170
+\caption@hangindent=\dimen171
 )
-\c@ContinuedFloat=\count279
+\c@ContinuedFloat=\count282
 Package caption Info: hyperref package is loaded.
 ) (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2016/04/27 v1.618033 publication quality tables
-\heavyrulewidth=\dimen168
-\lightrulewidth=\dimen169
-\cmidrulewidth=\dimen170
-\belowrulesep=\dimen171
-\belowbottomsep=\dimen172
-\aboverulesep=\dimen173
-\abovetopsep=\dimen174
-\cmidrulesep=\dimen175
-\cmidrulekern=\dimen176
-\defaultaddspace=\dimen177
-\@cmidla=\count280
-\@cmidlb=\count281
-\@aboverulesep=\dimen178
-\@belowrulesep=\dimen179
-\@thisruleclass=\count282
-\@lastruleclass=\count283
-\@thisrulewidth=\dimen180
+\heavyrulewidth=\dimen172
+\lightrulewidth=\dimen173
+\cmidrulewidth=\dimen174
+\belowrulesep=\dimen175
+\belowbottomsep=\dimen176
+\aboverulesep=\dimen177
+\abovetopsep=\dimen178
+\cmidrulesep=\dimen179
+\cmidrulekern=\dimen180
+\defaultaddspace=\dimen181
+\@cmidla=\count283
+\@cmidlb=\count284
+\@aboverulesep=\dimen182
+\@belowrulesep=\dimen183
+\@thisruleclass=\count285
+\@lastruleclass=\count286
+\@thisrulewidth=\dimen184
 ) (/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)
-\LTleft=\skip53
-\LTright=\skip54
-\LTpre=\skip55
-\LTpost=\skip56
-\LTchunksize=\count284
-\LTcapwidth=\dimen181
-\LT@head=\box45
-\LT@firsthead=\box46
-\LT@foot=\box47
-\LT@lastfoot=\box48
-\LT@cols=\count285
-\LT@rows=\count286
-\c@LT@tables=\count287
-\c@LT@chunks=\count288
+\LTleft=\skip54
+\LTright=\skip55
+\LTpre=\skip56
+\LTpost=\skip57
+\LTchunksize=\count287
+\LTcapwidth=\dimen185
+\LT@head=\box46
+\LT@firsthead=\box47
+\LT@foot=\box48
+\LT@lastfoot=\box49
+\LT@cols=\count288
+\LT@rows=\count289
+\c@LT@tables=\count290
+\c@LT@chunks=\count291
 \LT@p@ftn=\toks23
 ) (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 Package: array 2016/10/06 v2.4d Tabular extension package (FMi)
-\col@sep=\dimen182
-\extrarowheight=\dimen183
+\col@sep=\dimen186
+\extrarowheight=\dimen187
 \NC@list=\toks24
-\extratabsurround=\skip57
-\backup@length=\skip58
+\extratabsurround=\skip58
+\backup@length=\skip59
 ) (/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2016/11/25 v2.2 Span multiple rows of a table
-\multirow@colwidth=\skip59
-\multirow@cntb=\count289
-\multirow@dima=\skip60
-\bigstrutjot=\dimen184
+\multirow@colwidth=\skip60
+\multirow@cntb=\count292
+\multirow@dima=\skip61
+\bigstrutjot=\dimen188
 ) (/usr/share/texlive/texmf-dist/tex/latex/wrapfig/wrapfig.sty
-\wrapoverhang=\dimen185
-\WF@size=\dimen186
-\c@WF@wrappedlines=\count290
-\WF@box=\box49
+\wrapoverhang=\dimen189
+\WF@size=\dimen190
+\c@WF@wrappedlines=\count293
+\WF@box=\box50
 \WF@everypar=\toks25
 Package: wrapfig 2003/01/31  v 3.6
 ) (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count291
+\c@float@type=\count294
 \float@exts=\toks26
-\float@box=\box50
+\float@box=\box51
 \@float@everytoks=\toks27
-\@floatcapt=\box51
+\@floatcapt=\box52
 ) (/usr/share/texlive/texmf-dist/tex/latex/colortbl/colortbl.sty
 Package: colortbl 2012/02/13 v1.0a Color table columns (DPC)
-(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
-Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
-(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package color Info: Driver file: xetex.def on input line 147.
-)
 \everycr=\toks28
-\minrowclearance=\skip61
+\minrowclearance=\skip62
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/pdflscape.sty
 Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/lscape.sty
@@ -1040,36 +1057,36 @@ Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 99.
 Package: tabu 2011/02/26 v2.8 - flexible LaTeX tabulars (FC)
 (/usr/share/texlive/texmf-dist/tex/latex/varwidth/varwidth.sty
 Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
-\@vwid@box=\box52
-\sift@deathcycles=\count292
-\@vwid@loff=\dimen187
-\@vwid@roff=\dimen188
+\@vwid@box=\box53
+\sift@deathcycles=\count295
+\@vwid@loff=\dimen191
+\@vwid@roff=\dimen192
 )
-\c@taburow=\count293
-\tabu@nbcols=\count294
-\tabu@cnt=\count295
-\tabu@Xcol=\count296
-\tabu@alloc=\count297
-\tabu@nested=\count298
-\tabu@target=\dimen189
-\tabu@spreadtarget=\dimen190
-\tabu@naturalX=\dimen191
-\tabucolX=\dimen192
-\tabu@Xsum=\dimen193
-\extrarowdepth=\dimen194
-\abovetabulinesep=\dimen195
-\belowtabulinesep=\dimen196
-\tabustrutrule=\dimen197
+\c@taburow=\count296
+\tabu@nbcols=\count297
+\tabu@cnt=\count298
+\tabu@Xcol=\count299
+\tabu@alloc=\count300
+\tabu@nested=\count301
+\tabu@target=\dimen193
+\tabu@spreadtarget=\dimen194
+\tabu@naturalX=\dimen195
+\tabucolX=\dimen196
+\tabu@Xsum=\dimen197
+\extrarowdepth=\dimen198
+\abovetabulinesep=\dimen199
+\belowtabulinesep=\dimen256
+\tabustrutrule=\dimen257
 \tabu@thebody=\toks29
 \tabu@footnotes=\toks30
-\tabu@box=\box53
-\tabu@arstrutbox=\box54
-\tabu@hleads=\box55
-\tabu@vleads=\box56
-\tabu@cellskip=\skip62
+\tabu@box=\box54
+\tabu@arstrutbox=\box55
+\tabu@hleads=\box56
+\tabu@vleads=\box57
+\tabu@cellskip=\skip63
 ) (/usr/share/texlive/texmf-dist/tex/latex/threeparttable/threeparttable.sty
 Package: threeparttable 2003/06/13  v 3.0
-\@tempboxb=\box57
+\@tempboxb=\box58
 ) (/usr/share/texlive/texmf-dist/tex/latex/threeparttablex/threeparttablex.sty
 Package: threeparttablex 2013/07/23 v0.3 by daleif
 (/usr/share/texlive/texmf-dist/tex/latex/environ/environ.sty
@@ -1077,22 +1094,22 @@ Package: environ 2014/05/04 v0.3 A new way to define environments
 (/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty
 Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 ))
-\TPTL@width=\skip63
+\TPTL@width=\skip64
 ) (/usr/share/texlive/texmf-dist/tex/generic/ulem/ulem.sty
-\UL@box=\box58
-\UL@hyphenbox=\box59
-\UL@skip=\skip64
+\UL@box=\box59
+\UL@hyphenbox=\box60
+\UL@skip=\skip65
 \UL@hook=\toks31
-\UL@height=\dimen198
-\UL@pe=\count299
-\UL@pixel=\dimen199
-\ULC@box=\box60
+\UL@height=\dimen258
+\UL@pe=\count302
+\UL@pixel=\dimen259
+\ULC@box=\box61
 Package: ulem 2012/05/18
-\ULdepth=\dimen256
+\ULdepth=\dimen260
 ) (/usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
-\rotheadsize=\dimen257
-\c@nlinenum=\count300
+\rotheadsize=\dimen261
+\c@nlinenum=\count303
 \TeXr@lab=\toks32
 ) (/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
 Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
@@ -1101,7 +1118,7 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package xcolor Info: Driver file: xetex.def on input line 225.
 LaTeX Info: Redefining \color on input line 709.
-\rownum=\count301
+\rownum=\count304
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
 Package xcolor Info: Model `RGB' extended on input line 1364.
 Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
@@ -1113,15 +1130,15 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 ) (/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 Package: fancyhdr 2017/06/30 v3.9a Extensive control of page headers and footer
 s
-\f@nch@headwidth=\skip65
-\f@nch@O@elh=\skip66
-\f@nch@O@erh=\skip67
-\f@nch@O@olh=\skip68
-\f@nch@O@orh=\skip69
-\f@nch@O@elf=\skip70
-\f@nch@O@erf=\skip71
-\f@nch@O@olf=\skip72
-\f@nch@O@orf=\skip73
+\f@nch@headwidth=\skip66
+\f@nch@O@elh=\skip67
+\f@nch@O@erh=\skip68
+\f@nch@O@olh=\skip69
+\f@nch@O@orh=\skip70
+\f@nch@O@elf=\skip71
+\f@nch@O@erf=\skip72
+\f@nch@O@olf=\skip73
+\f@nch@O@orf=\skip74
 ) (/usr/share/texlive/texmf-dist/tex/latex/shipunov/boldline.sty
 Package: boldline 2008/02/04 v0.2 Adjust line width in tables
 
@@ -1146,46 +1163,46 @@ LaTeX Font Info:    Redeclaring font encoding TU on input line 82.
 ))) (./11_Comparing_Different_Groups.aux)
 \openout1 = `11_Comparing_Different_Groups.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 103.
-LaTeX Font Info:    ... okay on input line 103.
-LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 103.
-LaTeX Font Info:    Try loading font information for T3+cmr on input line 103.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 143.
+LaTeX Font Info:    ... okay on input line 143.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 143.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 143.
 (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
 File: t3cmr.fd 2001/12/31 TIPA font definitions
 )
-LaTeX Font Info:    ... okay on input line 103.
+LaTeX Font Info:    ... okay on input line 143.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 103.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 143.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 103.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 143.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 103.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 143.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 103.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 143.
 .................................................
 . fontspec info: "set-scale"
 . 
 . latinmodern-math scale = 1.00000590054049.
 .................................................
-\g__fontspec_family_latinmodern-math.otf_int=\count302
+\g__fontspec_family_latinmodern-math.otf_int=\count305
 .................................................
 . fontspec info: "set-scale"
 . 
@@ -1216,7 +1233,7 @@ apping=tex-text;"
 . - 'bold small caps'  (bx/sc) with NFSS spec.: 
 .................................................
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 103.
+(Font)              scaled to size 12.0pt on input line 143.
 .................................................
 . fontspec info: "set-scale"
 . 
@@ -1266,18 +1283,18 @@ apping=tex-text;"
 . - 'bold small caps'  (bx/sc) with NFSS spec.: 
 .................................................
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 103.
+(Font)              scaled to size 12.0pt on input line 143.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 103.
+(Font)              `operators' in the math version `normal' on input line 143.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input
- line 103.
+ line 143.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 103.
+(Font)              `operators' in the math version `bold' on input line 143.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/bx/n on inp
-ut line 103.
+ut line 143.
 .................................................
 . fontspec info: "set-scale"
 . 
@@ -1350,15 +1367,15 @@ x-text;"
 . \fontdimen 20\font =0pt\relax \fontdimen 21\font =0pt\relax 
 .................................................
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 103.
+(Font)              `symbols' in the math version `normal' on input line 143.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
 (Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on inpu
-t line 103.
+t line 143.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 103.
+(Font)              `symbols' in the math version `bold' on input line 143.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
 (Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/bx/n on inp
-ut line 103.
+ut line 143.
 .................................................
 . fontspec info: "set-scale"
 . 
@@ -1420,17 +1437,17 @@ x-text;"
 .................................................
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
 (Font)              `largesymbols' in the math version `normal' on input line 1
-03.
+43.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on inpu
-t line 103.
+t line 143.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 103
+(Font)              `largesymbols' in the math version `bold' on input line 143
 .
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/bx/n on inp
-ut line 103.
-LaTeX Info: Redefining \microtypecontext on input line 103.
+ut line 143.
+LaTeX Info: Redefining \microtypecontext on input line 143.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
 Package microtype Info: No adjustment of tracking.
@@ -1440,21 +1457,21 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `Arial' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-\AtBeginShipoutBox=\box61
-Package hyperref Info: Link coloring OFF on input line 103.
+\AtBeginShipoutBox=\box62
+Package hyperref Info: Link coloring OFF on input line 143.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count303
+\c@section@level=\count306
 )
-LaTeX Info: Redefining \ref on input line 103.
-LaTeX Info: Redefining \pageref on input line 103.
-LaTeX Info: Redefining \nameref on input line 103.
+LaTeX Info: Redefining \ref on input line 143.
+LaTeX Info: Redefining \pageref on input line 143.
+LaTeX Info: Redefining \nameref on input line 143.
 (./11_Comparing_Different_Groups.out) (./11_Comparing_Different_Groups.out)
-\@outlinefile=\write3
-\openout3 = `11_Comparing_Different_Groups.out'.
+\@outlinefile=\write4
+\openout4 = `11_Comparing_Different_Groups.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1500,33 +1517,257 @@ Package caption Info: threeparttable package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 11.96872pt on input line 106.
+(Font)              scaled to size 11.96872pt on input line 146.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 11.96872pt on input line 106.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 195.
+(Font)              scaled to size 11.96872pt on input line 146.
+
+Package xcolor Warning: Incompatible color definition on input line 154.
+
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 156.
+
+Package xcolor Warning: Incompatible color definition on input line 160.
+
+
+Package xcolor Warning: Incompatible color definition on input line 160.
+
+
+Package xcolor Warning: Incompatible color definition on input line 182.
+
+
+Package xcolor Warning: Incompatible color definition on input line 186.
+
+
+Package xcolor Warning: Incompatible color definition on input line 186.
+
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 14.36246pt on input line 195.
+(Font)              scaled to size 14.36246pt on input line 212.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 14.36246pt on input line 195.
+(Font)              scaled to size 14.36246pt on input line 212.
 [1
 
 ]
-Overfull \vbox (222.78502pt too high) has occurred while \output is active []
+
+Package xcolor Warning: Incompatible color definition on input line 220.
+
+
+Package xcolor Warning: Incompatible color definition on input line 224.
+
+
+Package xcolor Warning: Incompatible color definition on input line 224.
 
 [2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 195.
+
+Package xcolor Warning: Incompatible color definition on input line 280.
+
+
+Package xcolor Warning: Incompatible color definition on input line 284.
+
+
+Package xcolor Warning: Incompatible color definition on input line 284.
+
+
+Package xcolor Warning: Incompatible color definition on input line 308.
+
+
+Package xcolor Warning: Incompatible color definition on input line 312.
+
+
+Package xcolor Warning: Incompatible color definition on input line 312.
+
+[3]
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 8.41483pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 5.97688pt on input line 341.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 341.
+
+(/usr/share/texmf/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 12.00018pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.41495pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 5.97696pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 11.99982pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.41469pt on input line 341.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 5.97679pt on input line 341.
+LaTeX Font Info:    Try loading font information for U+msa on input line 341.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 341.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+
+Package xcolor Warning: Incompatible color definition on input line 343.
+
+
+Package xcolor Warning: Incompatible color definition on input line 350.
+
+
+Package xcolor Warning: Incompatible color definition on input line 350.
+
+
+Package xcolor Warning: Incompatible color definition on input line 370.
+
+
+Package xcolor Warning: Incompatible color definition on input line 374.
+
+
+Package xcolor Warning: Incompatible color definition on input line 374.
+
+[4]
+
+Package xcolor Warning: Incompatible color definition on input line 401.
+
+
+Package xcolor Warning: Incompatible color definition on input line 408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 435.
+
+
+Package xcolor Warning: Incompatible color definition on input line 441.
+
+
+Package xcolor Warning: Incompatible color definition on input line 441.
+
+[5]
+
+Package xcolor Warning: Incompatible color definition on input line 474.
+
+
+Package xcolor Warning: Incompatible color definition on input line 478.
+
+
+Package xcolor Warning: Incompatible color definition on input line 478.
+
+File: 11_Comparing_Different_Groups_files/figure-latex/unnamed-chunk-9-1.png Gr
+aphic file (type bmp)
+<11_Comparing_Different_Groups_files/figure-latex/unnamed-chunk-9-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 492.
+
+
+Package xcolor Warning: Incompatible color definition on input line 496.
+
+
+Package xcolor Warning: Incompatible color definition on input line 496.
+
+
+Package xcolor Warning: Incompatible color definition on input line 503.
+
+
+Package xcolor Warning: Incompatible color definition on input line 507.
+
+
+Package xcolor Warning: Incompatible color definition on input line 507.
+
+[6]
+
+Package xcolor Warning: Incompatible color definition on input line 514.
+
+
+Package xcolor Warning: Incompatible color definition on input line 518.
+
+
+Package xcolor Warning: Incompatible color definition on input line 518.
+
+
+Package xcolor Warning: Incompatible color definition on input line 552.
+
+
+Package xcolor Warning: Incompatible color definition on input line 556.
+
+
+Package xcolor Warning: Incompatible color definition on input line 556.
+
+
+Package xcolor Warning: Incompatible color definition on input line 581.
+
+[7]
+
+Package xcolor Warning: Incompatible color definition on input line 585.
+
+
+Package xcolor Warning: Incompatible color definition on input line 585.
+
+
+Package xcolor Warning: Incompatible color definition on input line 622.
+
+
+Package xcolor Warning: Incompatible color definition on input line 628.
+
+
+Package xcolor Warning: Incompatible color definition on input line 628.
+
+[8]
+
+Package xcolor Warning: Incompatible color definition on input line 661.
+
+
+Package xcolor Warning: Incompatible color definition on input line 665.
+
+
+Package xcolor Warning: Incompatible color definition on input line 665.
+
+
+Package xcolor Warning: Incompatible color definition on input line 678.
+
+
+Package xcolor Warning: Incompatible color definition on input line 682.
+
+
+Package xcolor Warning: Incompatible color definition on input line 682.
+
+
+Package xcolor Warning: Incompatible color definition on input line 697.
+
+
+Package xcolor Warning: Incompatible color definition on input line 701.
+
+
+Package xcolor Warning: Incompatible color definition on input line 701.
+
+[9]
+
+Package xcolor Warning: Incompatible color definition on input line 708.
+
+
+Package xcolor Warning: Incompatible color definition on input line 712.
+
+
+Package xcolor Warning: Incompatible color definition on input line 712.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 737.
+[10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 737.
 (./11_Comparing_Different_Groups.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 195.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 195.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 195.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 737.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 737.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 737.
  ) 
 Here is how much of TeX's memory you used:
- 28378 strings out of 494988
- 507101 string characters out of 6178637
- 724837 words of memory out of 5000000
- 31973 multiletter control sequences out of 15000+600000
- 530996 words of font info for 42 fonts, out of 8000000 for 9000
+ 28914 strings out of 494988
+ 516871 string characters out of 6178637
+ 736388 words of memory out of 5000000
+ 32457 multiletter control sequences out of 15000+600000
+ 533836 words of font info for 61 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 51i,11n,117p,10438b,340s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 54i,12n,117p,10438b,461s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 11_Comparing_Different_Groups.pdf (2 pages).
+Output written on 11_Comparing_Different_Groups.pdf (10 pages).

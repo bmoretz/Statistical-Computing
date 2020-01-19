@@ -30,9 +30,9 @@ header-includes:
    \setlength\headheight{30pt}
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
-   \fancyhead[C]{\Large\bfseries\color{headergrey}Comparing Different Groups}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Multiple Comparisons}
    \rfoot{\color{headergrey}\thepage}
-   \lfoot{\color{headergrey}Chapter 11}
+   \lfoot{\color{headergrey}Chapter 12}
    \fancyfoot[C]{\rmfamily\color{headergrey}Statistical Methods}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -117,171 +117,35 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-### Chapter 11
-
-#### 11.1
-
-For the data in 11.2, perform the paired T test for means using the weights for the east and south sides of the trees.
-
-```{r}
-data <- data.table::fread(paste0(data.dir,"corkall_dat.txt"))
-
-t.test(data$E - data$S)
-```
-
-#### 11.2
-
-Repeat the previous except using 20% timmed means. Verify the p-value is 0.0049.
-
-```{r}
-trimci(data$E - data$S)
-```
-
-#### 11.3
-
-Compare the marginal 20% trimmed means with yuend and verify that the p-value is now 0.121.
-
-```{r}
-yuend(data$E, data$S, tr=.2)
-```
-
-#### 11.4
-
-Generally, why is it possible to get a different p-value comparing the marginal trimmed means rather than testing the hypothesis that trimmed mean of the difference scores is zero?
-
-_The sample trimmed mean of the difference scores is not nesessarily equal to the difference between the trimmed marginals._
-
-#### 11.5
-
-Is it possible that the marginal trimmed means are equal but the timmred mean based on the difference scores is not equal?
-
-_Yes, the population trimmed mean of the difference scores is not necessarily equal to the difference between the population timmed means._
-
-#### 11.6
-
-Repeat E1 using a bootstrap-t method to compare the means.
-
-```{r}
-with(data, trimcibt(N - S, tr=0))
-```
-
-#### 11.7
-
-Repeat the previous using a 20% trimmed mean.
-
-```{r}
-with(data, trimcibt(N - S, tr=.2))
-```
-
-#### 11.8
-
-Consider the following data for two dependent groups:
-
-G1: 10, 14, 15, 18, 20, 29, 30, 40
-
-G2: 40, 8, 15, 20, 10, 8, 2, 3
-
-Compare the groups with a sign test and the Wilcoxon signed rank test ($\alpha = 0.05$)
-
-```{r}
-x <- c(10, 14, 15, 18, 20, 29, 30, 40)
-y <- c(40, 8, 15, 20, 10, 8, 2, 3)
-
-signt(x,y)
-wilcox.test(x, y)
-```
-
-#### 11.9
-
-For the dependent groups:
-
-G1: 86, 71, 77, 68, 91, 72, 77, 91, 70, 71, 88, 87
-
-G2: 88, 77, 76, 64, 96, 72, 65, 90, 65, 80, 81, 72
-
-Apply the Wilcoxon signed rank test with $\alpha = 0.05$. Verify that W = 0.7565.
-
-```{r}
-
-x <- c(86, 71, 77, 68, 91, 72, 77, 91, 70, 71, 88, 87)
-y <- c(88, 77, 76, 64, 96, 72, 65, 90, 65, 80, 81, 72)
-
-wilcox.test(x,y,paired=TRUE)
-
-```
-
-#### 11.10
-
-Using the Idometh data, compare times 2 and 3 using means based on difference scores and verify that the p-value is 0.014.
-
-```{r}
-g1 <- which(Indometh[,2]==0.5)
-g2 <- which(Indometh[,2]==0.75)
-trimci(Indometh[g1,3]-Indometh[g2,3],tr=0)
-```
-
-#### 11.11
-
-Continuing with the previous, plot the differences.
-
-```{r}
-akerd(Indometh[g1,3]-Indometh[g2,3])
-```
-
-#### 11.12
-
-Use R to test the hypothesis that the differences scores have a mean, 20% trimmed mean and median of zero.
-
-```{r}
-data.before <- data.table::fread(paste0(data.dir, "CESD_before_dat.txt"))
-data.after <- data.table::fread(paste0(data.dir, "CESD_after_dat.txt"))
-
-trimci(data.before - data.after, tr = 0)
-```
-
-#### 11.13
-
-For the data in the previous exercise, tes the hypothesis that the marginal 20% trimmed means are equal.
-
-```{r}
-sintv2(data.before - data.after)
-```
-
-#### 11.15
-
-For the data using in Ex 12, use comdvar to compare the marginal variances.
-
-```{r}
-yuend(data.before, data.after)
-```
-
-#### 11.16
-
-Test the hypothesis that the means of these three measures are equal (CESD1, CESD2, CESD3).
-
-```{r}
-data <- data.table::fread(paste0(data.dir, "CESDMF123_dat.txt"))
-
-rmanova(data[, 2:4], tr = 0)
-```
-
-#### 11.17
-
-For the data in the previous exercise, test the hypothesis of identical distributions using the two rank based methods.
-
-```{r}
-bprm(data[, 2:4])
-
-friedman.test(as.matrix(data[, 2:4]))
-```
-
-#### 11.18
-
-Perform a 2-by-3 between-by-within ANOVA based on 10% trimmed means.
-
-```{r}
-M <- bw2list(data, 5, c(2:4))
-
-bwtrim(2, 3, M, tr=0.1)
-```
-
+### Chapter 12
+
+#### 12.1
+#### 12.2
+#### 12.3
+#### 12.4
+#### 12.5
+#### 12.6
+#### 12.7
+#### 12.8
+#### 12.9
+#### 12.10
+#### 12.11
+#### 12.12
+#### 12.13
+#### 12.14
+#### 12.15
+#### 12.16
+#### 12.17
+#### 12.18
+#### 12.19
+#### 12.20
+#### 12.21
+#### 12.22
+#### 12.23
+#### 12.24
+#### 12.25
+#### 12.26
+#### 12.27
+#### 12.28
+#### 12.29
+#### 12.30

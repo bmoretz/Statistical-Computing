@@ -75,7 +75,7 @@ library(pander, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(formattable, quietly = TRUE, warn.conflicts = FALSE)
 library(grid, quietly = TRUE, warn.conflicts = FALSE)
-library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)+
 library(WRS, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)

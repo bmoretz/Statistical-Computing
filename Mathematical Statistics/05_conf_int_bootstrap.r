@@ -223,10 +223,10 @@ N.CLEC <- length(Time.CLEC)
 
 for(i in 1:N)
 {
-    ilec <- sample(Time.ILEC, N.ILEC, replace = T)
-    clec <- sample(Time.CLEC, N.CLEC, replace = T)
-    
-    results[i] <- mean(ilec) - mean(clec)
+  ilec <- sample(Time.ILEC, N.ILEC, replace = T)
+  clec <- sample(Time.CLEC, N.CLEC, replace = T)
+  
+  results[i] <- mean(ilec) - mean(clec)
 }
 
 alpha <- 0.05

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  27 JAN 2020 16:14
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/Debian) (preloaded format=xelatex 2019.12.17)  27 JAN 2020 17:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1561,225 +1561,601 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 
-Package xcolor Warning: Incompatible color definition on input line 171.
+Package xcolor Warning: Incompatible color definition on input line 170.
 
 
-Package xcolor Warning: Incompatible color definition on input line 177.
+Package xcolor Warning: Incompatible color definition on input line 176.
 
 
-Package xcolor Warning: Incompatible color definition on input line 177.
+Package xcolor Warning: Incompatible color definition on input line 176.
 
 
-Package xcolor Warning: Incompatible color definition on input line 182.
+Package xcolor Warning: Incompatible color definition on input line 181.
 
 
-Package xcolor Warning: Incompatible color definition on input line 188.
+Package xcolor Warning: Incompatible color definition on input line 187.
 
 
-Package xcolor Warning: Incompatible color definition on input line 188.
+Package xcolor Warning: Incompatible color definition on input line 187.
 
 
-Package xcolor Warning: Incompatible color definition on input line 195.
+Package xcolor Warning: Incompatible color definition on input line 194.
 
 
-Package xcolor Warning: Incompatible color definition on input line 201.
+Package xcolor Warning: Incompatible color definition on input line 200.
 
 
-Package xcolor Warning: Incompatible color definition on input line 201.
+Package xcolor Warning: Incompatible color definition on input line 200.
 
 
-Package xcolor Warning: Incompatible color definition on input line 208.
+Package xcolor Warning: Incompatible color definition on input line 207.
 
 
-Package xcolor Warning: Incompatible color definition on input line 214.
+Package xcolor Warning: Incompatible color definition on input line 213.
 
 
-Package xcolor Warning: Incompatible color definition on input line 214.
+Package xcolor Warning: Incompatible color definition on input line 213.
 
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 11.96872pt on input line 219.
+(Font)              scaled to size 11.96872pt on input line 218.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 11.96872pt on input line 219.
+(Font)              scaled to size 11.96872pt on input line 218.
 LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
-(Font)              scaled to size 14.36246pt on input line 223.
+(Font)              scaled to size 14.36246pt on input line 222.
 LaTeX Font Info:    Font shape `TU/Arial(0)/bx/n' will be
-(Font)              scaled to size 14.36246pt on input line 223.
+(Font)              scaled to size 14.36246pt on input line 222.
 [1
 
 ]
 
-Package xcolor Warning: Incompatible color definition on input line 226.
+Package xcolor Warning: Incompatible color definition on input line 225.
 
 
-Package xcolor Warning: Incompatible color definition on input line 232.
+Package xcolor Warning: Incompatible color definition on input line 231.
 
 
-Package xcolor Warning: Incompatible color definition on input line 232.
+Package xcolor Warning: Incompatible color definition on input line 231.
 
 
-Package xcolor Warning: Incompatible color definition on input line 239.
+Package xcolor Warning: Incompatible color definition on input line 238.
 
 
-Package xcolor Warning: Incompatible color definition on input line 247.
+Package xcolor Warning: Incompatible color definition on input line 246.
 
 
-Package xcolor Warning: Incompatible color definition on input line 247.
+Package xcolor Warning: Incompatible color definition on input line 246.
 
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 253.
+(amsmath)                 on input line 252.
 
 
-Package xcolor Warning: Incompatible color definition on input line 258.
+Package xcolor Warning: Incompatible color definition on input line 257.
 
 
-Package xcolor Warning: Incompatible color definition on input line 267.
+Package xcolor Warning: Incompatible color definition on input line 266.
 
 
-Package xcolor Warning: Incompatible color definition on input line 267.
+Package xcolor Warning: Incompatible color definition on input line 266.
 
 
-Package xcolor Warning: Incompatible color definition on input line 276.
+Package xcolor Warning: Incompatible color definition on input line 275.
 
 
-Package xcolor Warning: Incompatible color definition on input line 284.
+Package xcolor Warning: Incompatible color definition on input line 283.
 
 
-Package xcolor Warning: Incompatible color definition on input line 284.
+Package xcolor Warning: Incompatible color definition on input line 283.
 
 
-Package xcolor Warning: Incompatible color definition on input line 296.
+Package xcolor Warning: Incompatible color definition on input line 295.
 
 
-Package xcolor Warning: Incompatible color definition on input line 300.
+Package xcolor Warning: Incompatible color definition on input line 299.
 
 
-Package xcolor Warning: Incompatible color definition on input line 300.
+Package xcolor Warning: Incompatible color definition on input line 299.
 
 [2]
 
-Package xcolor Warning: Incompatible color definition on input line 313.
+Package xcolor Warning: Incompatible color definition on input line 312.
 
 
-Package xcolor Warning: Incompatible color definition on input line 317.
+Package xcolor Warning: Incompatible color definition on input line 316.
 
 
-Package xcolor Warning: Incompatible color definition on input line 317.
+Package xcolor Warning: Incompatible color definition on input line 316.
 
 
-Package xcolor Warning: Incompatible color definition on input line 321.
+Package xcolor Warning: Incompatible color definition on input line 320.
 
 
-Package xcolor Warning: Incompatible color definition on input line 327.
+Package xcolor Warning: Incompatible color definition on input line 326.
 
 
-Package xcolor Warning: Incompatible color definition on input line 327.
+Package xcolor Warning: Incompatible color definition on input line 326.
 
 
-Package xcolor Warning: Incompatible color definition on input line 335.
+Package xcolor Warning: Incompatible color definition on input line 334.
 
 
-Package xcolor Warning: Incompatible color definition on input line 339.
+Package xcolor Warning: Incompatible color definition on input line 338.
 
 
-Package xcolor Warning: Incompatible color definition on input line 339.
+Package xcolor Warning: Incompatible color definition on input line 338.
 
 
-Package xcolor Warning: Incompatible color definition on input line 372.
+Package xcolor Warning: Incompatible color definition on input line 371.
 
 [3]
 
-Package xcolor Warning: Incompatible color definition on input line 376.
+Package xcolor Warning: Incompatible color definition on input line 375.
 
 
-Package xcolor Warning: Incompatible color definition on input line 376.
+Package xcolor Warning: Incompatible color definition on input line 375.
 
 
-Package xcolor Warning: Incompatible color definition on input line 428.
+Package xcolor Warning: Incompatible color definition on input line 427.
 
 
-Package xcolor Warning: Incompatible color definition on input line 434.
+Package xcolor Warning: Incompatible color definition on input line 433.
 
 
-Package xcolor Warning: Incompatible color definition on input line 434.
+Package xcolor Warning: Incompatible color definition on input line 433.
 
 
-Package xcolor Warning: Incompatible color definition on input line 445.
+Package xcolor Warning: Incompatible color definition on input line 444.
 
 [4]
 
-Package xcolor Warning: Incompatible color definition on input line 458.
+Package xcolor Warning: Incompatible color definition on input line 457.
 
 
-Package xcolor Warning: Incompatible color definition on input line 458.
+Package xcolor Warning: Incompatible color definition on input line 457.
 
 File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-16-1.png Graphic f
 ile (type bmp)
 <05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-16-1.png>
 
-Package xcolor Warning: Incompatible color definition on input line 469.
+Package xcolor Warning: Incompatible color definition on input line 464.
 
 
-Package xcolor Warning: Incompatible color definition on input line 479.
+Package xcolor Warning: Incompatible color definition on input line 474.
 
 
-Package xcolor Warning: Incompatible color definition on input line 479.
+Package xcolor Warning: Incompatible color definition on input line 474.
 
 [5]
 
-Package xcolor Warning: Incompatible color definition on input line 495.
+Package xcolor Warning: Incompatible color definition on input line 490.
 
 
-Package xcolor Warning: Incompatible color definition on input line 520.
+Package xcolor Warning: Incompatible color definition on input line 514.
 
 
-Package xcolor Warning: Incompatible color definition on input line 520.
+Package xcolor Warning: Incompatible color definition on input line 514.
 
 
-Package xcolor Warning: Incompatible color definition on input line 525.
+Package xcolor Warning: Incompatible color definition on input line 519.
 
 
-Package xcolor Warning: Incompatible color definition on input line 535.
+Package xcolor Warning: Incompatible color definition on input line 529.
 
 
-Package xcolor Warning: Incompatible color definition on input line 535.
+Package xcolor Warning: Incompatible color definition on input line 529.
 
 
-Package xcolor Warning: Incompatible color definition on input line 560.
+Package xcolor Warning: Incompatible color definition on input line 554.
 
 [6]
 
-Package xcolor Warning: Incompatible color definition on input line 570.
+Package xcolor Warning: Incompatible color definition on input line 566.
 
 
-Package xcolor Warning: Incompatible color definition on input line 570.
+Package xcolor Warning: Incompatible color definition on input line 566.
 
 
-Package xcolor Warning: Incompatible color definition on input line 591.
+Package xcolor Warning: Incompatible color definition on input line 587.
 
 
-Package xcolor Warning: Incompatible color definition on input line 601.
+Package xcolor Warning: Incompatible color definition on input line 599.
 
 
-Package xcolor Warning: Incompatible color definition on input line 601.
+Package xcolor Warning: Incompatible color definition on input line 599.
+
+
+Package xcolor Warning: Incompatible color definition on input line 633.
 
 [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 655.
+
+Package xcolor Warning: Incompatible color definition on input line 645.
+
+
+Package xcolor Warning: Incompatible color definition on input line 645.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-21-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-21-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 652.
+
+
+Package xcolor Warning: Incompatible color definition on input line 660.
+
+
+Package xcolor Warning: Incompatible color definition on input line 660.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-22-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-22-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 664.
+
 [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 655.
+
+Package xcolor Warning: Incompatible color definition on input line 670.
+
+
+Package xcolor Warning: Incompatible color definition on input line 670.
+
+
+Package xcolor Warning: Incompatible color definition on input line 683.
+
+
+Package xcolor Warning: Incompatible color definition on input line 693.
+
+
+Package xcolor Warning: Incompatible color definition on input line 693.
+
+
+Package xcolor Warning: Incompatible color definition on input line 709.
+
+
+Package xcolor Warning: Incompatible color definition on input line 718.
+
+
+Package xcolor Warning: Incompatible color definition on input line 718.
+
+
+Package xcolor Warning: Incompatible color definition on input line 718.
+
+[9]
+
+Package xcolor Warning: Incompatible color definition on input line 718.
+
+
+Package xcolor Warning: Incompatible color definition on input line 718.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-23-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-23-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 725.
+
+
+Package xcolor Warning: Incompatible color definition on input line 733.
+
+
+Package xcolor Warning: Incompatible color definition on input line 733.
+
+
+Package xcolor Warning: Incompatible color definition on input line 758.
+
+
+Package xcolor Warning: Incompatible color definition on input line 768.
+
+
+Package xcolor Warning: Incompatible color definition on input line 768.
+
+
+Package xcolor Warning: Incompatible color definition on input line 768.
+
+[10]
+
+Package xcolor Warning: Incompatible color definition on input line 768.
+
+
+Package xcolor Warning: Incompatible color definition on input line 768.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 772.
+
+
+Package xcolor Warning: Incompatible color definition on input line 780.
+
+
+Package xcolor Warning: Incompatible color definition on input line 780.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-2.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-2.png>
+
+Package xcolor Warning: Incompatible color definition on input line 784.
+
+
+Package xcolor Warning: Incompatible color definition on input line 790.
+
+
+Package xcolor Warning: Incompatible color definition on input line 790.
+
+[11]
+
+Package xcolor Warning: Incompatible color definition on input line 800.
+
+
+Package xcolor Warning: Incompatible color definition on input line 809.
+
+
+Package xcolor Warning: Incompatible color definition on input line 809.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-3.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-25-3.png>
+
+Package xcolor Warning: Incompatible color definition on input line 813.
+
+
+Package xcolor Warning: Incompatible color definition on input line 821.
+
+
+Package xcolor Warning: Incompatible color definition on input line 821.
+
+
+Package xcolor Warning: Incompatible color definition on input line 842.
+
+
+Package xcolor Warning: Incompatible color definition on input line 852.
+
+
+Package xcolor Warning: Incompatible color definition on input line 852.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 856.
+
+[12]
+
+Package xcolor Warning: Incompatible color definition on input line 864.
+
+
+Package xcolor Warning: Incompatible color definition on input line 864.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-2.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-2.png>
+
+Package xcolor Warning: Incompatible color definition on input line 868.
+
+
+Package xcolor Warning: Incompatible color definition on input line 874.
+
+
+Package xcolor Warning: Incompatible color definition on input line 874.
+
+
+Package xcolor Warning: Incompatible color definition on input line 884.
+
+[13]
+
+Package xcolor Warning: Incompatible color definition on input line 893.
+
+
+Package xcolor Warning: Incompatible color definition on input line 893.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-3.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-26-3.png>
+
+Package xcolor Warning: Incompatible color definition on input line 897.
+
+
+Package xcolor Warning: Incompatible color definition on input line 905.
+
+
+Package xcolor Warning: Incompatible color definition on input line 905.
+
+
+Package xcolor Warning: Incompatible color definition on input line 933.
+
+
+Package xcolor Warning: Incompatible color definition on input line 969.
+
+
+Package xcolor Warning: Incompatible color definition on input line 969.
+
+
+Package xcolor Warning: Incompatible color definition on input line 969.
+
+[14]
+
+Package xcolor Warning: Incompatible color definition on input line 969.
+
+
+Package xcolor Warning: Incompatible color definition on input line 969.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-27-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-27-1.png>
+[15]
+
+Package xcolor Warning: Incompatible color definition on input line 980.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+[16]
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1014.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-28-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-28-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1018.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1052.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1052.
+
+
+Underfull \vbox (badness 10000) detected at line 1052
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 1052.
+
+[17]
+
+Package xcolor Warning: Incompatible color definition on input line 1052.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1052.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-29-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-29-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1056.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1090.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1090.
+
+
+Underfull \vbox (badness 2237) detected at line 1090
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 1090.
+
+[18]
+
+Package xcolor Warning: Incompatible color definition on input line 1090.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1090.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-30-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-30-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1108.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1115.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1115.
+
+[19]
+
+Package xcolor Warning: Incompatible color definition on input line 1127.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1133.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1133.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-31-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-31-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1145.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1149.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1149.
+
+[20]
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-31-2.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-31-2.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1196.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1206.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1206.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1222.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1237.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1237.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1237.
+
+[21]
+
+Package xcolor Warning: Incompatible color definition on input line 1237.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1237.
+
+File: 05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-32-1.png Graphic f
+ile (type bmp)
+<05_conf_int_bootstrap_files/figure-latex/unnamed-chunk-32-1.png>
+
+Package xcolor Warning: Incompatible color definition on input line 1244.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1249.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1249.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1262.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1268.
+
+
+Package xcolor Warning: Incompatible color definition on input line 1268.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1274.
+[22]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1274.
 (./05_conf_int_bootstrap.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 655.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 655.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 655.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1274.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1274.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1274.
  ) 
 Here is how much of TeX's memory you used:
- 28919 strings out of 494988
- 516859 string characters out of 6178637
- 739290 words of memory out of 5000000
- 32460 multiletter control sequences out of 15000+600000
+ 28987 strings out of 494988
+ 520521 string characters out of 6178637
+ 739473 words of memory out of 5000000
+ 32512 multiletter control sequences out of 15000+600000
  533844 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  54i,12n,117p,10430b,459s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 05_conf_int_bootstrap.pdf (8 pages).
+Output written on 05_conf_int_bootstrap.pdf (22 pages).

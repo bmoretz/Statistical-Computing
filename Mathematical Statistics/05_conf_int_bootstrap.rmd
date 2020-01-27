@@ -84,6 +84,7 @@ library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
 library(gtools, quietly = TRUE, warn.conflicts = FALSE)
 library(here, quietly = T, warn.conflicts = F)
 library(boot, quietly = T, warn.conflicts = F)
+library(ggExtra, quietly = T, warn.conflicts = F)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -108,8 +109,7 @@ theme_update(axis.text.x = element_text(size = 10),
                                          colour = "lightgray"), 
              plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
 
-setwd(paste0(here::here(), "/datasets/"))
-
+data.dir <- paste0(here::here(), "/datasets/")
 ```
 
 ```{r pander_setup, include = FALSE}
@@ -331,7 +331,7 @@ samp <- data.table(values = rnorm(200, mean = 36, sd = 8))
 ggplot(samp, aes(values)) +
    geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
    geom_density(aes(values), color = "darkorange") +
-   geom_vline(xintercept = mu, col = "black", height = .8, lty = 2) +
+   geom_vline(xintercept = mu, col = "black", lty = 2) +
    geom_vline(xintercept = mu - se, col = "darkred", lty = 2) +
    geom_vline(xintercept = mu + se, col = "darkred", lty = 2)
 
@@ -340,6 +340,7 @@ ggplot(samp, aes(values)) +
 c.) Compute the bootstrap distribution for your sample, and note the bootstrap mean and standard error.
 
 ```{r}
+
 boot.fn <- function(data, index){
    mean(data[index]$values)
 }
@@ -348,7 +349,7 @@ I <- 10e3
 
 boot(samp, boot.fn, R = I) # boot pkg
 
-cst.boot <- function(values, n) {
+cst.boot <- function(values, n, I = 10e3, alpha = 0.05) {
    bootstrap <- numeric(I)
    
    for(i in 1:I)
@@ -356,15 +357,14 @@ cst.boot <- function(values, n) {
       bootstrap[i] <- mean( sample(values, n, replace = T) )
    }
    
-   alpha <- 0.05
-   
    observed <- mean(values)
    
    boot.mean <- mean(bootstrap)
    boot.bias <- observed - boot.mean
    boot.se <- sd(bootstrap)
    
-   list(observed = observed,
+   list(bootstrap = bootstrap,
+         observed = observed,
          mean = boot.mean,
          bias = boot.bias,
          se = boot.se,
@@ -388,7 +388,9 @@ pretty_kable(tbl, "Sampling Statistics")
 e.) Repeat for sample sizes $n = 50$ and $n = 10$. Carefully describe yyour observations about the effects of sample size on the bootstrap distribuiton.
 
 ```{r}
-n.50 <- cst.boot(samp$values, 50)
+n <- 50
+samp <- data.table(values = rnorm(n, mean = mu, sd = sigma))
+n.50 <- cst.boot(samp$values, n)
 
 tbl <- data.table(Data = c("Population", "Sampling Distribution", "Sample", "Bootstrap Distribution"),
                   Mean = c(mu, sigma, n.50$observed, n.50$mean),
@@ -399,6 +401,8 @@ pretty_kable(tbl, "Sampling Statistics")
 ```
 
 ```{r}
+n <- 10
+samp <- data.table(values = rnorm(n, mean = mu, sd = sigma))
 n.10 <- cst.boot(samp$values, 10)
 
 tbl <- data.table(Data = c("Population", "Sampling Distribution", "Sample", "Bootstrap Distribution"),
@@ -416,21 +420,335 @@ Consider a population that has a gamma distribution with parameters r = 5, $\lam
 
 a.) Use simulation (with $n = 200$) to generate an approximate sampling distribution of the mean; plot and describe the distribution.
 
+```{r}
+set.seed(123)
+
+n <- 200; r <- 5; lambda <- 4; mu <- lambda/r
+
+pop <- data.table(values = rgamma(n, shape = lambda, rate = r))
+
+ggplot(pop, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+```
+
 b.) Now, draw one random sample of size 200 from this population. Create a histogram of your sample, and find the mean and standard deviation.
+
+```{r}
+samp <- data.table(values = sample(pop$values, n, replace = T))
+
+ggplot(samp, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+
+xbar <- mean(samp$values); sd <- sd(samp$values) 
+
+xbar; sd
+```
 
 c.) Compute the bootstrap distribution of the mean for you sample, plot it, and note the bootstrap mean and standard error.
 
+```{r}
+I <- 10e3
+
+boot.fn <- function(data, index) {
+   mean(data[index]$values)
+}
+
+boot(samp, boot.fn, R = I)
+
+n.200 <- cst.boot(samp$values, n)
+
+ggplot(data.table(values = n.200$bootstrap), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange") +
+   labs(title = "N=200, bootstrapped mean (Gamma r=5, lambda = 4)")
+```
+
 d.) Compare the bootstrap distribution to the approximate theoretical sampling distribution by creating a table like Table 5.2.
+
+```{r}
+tbl <- data.table(Data = c("Population", "Sampling Distribution", "Sample", "Bootstrap Distribution"),
+                  Mean = c(mu, sd(samp$values), n.200$observed, n.200$mean),
+                  SD = c(mu, mu/sqrt(n), sd(samp$values), n.200$se))
+
+pretty_kable(tbl, "Sampling Statistics")
+```
 
 e.) Repeat (a-e) for sample sizes of n = 50, and n = 10. Describe carefully your observations about the effects of sample size on the bootstrap distribution.
 
+```{r}
+n <- 50
+
+pop <- data.table(values = rgamma(n, shape = lambda, rate = r))
+
+ggplot(pop, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+
+samp <- data.table(values = sample(pop$values, n, replace = T))
+
+ggplot(samp, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+
+xbar <- mean(samp$values); sd <- sd(samp$values) 
+
+xbar; sd
+
+n.50 <- cst.boot(samp$values, n)
+
+ggplot(data.table(values = n.50$bootstrap), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange") +
+   labs(title = "N=50, bootstrapped mean (Gamma r=5, lambda = 4)")
+
+tbl <- data.table(Data = c("Population", "Sampling Distribution", "Sample", "Bootstrap Distribution"),
+                  Mean = c(mu, sd(samp$values), n.50$observed, n.50$mean),
+                  SD = c(mu, mu/sqrt(n), sd(samp$values), n.50$se))
+
+pretty_kable(tbl, "Sampling Statistics")
+```
+
+
+```{r}
+n <- 10
+
+pop <- data.table(values = rgamma(n, shape = lambda, rate = r))
+
+ggplot(pop, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+
+samp <- data.table(values = sample(pop$values, n, replace = T))
+
+ggplot(samp, aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+
+xbar <- mean(samp$values); sd <- sd(samp$values) 
+
+xbar; sd
+
+n.50 <- cst.boot(samp$values, n)
+
+ggplot(data.table(values = n.50$bootstrap), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange") +
+   labs(title = "N=50, bootstrapped mean (Gamma r=5, lambda = 4)")
+
+tbl <- data.table(Data = c("Population", "Sampling Distribution", "Sample", "Bootstrap Distribution"),
+                  Mean = c(mu, sd(samp$values), n.50$observed, n.50$mean),
+                  SD = c(mu, mu/sqrt(n), sd(samp$values), n.50$se))
+
+pretty_kable(tbl, "Sampling Statistics")
+```
 
 ### 5.10
 
 We investigate the bootstrap distribution of the median. Create random sample of size n for various n and bootstrap the median. Describe the bootstrap distribution.
 
 ```{r}
+ne <- 14 # n even
+no <- 15 # n odd
 
+wwe <- rnorm(ne) # draw samples of size ne
+wwo <- rnorm(no) # draw random samples of size no
 
+N <- 10^4
+
+even.boot <- numeric(N) # save space
+odd.boot <- numeric(N)
+
+for(i in 1:N)
+{
+   x.even <- sample(wwe, ne, replace = T)
+   x.odd <- sample(wwo, no, replace = T)
+   
+   even.boot[i] <- median(x.even)
+   odd.boot[i] <- median(x.odd)
+}
+
+boot <- data.table(even = even.boot, odd = odd.boot)
+
+p1 <- ggplot(boot, aes(even)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange") +
+   labs(title = "even")
+
+p2 <- ggplot(boot, aes(odd)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange") +
+   labs(title = "odd")
+
+gridExtra::grid.arrange(p1, p2)
 ```
 
+Change the sample sizes to 36 and 37; 200 and 201; and 10,000 and 10,001.
+
+Note the similarities/dissimalarities, trends, and so on. Why does the parity of the sample size matter? (_Note: Adjust the x limits in the plots as needed._)
+
+```{r}
+ne <- 36 # n even
+no <- 37 # n odd
+
+wwe <- rnorm(ne) # draw samples of size ne
+wwo <- rnorm(no) # draw random samples of size no
+
+N <- 10^4
+
+even.boot <- numeric(N) # save space
+odd.boot <- numeric(N)
+
+for(i in 1:N)
+{
+   x.even <- sample(wwe, ne, replace = T)
+   x.odd <- sample(wwo, no, replace = T)
+   
+   even.boot[i] <- median(x.even)
+   odd.boot[i] <- median(x.odd)
+}
+
+boot <- data.table(even = even.boot, odd = odd.boot)
+
+p1 <- ggplot(boot, aes(even)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+p2 <- ggplot(boot, aes(odd)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+gridExtra::grid.arrange(p1, p2)
+```
+
+```{r}
+ne <- 200 # n even
+no <- 201 # n odd
+
+wwe <- rnorm(ne) # draw samples of size ne
+wwo <- rnorm(no) # draw random samples of size no
+
+N <- 10^4
+
+even.boot <- numeric(N) # save space
+odd.boot <- numeric(N)
+
+for(i in 1:N)
+{
+   x.even <- sample(wwe, ne, replace = T)
+   x.odd <- sample(wwo, no, replace = T)
+   
+   even.boot[i] <- median(x.even)
+   odd.boot[i] <- median(x.odd)
+}
+
+boot <- data.table(even = even.boot, odd = odd.boot)
+
+p1 <- ggplot(boot, aes(even)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+p2 <- ggplot(boot, aes(odd)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+gridExtra::grid.arrange(p1, p2)
+```
+
+```{r}
+ne <- 10000 # n even
+no <- 10001 # n odd
+
+wwe <- rnorm(ne) # draw samples of size ne
+wwo <- rnorm(no) # draw random samples of size no
+
+N <- 10^4
+
+even.boot <- numeric(N) # save space
+odd.boot <- numeric(N)
+
+for(i in 1:N)
+{
+   x.even <- sample(wwe, ne, replace = T)
+   x.odd <- sample(wwo, no, replace = T)
+   
+   even.boot[i] <- median(x.even)
+   odd.boot[i] <- median(x.odd)
+}
+
+boot <- data.table(even = even.boot, odd = odd.boot)
+
+p1 <- ggplot(boot, aes(even)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+p2 <- ggplot(boot, aes(odd)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(even), col = "darkorange")
+
+gridExtra::grid.arrange(p1, p2)
+```
+
+For odd n, median will be one of the sample points. For smaller n, there will be only n possible values for the median, so the sampling distribution is more "granular" than when n is even.
+
+### 5.11
+
+Import the data from data set Bangladesh. In addition to aresnic concentrations for 271 wells, the data set contains cobolt and chlorine concentrations.
+
+a.) Conduct EDA on the chlorine concentrations and describe the salient features.
+
+```{r}
+Bangladesh <- data.table(read.csv(paste0(data.dir, "Bangladesh.csv"),
+                                 header = T))
+
+head(Bangladesh)
+
+ggplot(Bangladesh, aes(Chlorine)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(Chlorine), col = "darkorange")
+
+GGally::ggpairs(Bangladesh)
+```
+
+b.) Bootstrap the mean.
+
+```{r}
+N <- 10e3
+
+boot.fn <- function(data, index){
+   mean(data[index], na.rm = T)
+}
+
+boot(Bangladesh$Chlorine, boot.fn, R = N)
+
+observed <- mean(Bangladesh$Chlorine, na.rm = T)
+
+bootstrap <- numeric(N)
+
+for(i in 1:N)
+{
+   bootstrap[i] <- mean(sample(Bangladesh$Chlorine, size = nrow(Bangladesh), replace = T), na.rm = T)   
+}
+
+ggplot(data.table(values = bootstrap), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(aes(values), col = "darkorange")
+```
+
+c.) Find and interpret the 95% bootstrap percentile confidence interval.
+
+```{r}
+alpha <- 0.05
+quantile(bootstrap, c(alpha/2, 1 - alpha/2))
+```
+
+The spread on the confidence interval is extremely large, which is unsuprising given the heavly skewed distribtion of the sample.
+
+d.) What is the bootstrap estimate of the bias? What fraction of the bootstrap standard error does it represent?
+
+```{r}
+bias <- observed - mean(bootstrap)
+
+sd(bootstrap) / bias
+```

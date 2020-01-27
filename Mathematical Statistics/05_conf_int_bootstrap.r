@@ -265,12 +265,15 @@ for(i in 1:N)
   result[i] <- mean(Verizon[index]$Time) / mean(Verizon[-index]$Time)
 }
 
-mean(time.ratio.mean)
-sd(time.ratio.mean)
+observed - mean(time.ratio.mean) # bias
+sd(time.ratio.mean) # standard error
 
 quantile(time.ratio.mean, c(0.025, .975))
 
-mean(time.ratio.mean) - mean(Time.ILEC)/mean(Time.CLEC) # Bias
+time.ratio.bias <- mean(time.ratio.mean) - mean(Time.ILEC)/mean(Time.CLEC) # Bias
+
+time.ratio.bias / sd(time.ratio.mean)
+
 
 # Significance
 p <- (sum(result >= observed) + 1) / ( N + 1)

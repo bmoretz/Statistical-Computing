@@ -269,6 +269,8 @@ b.) List the distinct bootstrap samples assuming order does not matter.
 
 ```{r}
 combinations(n = 3, r = 4, v = samples, repeats.allowed = T)
+
+choose(4 + 3 - 1, 4)
 ```
 
 ### 5.5

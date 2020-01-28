@@ -30,7 +30,7 @@ sd(my.boot)
 ### Bangladesh
 
 Bangladesh <- data.table(read.csv(paste0(data.dir, "Bangladesh.csv"),
-                                 header = T))
+                                  header = T))
 
 Arsenic <- Bangladesh$Arsenic
 

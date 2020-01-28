@@ -67,7 +67,6 @@ library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
-library(Rblpapi, quietly = TRUE, warn.conflicts = FALSE)
 library(scales, quietly = TRUE, warn.conflicts = FALSE)
 library(pander, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
@@ -703,7 +702,6 @@ a.) Conduct EDA on the chlorine concentrations and describe the salient features
 ```{r}
 Bangladesh <- data.table(read.csv(paste0(data.dir, "Bangladesh.csv"),
                                  header = T))
-
 head(Bangladesh)
 
 ggplot(Bangladesh, aes(Chlorine)) +
@@ -754,3 +752,299 @@ bias <- observed - mean(bootstrap)
 
 sd(bootstrap) / bias
 ```
+
+### 5.12
+
+Consider Bangladesh chlorine (concentration). Bootstrap the trimmed mean (say, trim the upper and lower 25%), and compare your results with the usual mean (previous result).
+
+```{r}
+values <- Bangladesh[!is.na(Chlorine)]$Chlorine
+
+n <- length(values); N <- 10e3; trim <- .25
+
+observed <- mean(values, trim = trim)
+bootstrap <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   bootstrap[i] <- mean( sample(values, n, replace = T), trim = trim )
+}
+
+ggplot(data.table(value = bootstrap), aes(value)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange")
+
+alpha <- 0.05
+
+boot.mean <- mean(bootstrap)
+boot.bias <- observed - boot.mean
+boot.se <- sd(bootstrap)
+
+quantile(bootstrap, c(alpha/2, 1 - alpha/2))
+
+# boot pkg
+
+boot.fn <- function(data, index){
+   mean( data[index], trim = trim)
+}
+
+boot(values, boot.fn, R = N)
+```
+
+The bootstrap 20% trimmed mean is substantially smaller than the regular mean. The confidence intervals are also tighter, which is unsuprising due to the heavy presence of outliers in our sample.
+
+### 5.13
+
+The data set _FishMercury_ contains mercury levels (parts per million) for 30 fish caught in lakes in Minnesota.
+
+```{r}
+FishMercury <- data.table(read.csv(paste0(data.dir, "FishMercury.csv"),
+                                 header = T))
+```
+
+a.) Create a histogram or boxplot of the data. What do you observe?
+
+```{r}
+ggplot(FishMercury, aes(Mercury)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_rug(col = "darkred")
+
+FishMercury[Mercury > 1.5]
+
+ggplot(FishMercury[Mercury < 1.5], aes(Mercury)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_rug(col = "darkred")
+
+FishMercury[Mercury > 1.5] / sd(FishMercury$Mercury) # 6 sd outlier
+
+```
+
+One extreme (6 SD) outlier in the data.
+
+b.) Bootstrap the mean, and record the bootstrap standard error and the 95% bootstrap percentile interval.
+
+```{r}
+n <- nrow(FishMercury); N <- 10e3
+
+observed <- mean(FishMercury$Mercury)
+
+bootstrap <- vector(mode = "numeric", length = n)
+
+for(i in 1:N)
+{
+   bootstrap[i] <- mean( sample(FishMercury$Mercury, n, replace = T) )
+}
+
+boot.mean <- mean(bootstrap)
+boot.bias <- observed - boot.mean
+boot.se <- sd(bootstrap)
+
+alpha <- 0.05
+
+quantile(bootstrap, c(alpha/2, 1 - alpha/2))
+
+# boot pkg
+
+boot.fn <- function(data, index) {
+   mean( data[index] )
+}
+
+boot(FishMercury$Mercury, boot.fn, R = N)
+```
+
+c.) Remove the outlier and bootstrap the mean of the remaining data. Record the bootstrap standard error and the 95% bootstrap percentile interval.
+
+```{r}
+mercury <- FishMercury[Mercury < 1.5]$Mercury
+
+n <- length(mercury)
+bootstrap.values <- vector(mode = "numeric", length = n)
+
+observed <- mean(mercury)
+
+for( i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(mercury, size = n, replace = T) )   
+}
+
+mean(bootstrap.values)
+
+boot(mercury, boot.fn, R = N)
+
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2))
+```
+
+The standard error reduced drastically, and the confidence intervals are much more narrow.
+
+### 5.14
+
+In Section 3.3, we performed a permutation test to determine if men and women consumed, on average, different amounts of hot wings.
+
+```{r}
+BeerWings <- data.table(read.csv(paste0(data.dir, "Beerwings.csv"),
+                                 header = T))
+
+wings <- BeerWings$Hotwings
+
+?stat_ecdf
+
+ggplot(BeerWings, aes(Hotwings, group = Gender, col = Gender)) +
+   stat_ecdf(geom = "step")
+
+N <- 10e3; alpha <- 0.05; n <- length(wings)
+
+wings.m <- BeerWings[Gender == "M"]$Hotwings
+wings.f <- BeerWings[Gender == "F"]$Hotwings
+
+observed <- mean(wings.m) - mean(wings.f)
+
+permutation.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp <- sample(1:n, length(wings.m), replace = F)
+   
+   samp.m <- wings[samp]; samp.w <- wings[-samp]
+   
+   permutation.values[i] <- mean(samp.m) - mean(samp.w)
+}
+
+ggplot(data.table(values = permutation.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+ggplot(data.table(value = permutation.values), aes(value)) +
+   stat_ecdf(geom = "step") +
+   geom_vline(xintercept = observed, col = "darkred") +
+   scale_y_continuous(labels = comma)
+
+p <- (sum(permutation.values >= observed) + 1) / (N + 1)
+
+var <- p*(1 - p)/N
+```
+
+a.) Bootstrap the difference in means and describe the bootstrap distribution.
+
+```{r}
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp.m <- sample(wings.m, size = length(wings.m), replace = T)
+   samp.f <- sample(wings.f, size = length(wings.f), replace = T)
+   
+   bootstrap.values[i] <- mean(samp.m) - mean(samp.f)
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30)
+
+boot.mean <- mean(bootstrap.values)
+boot.se <- sd(bootstrap.values)
+
+boot.bias <- observed - boot.mean
+
+boot.se; boot.bias
+```
+
+b.) Find a 95% bootstrap percentile confidence interval for the difference of means, and give a sentence interpreting this interval.
+
+```{r}
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2))
+```
+
+The 95% confidence interval does not contain 0, further supporting our permutation test results.
+
+c.) How do the bootstrap and permutation distributions differ?
+
+The permutation distribution is sampled without replacement, and the bootstrap distribution is sampled using replacement.
+
+### 5.15
+
+A high school student was curious about the total number of minutes devoted to commercials during any given half-hour time period on basic and extended cable TV channels. (B. Rodgers and T. Robinson, personal communication).
+
+Import the TV data.
+
+```{r}
+TV <- data.table(read.csv(paste0(data.dir, "TV.csv"),
+                                 header = T))
+```
+
+a.) Perform some exploratory data analysis and obtain summary statistics on the commercial times on basic and extended cable TV channels (do seperate analysis for each type of channel).
+
+```{r}
+ggplot(TV, aes(Cable, Times, fill = Cable)) +
+   geom_boxplot()
+
+ggplot(TV, aes(Times, group = Cable)) +
+   geom_density(aes(y = ..density.., fill = Cable), alpha = .45)
+
+aov(TV$Times ~ TV$Cable)
+
+tv.basic <- TV[Cable == "Basic"]$Times
+tv.extended <- TV[Cable == "Extended"]$Times
+tv.pooled <- c(tv.basic, tv.extended)
+
+observed <- mean(tv.basic) - mean(tv.extended)
+
+mean(tv.basic); mean(tv.extended)
+```
+
+b.) Bootstrap the difference in mean times, plot the distribution, and give summary statistics of the bootstrap distribution. Obtain a 95% bootstrap percentile confidence interval, and interpret this interval.
+
+```{r}
+N <- 10e3; n <- length(TV$Times); alpha <- 0.05
+
+bootstrap.values <- vector(mode = "numeric", N)
+
+for(i in 1:N)
+{
+   samp.basic <- sample(tv.basic, size = length(tv.basic), replace = T)
+   samp.extended <- sample(tv.extended, size = length(tv.extended), replace = T)
+   
+   bootstrap.values[i] <- mean(samp.basic) - mean(samp.extended)
+}
+
+boot.mean <- mean(bootstrap.values)
+boot.se <- sd(bootstrap.values)
+boot.bias <- observed - boot.mean
+
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2)) # bootstrap interval
+```
+
+The 95% boostrap interval does not contain 0, suggesting there is in fact a difference in the times between basic and extended (basic being longer).
+
+c.) What is the bootstrap estimate of the bias?
+
+```{r}
+boot.bias
+
+boot.bias / boot.se # about 1% of the standard error
+```
+
+d.) Conduct a permutation test to see if the difference in mean commercial times is statistically significant, and state your conclusion.
+
+```{r}
+permutation.values <- vector(mode = "numeric", n = N)
+
+for(i in 1:N)
+{
+   samp <- sample(length(tv.pooled), length(tv.basic), replace = F)
+   
+   samp.basic <- tv.pooled[samp]; samp.extended <- tv.pooled[-samp]
+   
+   permutation.values[i] <- mean(samp.basic) - mean(samp.extended)
+}
+
+ggplot(data.table(values = permutation.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_vline(xintercept = observed, col = "darkred")
+
+p <- ( sum(permutation.values >= observed) + 1) / ( N + 1)
+var <- p*(1 - p)/N
+```
+
+Permutation test supports the alternative hypothesis that there is a difference in commercial times.

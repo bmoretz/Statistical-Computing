@@ -84,6 +84,7 @@ library(gtools, quietly = TRUE, warn.conflicts = FALSE)
 library(here, quietly = T, warn.conflicts = F)
 library(boot, quietly = T, warn.conflicts = F)
 library(ggExtra, quietly = T, warn.conflicts = F)
+library(GGally, quietly = T, warn.conflicts = F)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -361,7 +362,7 @@ cst.boot <- function(values, n, I = 10e3, alpha = 0.05) {
    observed <- mean(values)
    
    boot.mean <- mean(bootstrap)
-   boot.bias <- observed - boot.mean
+   boot.bias <- boot.mean - observed
    boot.se <- sd(bootstrap)
    
    list(bootstrap = bootstrap,
@@ -748,10 +749,12 @@ The spread on the confidence interval is extremely large, which is unsuprising g
 d.) What is the bootstrap estimate of the bias? What fraction of the bootstrap standard error does it represent?
 
 ```{r}
-bias <- observed - mean(bootstrap)
+bias <-  mean(bootstrap) -observed
 
-sd(bootstrap) / bias
+bias / sd(bootstrap)
 ```
+
+roughly 1% of the standard error.
 
 ### 5.12
 
@@ -777,7 +780,7 @@ ggplot(data.table(value = bootstrap), aes(value)) +
 alpha <- 0.05
 
 boot.mean <- mean(bootstrap)
-boot.bias <- observed - boot.mean
+boot.bias <- boot.mean - observed
 boot.se <- sd(bootstrap)
 
 quantile(bootstrap, c(alpha/2, 1 - alpha/2))
@@ -838,7 +841,7 @@ for(i in 1:N)
 }
 
 boot.mean <- mean(bootstrap)
-boot.bias <- observed - boot.mean
+boot.bias <- boot.mean - observed
 boot.se <- sd(bootstrap)
 
 alpha <- 0.05
@@ -945,7 +948,7 @@ ggplot(data.table(values = bootstrap.values), aes(values)) +
 boot.mean <- mean(bootstrap.values)
 boot.se <- sd(bootstrap.values)
 
-boot.bias <- observed - boot.mean
+boot.bias <- boot.mean - observed
 
 boot.se; boot.bias
 ```
@@ -1010,7 +1013,7 @@ for(i in 1:N)
 
 boot.mean <- mean(bootstrap.values)
 boot.se <- sd(bootstrap.values)
-boot.bias <- observed - boot.mean
+boot.bias <- boot.mean - observed
 
 quantile(bootstrap.values, c(alpha/2, 1 - alpha/2)) # bootstrap interval
 ```
@@ -1028,7 +1031,7 @@ boot.bias / boot.se # about 1% of the standard error
 d.) Conduct a permutation test to see if the difference in mean commercial times is statistically significant, and state your conclusion.
 
 ```{r}
-permutation.values <- vector(mode = "numeric", n = N)
+permutation.values <- vector(mode = "numeric", length = N)
 
 for(i in 1:N)
 {
@@ -1048,3 +1051,312 @@ var <- p*(1 - p)/N
 ```
 
 Permutation test supports the alternative hypothesis that there is a difference in commercial times.
+
+### 5.16
+
+Researchers conducted a study of primary and early secondary school children in Italy to examine gender differences in math anxiety. One of the measures used to understand math anxiety is the _Abbreviated Math Anxiety Scale (AMAS)_, a self-reported math anxiety questionnaire. A higher score indicates more max anxiety. The data set MathAnxiety contains the results for a subset of the children in the original study.
+
+```{r}
+MathAnxiety <- data.table(read.csv(paste0(data.dir, "MathAnxiety.csv"),
+                                 header = T))
+```
+
+a.) Perform some exploratory analysis and obtain summary statistics of the AMAS scores for the boys and girls (do seperate analysis for each gender).
+
+```{r}
+ggplot(MathAnxiety, aes(Grade, AMAS)) +
+   geom_boxplot(aes(fill = Grade))
+
+ggplot(MathAnxiety, aes(Age, AMAS)) +
+   geom_point()
+
+ggplot(MathAnxiety, aes(RCMAS, AMAS)) +
+   geom_point(aes(color = Gender))
+
+ggplot(MathAnxiety, aes(Gender, AMAS)) +
+   geom_boxplot(aes(color = Gender))
+
+ggpairs(MathAnxiety)
+```
+
+b.) Bootstrap the difference in mean times, plot the distribution, and give summary statistics of the bootstrap distribution. Obtain a 95% confidence interval, and interperet this interval.
+
+```{r}
+amas_boy <- MathAnxiety[Gender == "Boy"]$AMAS
+amas_girl <- MathAnxiety[Gender == "Girl"]$AMAS
+
+N <- 10e3; n <- nrow(MathAnxiety); alpha <- 0.05
+
+observed <- mean(amas_boy) - mean(amas_girl)
+
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp_boy <- sample(amas_boy, length(amas_boy), replace = T)
+   samp_girl <- sample(amas_girl, length(amas_girl), replace = T)
+   
+   bootstrap.values[i] <- mean(samp_boy) - mean(samp_girl)
+}
+
+boot.mean <- mean(bootstrap.values)
+boot.bias <- boot.mean - observed
+boot.se <- sd(bootstrap.values)
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(color = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+boot.bias; boot.se
+
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2)) # conf interval
+```
+
+The 95% confidence interval is -2.8 ~ -0.7, which does not include zero. The data suggests that there is a statistical difference between the self-reported AMAS scores between boys and girls (boys being lower).
+
+c.) What is the bootstrap estimate of the bias? What fraction of the bootstrap; standard error does this represent?
+
+```{r}
+boot.bias
+
+boot.bias / boot.se
+```
+
+Bootstrap bias is .006, which is less than 1% of the se.
+
+d.) Conduct a permutation test to see if the difference in mean AMAS scores is statistically significant, and state your conclustion.
+
+```{r}
+amas_pooled <- c(amas_boy, amas_girl)
+
+n <- length(amas_pooled); observed <- mean(amas_boy) - mean(amas_girl)
+
+permutation.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp <- sample(1:n, length(samp_boy), replace = F)
+   
+   samp_boys <- amas_pooled[samp]; samp_girl <- amas_pooled[-samp]
+   
+   permutation.values[i] <- mean(samp_boy) - mean(samp_girl)
+}
+
+mean(permutation.values)
+
+ggplot(data.table(value = permutation.values), aes(value)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed)
+
+p <- ( sum(permutation.values <= observed) + 1 ) / (N + 1)
+var <- p*(1 - p)/ N
+
+t.test(amas_boy, amas_girl, alternative = "less")
+```
+
+The p-value for the permutation test is less than 1%, we reject the null hypothesis that there is no difference in self-reported AMAS scores between boys and girls. This conclustion is in-line with our results from the bootstraped difference in mean test.
+
+### 5.17
+
+Import the data from Girls2004.
+
+```{r}
+Girls2004 <- data.table(read.csv(paste0(data.dir, "Girls2004.csv"),
+                                 header = T))
+```
+
+a.) Perform some exploratory data analysis, and obtain summary statistics on the weights of baby girls born in Wyoming and Alaska.
+
+```{r}
+ggpairs(Girls2004)
+
+ggplot(Girls2004, aes(Smoker, Weight, fill = State)) +
+   geom_boxplot() +
+   scale_y_continuous(labels = scales::comma)
+
+ggplot(Girls2004, aes(MothersAge, Weight, fill = State)) +
+   geom_boxplot()
+```
+
+b.) Bootstrap the difference in means, plot the distribution, and give the summary statistics. Obtain a 95% confidence boostrap percentile confidence interval and interpret this interval.
+
+```{r}
+weights_wy <- Girls2004[State == "WY"]$Weight
+weights_ak <- Girls2004[State == "AK"]$Weight
+
+observed <- mean(weights_wy) - mean(weights_ak); N <- 10e3
+alpha <- 0.05
+
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp_wy <- sample(weights_wy, size = length(weights_wy), replace = T)
+   samp_ak <- sample(weights_ak, size = length(weights_ak), replace = T)
+
+   bootstrap.values[i] <- mean(samp_wy) - mean(samp_ak)
+}
+
+bootstrap.mean <- mean(bootstrap.values)
+bootstrap.bias <- bootstrap.mean - observed
+bootstrap.se <- sd(bootstrap.values)
+
+ggplot(data.table(value = bootstrap.values), aes(value)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+
+quantile(bootstrap.values, c(Lower = alpha/2, Upper = 1- alpha/2))
+```
+
+There is a statistically significant difference in the mean birth weights of girls born in Wyoming and Alaska (Wyoming girls weighing less on average), by between 530 and 96 oz less.
+
+c.) What is the bootstrap estimate of the bias? What fraction of thh boostrap standard error does it represent?
+
+```{r}
+bootstrap.bias
+
+bootstrap.bias / bootstrap.se
+```
+
+d.) Conduct a permutation test to see if the difference in mean weights is statistically significant, and state your conclusion.
+
+```{r}
+observed <- mean(weights_wy) - mean(weights_ak)
+weights_pooled <- c(weights_wy, weights_ak)
+
+permutation.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp <- sample(length(weights_pooled), size = length(weights_ak), replace = F)
+   
+   samp_wy <- weights_pooled[samp]; samp_ak <- weights_pooled[-samp]
+   
+   permutation.values[i] <- mean(samp_wy) - mean(samp_ak)
+}
+
+mean(permutation.values)
+
+ggplot(data.table(values = permutation.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+p <- (sum(permutation.values <= observed) + 1) / (N + 1)
+
+var <- p*(1 - p)/N
+```
+
+The permutation test further supports the claim that the weights of baby girls born in Wyoming and Alaska are different. We reject the null hypothesis that the means are the same at the 0.05% level (p = 0.003).
+
+e.) For what population(s), if any, does this conclusion hold?
+
+_I do not
+### 5.18
+
+Is there a difference in the price of groceries sold by the two retailers Target and Walmart? The data set _Groceries_ contain, a sample of grocery items and their prices advertised on their respective websites on one specific day.
+
+```{r}
+Groceries <- data.table(read.csv(paste0(data.dir, "Groceries.csv"),
+                                 header = T))
+```
+
+a.) Compute summary statistics of the prices for each store.
+
+```{r, fig.height=7}
+groceries <- melt(Groceries %>% select(-Size), 
+                  id.vars = c("Product"), 
+                  value.name = "Price", 
+                  variable.name = "Store")
+
+setorder(groceries, -Product)
+
+ggplot(groceries, aes(Product, Price, col = Store, group = Store)) +
+   geom_point(aes(color = Store)) +
+   coord_flip()
+```
+
+b.) Use the bootstrap to determine whether or not there is a difference in the mean prices.
+
+```{r}
+prices.target <- groceries[Store == "Target"]$Price
+prices.walmart <- groceries[Store == "Walmart"]$Price
+
+N <- 10e3
+
+observed <- mean(prices.target) - mean(prices.walmart)
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp.target <- sample(prices.target, size = length(prices.target), replace = T)
+   samp.walmart <- sample(prices.walmart, size = length(prices.walmart), replace = T)
+   
+   bootstrap.values[i] <- mean(samp.target) - mean(samp.walmart)
+}
+
+boot.mean <- mean(bootstrap.values)
+boot.bias <- boot.mean - observed
+boot.se <- sd(bootstrap.values)
+
+boot.bias / boot.se
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+quantile(bootstrap.values, c(Lower = alpha/2, Upper = 1 - alpha/2))
+```
+
+There doesn't appear to be a statistically significant difference in the average prices at the stores.
+
+c.) Create a histogram of the difference in prices. What is unusal about Quaker Oats Life cereal?
+
+```{r}
+Groceries[Product == "Quaker Oats Life Cereal  Original ",]
+```
+
+It's almost double the price.
+
+d.) Recompute the bootstrap percentile interval without this observation. What do you conclude?
+
+```{r}
+groceries_sans_quaker <- groceries[Product != "Quaker Oats Life Cereal  Original ",]
+
+stopifnot(nrow(groceries_sans_quaker) == nrow(groceries) - 2) # ensure removeed
+
+prices.target <- groceries_sans_quaker[Store == "Target"]$Price
+prices.walmart <- groceries_sans_quaker[Store == "Walmart"]$Price
+
+N <- 10e3
+
+observed <- mean(prices.target) - mean(prices.walmart)
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   samp.target <- sample(prices.target, size = length(prices.target), replace = T)
+   samp.walmart <- sample(prices.walmart, size = length(prices.walmart), replace = T)
+   
+   bootstrap.values[i] <- mean(samp.target) - mean(samp.walmart)
+}
+
+boot.mean <- mean(bootstrap.values)
+boot.bias <- boot.mean - observed
+boot.se <- sd(bootstrap.values)
+
+boot.bias / boot.se
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+quantile(bootstrap.values, c(Lower = alpha/2, Upper = 1 - alpha/2))
+```
+
+The bootstrap confidence intervals include zero, so there is not sufficent evidence here to support the claim that the prices have a statistically significant difference.

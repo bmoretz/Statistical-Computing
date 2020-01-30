@@ -1074,7 +1074,7 @@ ggplot(MathAnxiety, aes(RCMAS, AMAS)) +
    geom_point(aes(color = Gender))
 
 ggplot(MathAnxiety, aes(Gender, AMAS)) +
-   geom_boxplot(aes(color = Gender))
+   geom_boxplot(aes(fill = Gender))
 
 ggpairs(MathAnxiety)
 ```
@@ -1293,8 +1293,10 @@ bootstrap.values <- vector(mode = "numeric", length = N)
 
 for(i in 1:N)
 {
-   samp.target <- sample(prices.target, size = length(prices.target), replace = T)
-   samp.walmart <- sample(prices.walmart, size = length(prices.walmart), replace = T)
+   index <- sample(length(prices.target), size = length(prices.target), replace = T)
+   
+   samp.target <- prices.target[index]
+   samp.walmart <- prices.walmart[index]
    
    bootstrap.values[i] <- mean(samp.target) - mean(samp.walmart)
 }
@@ -1340,8 +1342,11 @@ bootstrap.values <- vector(mode = "numeric", length = N)
 
 for(i in 1:N)
 {
-   samp.target <- sample(prices.target, size = length(prices.target), replace = T)
-   samp.walmart <- sample(prices.walmart, size = length(prices.walmart), replace = T)
+   # paired data, must use the same products from each company
+   index <- sample(length(prices.target), size = length(prices.target), replace = T)
+   
+   samp.target <- prices.target[index]
+   samp.walmart <- prices.walmart[index]
    
    bootstrap.values[i] <- mean(samp.target) - mean(samp.walmart)
 }
@@ -1359,4 +1364,85 @@ ggplot(data.table(values = bootstrap.values), aes(values)) +
 quantile(bootstrap.values, c(Lower = alpha/2, Upper = 1 - alpha/2))
 ```
 
-The bootstrap confidence intervals include zero, so there is not sufficent evidence here to support the claim that the prices have a statistically significant difference.
+The bootstrap confidence intervals suggest that there is a statistically significant difference in prices (Target being more expensive than Walmart). The Quaker Oats cereal made a difference.
+
+### 5.19
+
+Do chocolate and vanilla ice cream have the same number of calories?
+
+The data set Ice Cream contains calorie information for a sample of brands of chocolate and vanilla ice cream.
+
+```{r}
+IceCream <- data.table(read.csv(paste0(data.dir, "IceCream.csv"),
+                                 header = T))
+```
+
+a.) Compute summary statistics of the calories for the two flavors.
+
+```{r}
+
+icecream <- IceCream %>%
+   mutate(Vanilla = VanillaCalories,
+          Chocolate = ChocolateCalories) %>%
+   select(Vanilla, Chocolate) %>%
+   melt(variable.name = "Flavor", value.name = "Calories") %>%
+   as.data.table()
+
+stopifnot(nrow(icecream) == nrow(IceCream) * 2)
+
+ggplot(icecream, aes(Calories, group = Flavor)) +
+   geom_density(aes(fill = Flavor), alpha = .35)
+
+ggplot(icecream, aes(Flavor, Calories, fill = Flavor)) +
+   geom_boxplot()
+```
+
+b.) Use the bootstrap to determine whether or not there is a difference in the mean number of calories.
+
+```{r}
+calories.vanilla <- icecream[Flavor == "Vanilla"]$Calories
+calories.chocolate <- icecream[Flavor == "Chocolate"]$Calories
+
+N <- 10e3
+
+observed <- mean(calories.chocolate) - mean(calories.vanilla)
+
+bootstrap.values <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   # paired data, must use the same samples from chocolate and vanilla (ie, same manufacture)
+   index <- sample(length(calories.vanilla), length(calories.vanilla), replace = T)
+   
+   v.samp <- calories.vanilla[index]
+   c.samp <- calories.chocolate[index]
+   
+   bootstrap.values[i] <- mean(c.samp) - mean(v.samp)
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed)
+
+bootstrap.mean <- mean(bootstrap.values)
+bootstrap.bias <- bootstrap.mean - observed
+bootstrap.se <- sd(bootstrap.values)
+
+bootstrap.bias / bootstrap.se
+
+quantile(bootstrap.values, c(Lower = alpha/2, Upper = 1 - alpha/2))
+```
+
+There appers to be a statistically difference in the amount of calories (Chocolate having more, by approx 4-12 on average).
+
+### 5.20
+
+In a remark at the end of Section 5.4.1, we mentioned that the procedure for bootstrapping the difference of medians is different than for thee mean.
+
+Import the data set Diving2017.
+
+```{r}
+
+```
+

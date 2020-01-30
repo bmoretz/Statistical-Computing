@@ -1380,7 +1380,6 @@ IceCream <- data.table(read.csv(paste0(data.dir, "IceCream.csv"),
 a.) Compute summary statistics of the calories for the two flavors.
 
 ```{r}
-
 icecream <- IceCream %>%
    mutate(Vanilla = VanillaCalories,
           Chocolate = ChocolateCalories) %>%
@@ -1443,6 +1442,236 @@ In a remark at the end of Section 5.4.1, we mentioned that the procedure for boo
 Import the data set Diving2017.
 
 ```{r}
+Diving2017 <- data.table(read.csv(paste0(data.dir, "Diving2017.csv"),
+                                 header = T))
+```
+
+a.) Compute the difference in the median scores in the final and semi-final rounds.
+
+```{r}
+observed <- median(Diving2017$Final) - median(Diving2017$Semifinal)
+```
+
+b.) Calculate a 95% bootstrap interval for this statistic.
+
+```{r}
+N <- 10^5
+
+result <- vector(mode = "numeric", length = N)
+
+for(i in 1:N)
+{
+   index <- sample(nrow(Diving2017), replace = T)
+   
+   Dive.boot <- Diving2017[index, ] # resample pairs
+   result[i] <- median(Dive.boot$Final) - median(Dive.boot$Semifinal)
+}
+
+ggplot(data.table(values = result), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange")
+```
+
+### 5.21
+
+Two college students collecteed data on the price of hardcover textbooks from two disciplinary areas: Mathematics and the Natural Sciences and the Social Sciences. The data are in the file BookPrices.
+
+```{r}
+BookPrices <- data.table(read.csv(paste0(data.dir, "BookPrices.csv"),
+                                 header = T))
+```
+
+a.) Perform some exploratory data analysis on book prices for each of the two diciplinary areas.
+
+```{r}
+ggpairs(BookPrices)
+
+ggplot(BookPrices, aes(Area, Price, group = Area)) +
+   geom_boxplot(aes(fill = Area))
+```
+
+b.) Bootstrap the mean of book price for each area separately, and describe the distributions.
+
+```{r}
+
+prices.math <- BookPrices[Area == "Math & Science"]$Price
+prices.science <- BookPrices[Area == "Social Sciences"]$Price
+
+N <- 10e4
+
+bootstrap.values <- vector(mode = "numeric", length = N); n <- length(prices.math)
+observed <- mean(prices.math)
+
+for(i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(prices.math, n, replace = T) )
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+bootstrap.mean <- mean(bootstrap.values)
 
 ```
 
+```{r}
+N <- 10e4
+
+bootstrap.values <- vector(mode = "numeric", length = N); n <- length(prices.science)
+observed <- mean(prices.science)
+
+for(i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(prices.science, n, replace = T) )
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+bootstrap.mean <- mean(bootstrap.values)
+```
+
+_Both of the distributions are relatively symetrical and approximately normal._
+
+c.) Bootstrap the ratio of means. Provide plots of the bootstrap distribution and comment.
+
+```{r}
+N <- 10e4
+
+bootstrap.values <- vector(mode = "numeric", length = N); n <- length(prices.science)
+observed <- mean(prices.math) / mean(prices.science)
+
+for(i in 1:N)
+{
+   samp.math <- sample(prices.math, length(prices.math), replace = T)
+   samp.science <- sample(prices.science, length(prices.science), replace = T)
+   
+   bootstrap.values[i] <- mean(samp.math) / mean(samp.science)
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed, col = "darkred")
+
+bootstrap.mean <- mean(bootstrap.values)
+```
+
+_The ratio of means distribution is heavly skewed with a long right tail._
+
+d.) Find the 95% bootstrap percentile interval for the ratio of means. Interpret this interval.
+
+```{r}
+alpha <- 0.05
+
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2))
+```
+
+_There is statistically significant evidence that the cost of math books are higher than science books._
+
+e.) What is the bootstrap estimate of the bias? What fraction of the bootstrap standard error does it represent?
+
+```{r}
+bootstrap.bias <- mean(bootstrap.values) - observed
+bootstrap.se <- sd(bootstrap.values)
+
+bootstrap.bias
+
+bootstrap.bias / bootstrap.se
+```
+
+The bias in the bootstrap is quite high at 5%. Also, the bias is almost 16% of the SE which is extremely high.
+
+### 5.22
+
+Import the data from flight delays case study in S1.1.
+
+For this study, we will consider the ratio of means.
+
+```{r}
+FlightDelays <- data.table(read.csv(paste0(data.dir, "FlightDelays.csv"),
+                                 header = T))
+```
+
+a.) Perform some exploratory data analysis on flight delay lengths.
+
+```{r}
+ggpairs(FlightDelays)
+
+ggplot(FlightDelays, aes(Carrier, Delay, col = Carrier)) +
+   geom_boxplot()
+```
+
+b.) Bootstrap the mean of flight delay lengths for each airline separately, and describe the distribution.
+
+```{r}
+ua.delay <- FlightDelays[Carrier == "UA"]$Delay
+aa.delay <- FlightDelays[Carrier == "AA"]$Delay
+
+n <- length(ua.delay); N <- 10e4
+bootstrap.values <- vector(mode = "numeric", length = n)
+
+for(i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(ua.delay, n, replace = T))   
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange")
+
+
+n <- length(aa.delay); N <- 10e4
+bootstrap.values <- vector(mode = "numeric", length = n)
+
+for(i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(aa.delay, n, replace = T))   
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange")
+
+```
+
+c.) Bootstrap the ratio of means. Provide plots of the bootstrap distribution and describe the distribution.
+
+```{r}
+n <- length(aa.delay); N <- 10e4
+bootstrap.values <- vector(mode = "numeric", length = n)
+
+observed <- mean(aa.delay) / mean(ua.delay)
+
+for(i in 1:N)
+{
+   bootstrap.values[i] <- mean( sample(aa.delay, n, replace = T)) / mean( sample(ua.delay, n, replace = T))   
+}
+
+ggplot(data.table(values = bootstrap.values), aes(values)) +
+   geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
+   geom_density(col = "darkorange") +
+   geom_vline(xintercept = observed)
+```
+
+d.) Find and interpret the 95% confidence bootstrap interval for the ratio of means. 
+
+```{r}
+quantile(bootstrap.values, c(alpha/2, 1 - alpha/2))
+```
+
+Distribution is approximately normal, and the interval contains zero so we can't rule out chance in the flight delay data.
+
+e.) What is the bootstrap estimate of the bias? What fraction of the standard error does it represent?
+
+```{r}
+boot.bias <- mean(bootstrap.values) - observed
+
+boot.bias / sd(bootstrap.values)
+```
+
+The se is approximately 3% of the bias.

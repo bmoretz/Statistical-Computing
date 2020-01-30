@@ -1655,7 +1655,7 @@ for(i in 1:N)
 ggplot(data.table(values = bootstrap.values), aes(values)) +
    geom_histogram(aes(y = ..density.., fill = ..count..), bins = 30) +
    geom_density(col = "darkorange") +
-   geom_vline(xintercept = observed)
+   geom_vline(xintercept = observed, col = "darkred")
 ```
 
 d.) Find and interpret the 95% confidence bootstrap interval for the ratio of means. 

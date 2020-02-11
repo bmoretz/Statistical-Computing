@@ -91,7 +91,7 @@ arsenic.boot <- boot(Arsenic, boot.fn, R = N)
 ### NC birth weights
 
 NCBirths <- data.table(read.csv(paste0(data.dir, "NCBirths2004.csv"),
-                                  header = T))
+                                header = T))
 
 weights <- NCBirths$Weight
 

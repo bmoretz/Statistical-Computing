@@ -1,5 +1,5 @@
 # Statistical-Computing
-Work related to C++/R integration, numerical methods, computational statistics & finance.
+Work related to C++/R integration, machine learning, computational statistics & finance.
 
 Working Materials:
 

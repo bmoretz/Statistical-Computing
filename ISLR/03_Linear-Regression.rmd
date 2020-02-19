@@ -1,0 +1,954 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 3}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Linear Regression}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: 
+    fig_caption: yes
+    fig_width: 9
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+```
+
+## Chapter 3
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+### R Lab
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+boston <- Boston
+head(boston)
+
+names(boston)
+```
+
+Simple Linear Regression
+
+```{r, echo = T}
+summary(lm.fit <- lm(medv ~ lstat, data = boston))
+
+coef(lm.fit)
+```
+
+```{r, echo = T}
+confint(lm.fit)
+
+predict(lm.fit, data.frame(lstat = c(5, 10, 15)), 
+        interval = "confidence")
+
+predict(lm.fit, data.frame(lstat = c(5, 10, 15)), 
+        interval = "prediction")
+```
+
+```{r, echo = T, fig.width=9, fig.height=3.5, fig.cap=""}
+ggplot(boston, aes(lstat, medv)) +
+   geom_point() +
+   geom_smooth(method = "lm")
+```
+
+```{r, echo = T, fig.width=9, fig.height=3.5, fig.cap=""}
+with(boston, {
+   plot(lstat, medv)
+   abline(lm.fit, col ="darkred")
+   abline(lm.fit, lwd = 3, col = "darkred")
+})
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+par(mfrow = c(2,2))
+with(boston, {
+   plot(lm.fit)
+})
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+par(mfrow = c(1,2))
+plot(predict(lm.fit), residuals(lm.fit))
+plot(predict(lm.fit), rstudent(lm.fit))
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+par(mfrow = c(1,1))
+plot(hatvalues(lm.fit))
+which.max(hatvalues(lm.fit))
+```
+
+### Multiple Liinear Regression
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm.fit <- lm(medv ~ lstat + age, data = boston))
+summary(lm.fit <- lm(medv ~ ., data = boston))
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+vif(lm.fit)
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm.fit1 <- lm(medv ~ .-age, data = boston))
+```
+
+### Interaction Terms
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm(medv ~ lstat*age, data = boston))
+```
+
+### Non-linear Transformations of the Predictors
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm.fit2 <- lm(medv ~ lstat + I(lstat^2), data = boston))
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+lm.fit <- lm(medv ~ lstat, data = boston)
+anova(lm.fit, lm.fit2)
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+par(mfrow = c(2,2))
+with(boston, {
+   plot(lm.fit2)
+})
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm.fit5 <- lm(medv ~ poly(lstat, 5), data = boston))
+```
+
+```{r, echo = T, fig.width=9, fig.height=4, fig.cap=""}
+summary(lm.fit5 <- lm(medv ~ log(rm), data = boston))
+```
+
+### Qualitative Predictors
+
+```{r, echo = T}
+carseats <- Carseats
+summary(carseats)
+```
+
+```{r, echo = T}
+summary(lm.fit <- lm(Sales ~ . + Income:Advertising+Price:Age, data = carseats))
+
+contrasts(carseats$ShelveLoc)
+```
+
+### Conceptual
+
+#### 1.)
+
+Describe the null hypothesis to which the p-values given in Table 3.4 correspond. Explain what conclusions you can draw based on these p-values.
+
+a.)
+
+$H_0 : TV = 0, H_a : TV != 0$
+
+*With a p-value of less than 0.0001, we reject the null hypothesis that the TV advertising budget does not effect sales.*
+
+b.)
+
+$H_0 : radio = 0, H_a : radio != 0$
+
+*With a p-value of less than 0.0001, we reject the null hypothesis that the radio advertising budget does not effect sales.*
+
+c.)
+
+$H_0 : newspaper = 0, H_a : newspaper != 0$
+
+*With a p-value of .8599, we fail to reject the null hypothesis that the newspaper advertising budget does not effect sales.*
+
+#### 2.)
+
+Carefully explain the differences between the KNN classifier and KNN regression methods.
+
+*KNN regression uses the same basic technique as the classifier, which is to take a specified number of neighbors (based on some distance measure, _d_) and average them together to generate a value for the response. The difference here is that the regression returns a continious response variable, and the classificer results in a discrete metric that is based on the probability generated from the average of the neighbors.*
+
+#### 3.)
+
+Suppose we have a data set with five predictors, $X_1$ = GPA, $X_2$ = IQ, $X_3$ = Gender (1 Female/0 Male), $X_4$ Interaction Between GPA and IQ, $X_5$ = Interaction between GPA and Gender.
+
+The response is starting salary after graduation (in thousands of dollars).
+
+Suppose we use least squares to fit the model, and get $\hat{\beta}_0 = 50, \hat{\beta}_1 = 20, \hat{\beta}_2 = 0.07, \hat{\beta}_3 = 35, \hat{\beta}_4 = 0.01, \hat{\beta}_5 = -10$.
+
+a.)
+
+i. For a fixed value of IQ and GPA, males earn more on average than females.
+ii. For a fixed value of IQ and GPA, females earn more on average than males.
+iii. For a fixed value of IQ and GPA, males earn more on average than females provided that the GPA is high enough.
+iv. For a fixed value of IQ and GPA, females earn more on average than males provided that the GPA is high enough.
+
+*The least square line is given by
+\[\hat{y} = 50 + 20GPA + 0.07IQ + 35Gender + 0.01GPA\times IQ - 10GPA\times Gender\]
+which becomes for the males
+\[\hat{y} = 50 + 20GPA + 0.07IQ + 0.01GPA\times IQ,\]
+and for the females
+\[\hat{y} = 85 + 10GPA + 0.07IQ + 0.01GPA\times IQ.\]
+So the starting salary for males is higher than for females on average iff $50 + 20GPA\ge 85 + 10GPA$ which is equivalent to $GPA\ge 3.5$. Therefore iii. is the right answer.*
+
+(b) Predict the salary of a female with IQ of 110 and a GPA of 4.0.
+
+*It suffices to plug in the given values in the least square line for females given above and we obtain
+\[\hat{y} = 85 + 40 + 7.7 + 4.4 = 137.1,\]
+which gives us a starting salary of $137100\$$.*
+
+(c) True or false: Since the coefficient for the GPA/IQ interaction term is very small, there is very little evidence of an interaction effect. Justify your answer.
+
+*False. To verify if the GPA/IQ has an impact on the quality of the model we need to test the hypothesis $H_0 : \hat{\beta_4} = 0$ and look at the p-value associated with the $t$ or the $F$ statistic to draw a conclusion.*
+
+#### 4.)
+
+I collect a set of data ($n = 100$ observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon$ .
+
+(a) Suppose that the true relationship between $X$ and $Y$ is linear, i.e. $Y = \beta_0 + \beta_1 X + \varepsilon$. Consider the training residual sum of squares (RSS) for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.
+
+*Without knowing more details about the training data, it is difficult to know which training RSS is lower between linear or cubic. However, as the true relationship between $X$ and $Y$ is linear, we may expect the least squares line to be close to the true regression line, and consequently the RSS for the linear regression may be lower than for the cubic regression.*
+
+(b) Answer (a) using test rather than training RSS.
+
+*In this case the test RSS depends upon the test data, so we have not enough information to conclude. However, we may assume that polynomial regression will have a higher test RSS as the overfit from training would have more error than the linear regression.*
+
+(c) Suppose that the true relationship between X and Y is not linear, but we don’t know how far it is from linear. Consider the training RSS for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.
+
+*Polynomial regression has lower train RSS than the linear fit because of higher flexibility: no matter what the underlying true relationship is the more flexible model will closer follow points and reduce train RSS. An example of this beahvior is shown on Figure 2.9 from Chapter 2.*
+
+(d) Answer (c) using test rather than training RSS.
+
+*There is not enough information to tell which test RSS would be lower for either regression given the problem statement is defined as not knowing "how far it is from linear". If it is closer to linear than cubic, the linear regression test RSS could be lower than the cubic regression test RSS. Or, if it is closer to cubic than linear, the cubic regression test RSS could be lower than the linear regression test RSS. It is dues to bias-variance tradeoff: it is not clear what level of flexibility will fit data better.*
+
+#### 5.)
+
+Consider the fitted values that result from performing linear regression without an intercept. In this setting, the i-th fitted value takes the form $\hat{y_i} = x_i\hat{\beta}$, where
+\[\hat{\beta} = \frac{\sum_{i=1}^n x_iy_i}{\sum_{k=1}^nx_k^2}.\]
+Show that we can write
+\[\hat{y}_i = \sum_{j=1}^na_jy_j.\]
+What is $a_j$ ?
+
+*We have immediately that
+\[\hat{y}_i = x_i\frac{\sum_{j=1}^n x_jy_j}{\sum_{k=1}^nx_k^2} = \sum_{j=1}^n\frac{x_ix_j}{\sum_{k=1}^nx_k^2}y_j = \sum_{j=1}^na_jy_j.\]*
+
+#### 6.)
+
+Using (3.4), argue that in the case of simple linear regression, the least squares line always passes through the point $(\overline{x},\overline{y})$.
+
+*The least square line equation is $y = \hat{\beta}_0 + \hat{\beta}_1x$, so if we substitute $\overline{x}$ for $x$ we obtain
+\[y = \hat{\beta}_0 + \hat{\beta}_1\overline{x} = \overline{y} - \hat{\beta}_1\overline{x} + \hat{\beta}_1\overline{x} = \overline{y}.\]
+We may conclude that the least square line passes through the point $(\overline{x},\overline{y})$.*
+
+#### 7.)
+
+It is claimed in the text that in the case of simple linear regression of $Y$ onto $X$, the $R^2$ statistic (3.17) is equal to the square of the correlation between $X$ and $Y$ (3.18). Prove that this is the case. For simplicity, you may assume that $\overline{x} = \overline{y} = 0$.
+
+*We have the following equalities
+\[R^2 = 1 - \frac{RSS}{TSS} = 1 - \frac{\sum_i(y_i - \hat{y}_i)^2}{\sum_jy_j^2};\]
+with $\hat{y}_i = \hat{\beta}_1x_i$ we may write
+\[R^2 = 1 - \frac{\sum_i(y_i - \sum_jx_jy_j/\sum_jx_j^2 x_i)^2}{\sum_jy_j^2} = \frac{\sum_jy_j^2 - (\sum_iy_i^2 - 2\sum_iy_i(\sum_jx_jy_j/\sum_jx_j^2)x_i + \sum_i(\sum_jx_jy_j/\sum_jx_j^2)^2x_i^2)}{\sum_jy_j^2}\]
+and finally
+\[R^2 = \frac{2(\sum_ix_iy_i)^2/\sum_jx_j^2 - (\sum_ix_iy_i)^2/\sum_jx_j^2}{\sum_jy_j^2} = \frac{(\sum_ix_iy_i)^2}{\sum_jx_j^2\sum_jy_j^2} = Cor(X, Y)^2.\]*
+
+### Applied
+
+#### 8.)
+
+This question involves the use of simple linear regression on the "Auto" data set.
+
+(a) Use the lm() function to perform a simple linear regression with "mpg" as the response and "horsepower" as the predictor. Use the summary() function to print the results. Comment on the output. For example :
+
+i. Is there a relationship between the predictor and the response ?
+
+```{r}
+auto <- as.data.table(ISLR::Auto)
+fit <- lm(mpg ~ horsepower, data = Auto)
+summary(fit)
+```
+
+*We can answer this question by testing the hypothesis $H_0 : \beta_i = 0\ \forall i$. The p-value corresponding to the F-statistic is `r as.numeric(pf(summary(fit)$fstatistic[1], summary(fit)$fstatistic[2], summary(fit)$fstatistic[3], lower.tail = F))`, this indicates a clear evidence of a relationship between "mpg" and "horsepower".*
+
+ii. How strong is the relationship between the predictor and the response ?
+
+*To calculate the residual error relative to the response we use the mean of the response and the RSE. The mean of mpg is `r mean(Auto$mpg)`. The RSE of the lm.fit was `r summary(fit)$sigma` which indicates a percentage error of `r summary(fit)$sigma / mean(Auto$mpg) * 100`%. We may also note that as the $R^2$ is equal to `r summary(fit)$r.sq`, almost `r summary(fit)$r.sq * 100`% of the variability in "mpg" can be explained using "horsepower".*
+
+iii. Is the relationship between the predictor and the response positive or negative ?
+
+*As the coeficient of "horsepower" is negative, the relationship is also negative. The more horsepower an automobile has the linear regression indicates the less mpg fuel efficiency the automobile will have.*
+
+iv. What is the predicted $mpg$ associated with a "horsepower" of 98 ? What are the associated 95% confidence and prediction intervals ?
+
+*Predicted Horsepower: `r predict(fit, newdata = data.frame(horsepower = 98))`*
+
+Confidence/Prediction intervals:
+
+```{r}
+predict(fit, data.frame(horsepower = 98), interval = "confidence")
+predict(fit, data.frame(horsepower = 98), interval = "prediction")
+```
+
+(b) Plot the response and the predictor. Also display the least squares regression line.
+
+```{r, fig.height=3}
+ggplot(auto, aes(horsepower, mpg)) +
+   geom_point(alpha = .3) +
+   geom_smooth(se = F, method = "lm") +
+   ggtitle("Scatterplot of mpg vs. horsepower")
+```
+
+(c) Use the plot() function to produce diagnostic plots of the least squares regression fit. Comment on any problems you see with the fit.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+*The plot of residuals versus fitted values indicates the presence of non linearity in the data. The plot of standardized residuals versus leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and a few high leverage points.*
+
+#### 9.)
+
+This question involves the use of multiple linear regression on the "Auto" data set.
+
+(a) Produce a scatterplot matrix which include all the variables in the data set.
+
+```{r, echo = T, fig.width=9, fig.height=6}
+ggpairs(auto[, -"name", with = F])
+```
+
+(b) Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the "name" variable, which is qualitative.
+
+```{r, echo = T}
+cor(auto[, -"name", with = F])
+```
+
+(c) Use the lm() function to perform a multiple linear regression with "mpg" as the response and all other variables except "name" as the predictors. Use the summary() function to print the results. Comment on the output. For instance :
+
+```{r, echo = T}
+summary(fit <- lm(mpg ~ . -name, data = auto))
+```
+
+i. Is there a relationship between the predictors and the response ?
+
+*Displacement, weight, year and origin seem to have statistically significant impacts on the response.*
+
+(d) Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers ? Does the leverage plots identify any observations with unusually high leverages ?
+
+```{r, echo = T}
+par(mfrow = c(2,2))
+plot(fit)
+```
+
+*The residuals appear to be approximately normally distributed, however there is a skewness in the right tail. There is one high leverage point (14).*
+
+(e) Use the * and : symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant ?
+
+*From the correlation matrix, we obtained the two highest correlated pairs and used them in picking interaction effects.*
+
+```{r, echo = T}
+summary(lm.fig <- lm(mpg ~ cylinders * displacement+displacement * weight, data = auto))
+```
+
+(f) Try a few different transformations of the variables, such as $\log{X}$, $\sqrt{X}$, $X^2$. Comment on your findings.
+
+```{r, fig.height=5}
+p1 <- ggplot(auto, aes(log(horsepower), mpg)) +
+   geom_point() +
+   geom_smooth(se = F, method = "lm") +
+   ggtitle("Log Transform")
+
+p2 <- ggplot(auto, aes(sqrt(horsepower), mpg)) +
+   geom_point() +
+   geom_smooth(se = F, method = "lm") +
+   ggtitle("Sqrt Transform")
+
+p3 <- ggplot(auto, aes(horsepower**2, mpg)) +
+   geom_point() +
+   geom_smooth(se = F, method = "lm") +
+   ggtitle("Squared Transform")
+
+grid.arrange(p1, p2, p3, nrow = 3)
+```
+
+*We limit ourselves to examining "horsepower" as sole predictor. It seems that the log transformation gives the most linear looking plot.*
+
+#### 10.)
+
+This question should be answered using the "Carseats" data set.
+
+(a) Fit a multiple regression model to predict "Sales" using "Price", "Urban" and "US
+
+```{r}
+carseats <- as.data.table(ISLR::Carseats)
+summary(fit3 <- lm(Sales ~ Price + Urban + US, data = carseats))
+```
+
+(b) Provide an interpretation of each coefficient in the model. Be careful - some of the variables in the model are qualitative !
+
+*The coefficient of the "Price" variable may be interpreted by saying that the average effect of a price increase of 1 dollar is a decrease of `r abs(summary(fit3)$coef[2, 1]) * 1000` units in sales all other predictors remaining fixed. The coefficient of the "Urban" variable may be interpreted by saying that on average the unit sales in urban location are `r abs(summary(fit3)$coef[3, 1]) * 1000` units less than in rural location all other predictors remaining fixed. The coefficient of the "US" variable may be interpreted by saying that on average the unit sales in a US store are `r abs(summary(fit3)$coef[4, 1]) * 1000` units more than in a non US store all other predictors remaining fixed.*
+
+(c) Write out the model in equation form, being careful to handle the qualitative variables properly.
+
+*The model may be written as
+\[Sales = `r summary(fit3)$coef[1, 1]` + (`r summary(fit3)$coef[2, 1]`)\times Price + (`r summary(fit3)$coef[3, 1]`)\times Urban + (`r summary(fit3)$coef[4, 1]`)\times US + \varepsilon\]
+with $Urban = 1$ if the store is in an urban location and $0$ if not, and $US = 1$ if the store is in the US and $0$ if not.*
+
+(d) For which of the predictors can you reject the null hypothesis $H_0 : \beta_j = 0$ ?
+
+*We can reject the null hypothesis for the "Price" and "US" variables.*
+
+(e) On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
+
+```{r}
+fit4 <- lm(Sales ~ Price + US, data = carseats)
+summary(fit4)
+```
+
+(f) How well do the models in (a) and (e) fit the data ?
+
+*The $R^2$ for the smaller model is marginally better than for the bigger model. Essentially about `r summary(fit4)$r.sq * 100`% of the variability is explained by the model.*
+
+(g) Using the model from (e), obtain 95% confidence intervals for the coefficient(s).
+
+```{r}
+confint(fit4)
+```
+
+(h) Is there evidence of outliers or high leverage observations in the model from (e) ?
+
+```{r, fig.height=5}
+par(mfrow = c(2, 2))
+plot(fit4)
+```
+
+*The plot of standardized residuals versus leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and some leverage points as some points exceed $(p + 1)/n$ (`r (3 + 1) / 400`).*
+
+#### 11.)
+
+In this problem we will investigate the t-statistic for the null hypothesis $H_0 : \beta = 0$ in simple linear regression without an intercept. To begin, we generate a predictor $x$ and a response $y$ as follows.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+y <- 2 * x + rnorm(100)
+```
+
+(a) Perform a simple linear regression of $y$ onto $x$, without an intercept. Report the coefficient estimate $\hat{\beta}$, the standard error of this coefficient estimate, and the t-statistic and p-value associated with the null hypothesis $H_0$. Comment on these results.
+
+```{r}
+fit5 <- lm(y ~ x + 0)
+summary(fit5)
+```
+
+*According to the summary above, we have a value of `r summary(fit5)$coef[1, 1]` for $\hat{\beta}$, a value of `r summary(fit5)$coef[1, 2]` for the standard error, a value of `r summary(fit5)$coef[1, 3]` for the t-statistic and a value of `r summary(fit5)$coef[1, 4]` for the p-value. The small p-value allows us to reject $H_0$.*
+
+(b) Now perform a simple linear regression of $x$ onto $y$, without an intercept. Report the coefficient estimate $\hat{\beta}$, the standard error of this coefficient estimate, and the t-statistic and p-value associated with the null hypothesis $H_0$. Comment on these results.
+
+```{r}
+fit6 <- lm(x ~ y + 0)
+summary(fit6)
+```
+
+*According to the summary above, we have a value of `r summary(fit6)$coef[1, 1]` for $\hat{\beta}$, a value of `r summary(fit6)$coef[1, 2]` for the standard error, a value of `r summary(fit6)$coef[1, 3]` for the t-statistic and a value of `r summary(fit6)$coef[1, 4]` for the p-value. The small p-value allows us to reject $H_0$.*
+
+(c) What is the relationship between the results obtained in (a) and (b) ?
+
+*We obtain the same value for the t-statistic and consequently the same value for the corresponding p-value. Both results in (a) and (b) reflect the same line created in (a). In other words, $y = 2x + \varepsilon$ could also be written $x = 0.5(y − \varepsilon)$.*
+
+(d) For the regrssion of $Y$ onto $X$ without an intercept, the t-statistic for $H_0 : \beta = 0$ takes the form $\hat{\beta}/SE(\hat{\beta})$, where $\hat{\beta}$ is given by (3.38), and where
+\[SE(\hat{\beta}) = \sqrt{\frac{\sum_{i=1}^n(y_i - x_i\hat{\beta})^2}{(n - 1)\sum_{i=1}^nx_i^2}}.\]
+Show algebraically, and confirm numerically in R, that the t-statistic can be written as
+\[\frac{\sqrt{n - 1}\sum_{i=1}^nx_iy_i}{\sqrt{(\sum_{i=1}^nx_i^2)(\sum_{i=1}^ny_i^2) - (\sum_{i=1}^nx_iy_i)}}.\]
+
+*We have
+\[t = \frac{\sum_ix_iy_y/\sum_jx_j^2}{\sqrt{\sum_i(y_i - x_i\hat{\beta})^2/(n - 1)\sum_jx_j^2}} = \frac{\sqrt{n - 1}\sum_ix_iy_i}{\sqrt{\sum_jx_j^2\sum_i(y_i - x_i\sum_jx_jy_j/\sum_jx_j^2)^2}} = \frac{\sqrt{n - 1}\sum_ix_iy_i}{\sqrt{(\sum_jx_j^2)(\sum_jy_j^2) - (\sum_jx_jy_j)}}.\]
+Now let's verify this result numerically.*
+
+```{r}
+n <- length(x)
+t <- sqrt(n - 1)*(x %*% y)/sqrt(sum(x^2) * sum(y^2) - (x %*% y)^2)
+as.numeric(t)
+```
+
+*We may see that the t above is exactly the t-statistic given in the summary of "fit6".*
+
+(e) Using the results from (d), argue that the t-statistic for the regression of $y$ onto $x$ is the same t-statistic for the regression of $x$ onto $y$.
+
+*It is easy to see that if we replace $x_i$ by $y_i$ in the formula for the t-statistic, the result would be the same.*
+
+(f) In R, show that when regression is performed with an intercept, the t-statistic for $H_0 : \beta_1 = 0$ is the same for the regression of $y$ onto $x$ as it is the regression of $x$ onto $y$.
+
+```{r}
+fit7 <- lm(y ~ x)
+summary(fit7)
+fit8 <- lm(x ~ y)
+summary(fit8)
+```
+
+*It is again easy to see that the t-statistic for "fit7" and "fit8" are both equal to `r summary(fit7)$coef[2, 3]`.*
+
+#### 12.)
+
+This problem involves simple linear regression without an intercept.
+
+(a) Recall that the coefficient estimate $\hat{\beta}$ for the linear regression of $Y$ onto $X$ witout an intercept is given by (3.38). Under what circumstance is the coefficient estimate for the regression of $X$ onto $Y$ the same as the coefficient estimate for the regression of $Y$ onto $X$ ?
+
+*The coefficient estimate for the regression of $Y$ onto $X$ is
+\[\hat{\beta} = \frac{\sum_ix_iy_i}{\sum_jx_j^2};\]
+The coefficient estimate for the regression of $X$ onto $Y$ is
+\[\hat{\beta}' = \frac{\sum_ix_iy_i}{\sum_jy_j^2}.\]
+The coefficients are the same iff $\sum_jx_j^2 = \sum_jy_j^2$.*
+
+(b) Generate an example in R with $n = 100$ observations in which the coefficient estimate for the regression of $X$ onto $Y$ is different from the coefficient estimate for the regression of $Y$ onto $X$.
+
+```{r}
+set.seed(1)
+x <- 1:100
+sum(x^2)
+y <- 2 * x + rnorm(100, sd = 0.1)
+sum(y^2)
+fit.Y <- lm(y ~ x + 0)
+fit.X <- lm(x ~ y + 0)
+summary(fit.Y)
+summary(fit.X)
+```
+
+(c) Generate an example in R with $n = 100$ observations in which the coefficient estimate for the regression of $X$ onto $Y$ is the same as the coefficient estimate for the regression of $Y$ onto $X$.
+
+```{r}
+x <- 1:100
+sum(x^2)
+y <- 100:1
+sum(y^2)
+fit.Y <- lm(y ~ x + 0)
+fit.X <- lm(x ~ y + 0)
+summary(fit.Y)
+summary(fit.X)
+```
+
+#### 13.)
+
+In this exercise you will create some simulated data and will fit simple linear regression models to it. Make sure to use set.seed(1) prior to starting part (a) to ensure conistent results.
+
+(a) Using the rnorm() function, create a vector, "x", containing 100 observations drawn from a $N(0,1)$ distribution. This represents a feature, $X$.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+```
+
+(b) Using the rnorm() function, create a vector, "eps", containing 100 observations drawn from a $N(0, 0.25)$ distribution.
+
+```{r}
+eps <- rnorm(100, sd = sqrt(0.25))
+```
+
+(c) Using "x" and "eps", generate a vector "y" according to the model
+\[Y = -1 + 0.5X + \varepsilon.\]
+What is the length of the vector "y" ? What are the values of $\beta_0$ and $\beta_1$ in this linear model ?
+
+```{r}
+y <- -1 + 0.5 * x + eps
+length(y)
+```
+
+*The values of $\beta_0$ and $\beta_1$ are $-1$ and $0.5$ respectively.*
+
+(d) Create a scatterplot displaying the relationship between "x" and "y". Comment on what you observe.
+
+```{r}
+plot(x, y)
+```
+
+*The relationship between "x" and "y" looks linear with some noise introduced by the "eps" variable.*
+
+(e) Fit a least squares linear model to predict "y" using "x". Comment on the model obtained. How do $\hat{\beta}_0$ and $\hat{\beta}_1$ compare to $\beta_0$ and $\beta_1$ ?
+
+```{r}
+fit9 <- lm(y ~ x)
+summary(fit9)
+```
+
+*The values of $\hat{\beta}_0$ and $\hat{\beta}_1$ are pretty close to $\beta_0$ and $\beta_1$. The model has a large F-statistic with a near-zero p-value so the null hypothesis can be rejected.*
+
+(f) Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() function to create an appropriate legend.
+
+```{r}
+plot(x, y)
+abline(fit9, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+(g) Now fit a polynomial regression model that predicts "y" using "x" and "x^2". Is there evidence that the quadratic term improves the model fit ? Explain your answer.
+
+```{r}
+fit10 <- lm(y ~ x + I(x^2))
+summary(fit10)
+```
+
+*The coefficient for "x^2" is not significant as its p-value is higher than 0.05. So there is not sufficient evidence that the quadratic term improves the model fit even though the $R^2$ is slightly higher and $RSE$ slightly lower than the linear model.*
+
+(h) Repeat (a)-(f) after modifying the data generation process in such a way that there is less noise in the data. The initial model should remain the same. Describe your results.
+
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.125)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit11 <- lm(y ~ x)
+summary(fit11)
+abline(fit11, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+*We reduced the noise by decreasing the variance of the normal distribution used to generate the error term $\varepsilon$. We may see that the coefficients are very close to the previous ones, but now, as the relationship is nearly linear, we have a much higher $R^2$ and much lower $RSE$. Moreover, the two lines overlap each other as we have very little noise.*
+
+(i) Repeat (a)-(f) after modifying the data generation process in such a way that there is more noise in the data. The initial model should remain the same. Describe your results.
+
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.5)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit12 <- lm(y ~ x)
+summary(fit12)
+abline(fit12, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+*We increased the noise by increasing the variance of the normal distribution used to generate the error term $\varepsilon$. We may see that the coefficients are again very close to the previous ones, but now, as the relationship is not quite linear, we have a much lower $R^2$ and much higher $RSE$. Moreover, the two lines are wider apart but are still really close to each other as we have a fairly large data set.*
+
+(j) What are the confidence intervals for $\beta_0$ and $\beta_1$ based on the original data set, the noisier data set, and the less noisy data set ? Comment on your results.
+
+```{r}
+confint(fit9)
+confint(fit11)
+confint(fit12)
+```
+
+*All intervals seem to be centered on approximately 0.5. As the noise increases, the confidence intervals widen. With less noise, there is more predictability in the data set.*
+
+#### 14.)
+
+This problem focuses on the collinearity problem.
+
+(a) Perform the following commands in R.
+
+```{r}
+set.seed(1)
+x1 <- runif(100)
+x2 <- 0.5 * x1 + rnorm(100)/10
+y <- 2 + 2 * x1 + 0.3 * x2 + rnorm(100)
+```
+
+The last line corresponds to creating a linear model in which "y" is a function of "x1" and "x2". Write out the form of the linear model. What are the regression coefficients ?
+
+*The form of the linear model is
+\[Y = 2 + 2X_1 +0.3X_2 + \varepsilon\]
+with $\varepsilon$ a $N(0,1)$ random variable. The regression coefficients are respectively 2, 2 and 0.3.*
+
+(b) What is the correlation between "x1" and "x2" ? Create a scatterplot displaying the relationship between the variables.
+
+```{r}
+cor(x1, x2)
+plot(x1, x2)
+```
+
+*The variables seem highly correlated.*
+
+(c) Using this data, fit a least squares regression to predict "y" using "x1" and "x2". Describe the results obtained. What are $\hat{\beta}_0$, $\hat{\beta}_1$ and $\hat{\beta}_2$ ? How do these relate to the true $\beta_0$, $\beta_1$ and $\beta_2$ ? Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ? How about the null hypothesis $H_0 : \beta_2 = 0$ ?
+
+```{r}
+fit13 <- lm(y ~ x1 + x2)
+summary(fit13)
+```
+
+*The coefficients $\hat{\beta}_0$, $\hat{\beta}_1$ and $\hat{\beta}_2$ are respectively `r summary(fit13)$coef[1, 1]`, `r summary(fit13)$coef[2, 1]` and `r summary(fit13)$coef[3, 1]`. Only $\hat{\beta}_0$ is close to $\beta_0$. As the p-value is less than 0.05 we may reject $H_0$ for $\beta_1$, however we may not reject $H_0$ for $\beta_2$ as the p-value is higher than 0.05.*
+
+(d) Now fit a least squares regression to predict "y" using only "x1". Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ?
+
+```{r}
+fit14 <- lm(y ~ x1)
+summary(fit14)
+```
+
+*The coefficient for "x1" in this last model is very different from the one with "x1" and "x2" as predictors. In this case "x1" is highly significant as its p-value is very low, so we may reject $H_0$.*
+
+(e) Now fit a least squares regression to predict "y" using only "x2". Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ?
+
+```{r}
+fit15 <- lm(y ~ x2)
+summary(fit15)
+```
+
+*The coefficient for "x2" in this last model is very different from the one with "x1" and "x2" as predictors. In this case "x2" is highly significant as its p-value is very low, so we may again reject $H_0$.*
+
+(f) Do the results obtained in (c)-(e) contradict each other ? Explain your answer.
+
+*No, the results do not contradict each other. As the predictors "x1" and "x2" are highly correlated we are in the presence of collinearity, in this case it can be difficult to determine how each predictor separately is associated with the response. Since collinearity reduces the accuracy of the estimates of the regression coefficients, it causes the standard error for $\hat{\beta}_1$ to grow (we have a standard error of `r summary(fit13)$coef[2, 2]` and `r summary(fit13)$coef[3, 2]` for "x1" and "x2" respectively in the model with two predictors and only of `r summary(fit14)$coef[2, 2]` and `r summary(fit15)$coef[2, 2]` for "x1" and "x2" respectively in the models with only one predictor). Consequently, we may fail to reject $H_0$ in the presence of collinearity. The importance of the "x2" variable has been masked due to the presence of collinearity.*
+
+(g) Now suppose we obtain one additional observation, which was unfortunately mismeasured.
+
+```{r}
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+```
+
+Re-fit the linear models from (c) to (e) using this new data. What effect does this new observation have on each of the models ? In each model, is this observation an outlier ? A high-leverage point ? Explain your answers.
+
+```{r}
+fit16 <- lm(y ~ x1 + x2)
+fit17 <- lm(y ~ x1)
+fit18 <- lm(y ~ x2)
+summary(fit16)
+summary(fit17)
+summary(fit18)
+plot(fit16)
+plot(fit17)
+plot(fit18)
+```
+
+*In the model with two predictors, the last point is a high-leverage point. In the model with "x1" as sole predictor, the last point is an outlier. In the model with "x2" as sole predictor, the last point is a high leverage point.*
+
+#### 15.)
+
+This problem involves the "Boston" data set, which we saw in the lab for this chapter. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
+
+(a) For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response ? Create some plots to back up your assertions.
+
+```{r}
+attach(Boston)
+fit.zn <- lm(crim ~ zn)
+summary(fit.zn)
+fit.indus <- lm(crim ~ indus)
+summary(fit.indus)
+chas <- as.factor(chas)
+fit.chas <- lm(crim ~ chas)
+summary(fit.chas)
+fit.nox <- lm(crim ~ nox)
+summary(fit.nox)
+fit.rm <- lm(crim ~ rm)
+summary(fit.rm)
+fit.age <- lm(crim ~ age)
+summary(fit.age)
+fit.dis <- lm(crim ~ dis)
+summary(fit.dis)
+fit.rad <- lm(crim ~ rad)
+summary(fit.rad)
+fit.tax <- lm(crim ~ tax)
+summary(fit.tax)
+fit.ptratio <- lm(crim ~ ptratio)
+summary(fit.ptratio)
+fit.black <- lm(crim ~ black)
+summary(fit.black)
+fit.lstat <- lm(crim ~ lstat)
+summary(fit.lstat)
+fit.medv <- lm(crim ~ medv)
+summary(fit.medv)
+```
+
+*To find which predictors are significant, we have to test $H_0 : \beta_1 = 0$. All predictors have a p-value less than 0.05 except "chas", so we may conclude that there is a statistically significant association between each predictor and the response except for the "chas" predictor.*
+
+(b) Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis $H_0 : \beta_j = 0$ ?
+
+```{r}
+fit.all <- lm(crim ~ ., data = Boston)
+summary(fit.all)
+```
+
+*We may reject the null hypothesis for "zn", "dis", "rad", "black" and "medv".*
+
+(c) How do your results from (a) compare to your results from (b) ? Create a plot displaying the univariate regression coefficients from (a) on the x-axis, and the multiple regression coefficients from (b) on the y-axis. That is, each predictor is displayed as a single point on the plot. Its coefficient in a simple linear regression model is shown on the x-axis, and its coefficient estimate in the multiple linear regression model is shown on the y-axis.
+
+```{r}
+simple.reg <- vector("numeric",0)
+simple.reg <- c(simple.reg, fit.zn$coefficient[2])
+simple.reg <- c(simple.reg, fit.indus$coefficient[2])
+simple.reg <- c(simple.reg, fit.chas$coefficient[2])
+simple.reg <- c(simple.reg, fit.nox$coefficient[2])
+simple.reg <- c(simple.reg, fit.rm$coefficient[2])
+simple.reg <- c(simple.reg, fit.age$coefficient[2])
+simple.reg <- c(simple.reg, fit.dis$coefficient[2])
+simple.reg <- c(simple.reg, fit.rad$coefficient[2])
+simple.reg <- c(simple.reg, fit.tax$coefficient[2])
+simple.reg <- c(simple.reg, fit.ptratio$coefficient[2])
+simple.reg <- c(simple.reg, fit.black$coefficient[2])
+simple.reg <- c(simple.reg, fit.lstat$coefficient[2])
+simple.reg <- c(simple.reg, fit.medv$coefficient[2])
+mult.reg <- vector("numeric", 0)
+mult.reg <- c(mult.reg, fit.all$coefficients)
+mult.reg <- mult.reg[-1]
+plot(simple.reg, mult.reg, col = "red")
+```
+
+*There is a difference between the simple and multiple regression coefficients. This difference is due to the fact that in the simple regression case, the slope term represents the average effect of an increase in the predictor, ignoring other predictors. In contrast, in the multiple regression case, the slope term represents the average effect of an increase in the predictor, while holding other predictors fixed. It does make sense for the multiple regression to suggest no relationship between the response and some of the predictors while the simple linear regression implies the opposite because the correlation between the predictors show some strong relationships between some of the predictors.*
+
+```{r}
+cor(Boston[-c(1, 4)])
+```
+
+*So for example, when "age" is high there is a tendency in "dis" to be low, hence in simple linear regression which only examines "crim" versus "age", we observe that higher values of "age" are associated with higher values of "crim", even though "age" does not actually affect "crim". So "age" is a surrogate for "dis"; "age" gets credit for the effect of "dis" on "crim".*
+
+(d) Is there evidence of non-linear association between any of the predictors and the response ? To answer this question, for each predictor $X$, fit a model of the form
+\[Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon.\]
+
+```{r}
+fit.zn2 <- lm(crim ~ poly(zn, 3))
+summary(fit.zn2)
+fit.indus2 <- lm(crim ~ poly(indus, 3))
+summary(fit.indus2)
+fit.nox2 <- lm(crim ~ poly(nox, 3))
+summary(fit.nox2)
+fit.rm2 <- lm(crim ~ poly(rm, 3))
+summary(fit.rm2)
+fit.age2 <- lm(crim ~ poly(age, 3))
+summary(fit.age2)
+fit.dis2 <- lm(crim ~ poly(dis, 3))
+summary(fit.dis2)
+fit.rad2 <- lm(crim ~ poly(rad, 3))
+summary(fit.rad2)
+fit.tax2 <- lm(crim ~ poly(tax, 3))
+summary(fit.tax2)
+fit.ptratio2 <- lm(crim ~ poly(ptratio, 3))
+summary(fit.ptratio2)
+fit.black2 <- lm(crim ~ poly(black, 3))
+summary(fit.black2)
+fit.lstat2 <- lm(crim ~ poly(lstat, 3))
+summary(fit.lstat2)
+fit.medv2 <- lm(crim ~ poly(medv, 3))
+summary(fit.medv2)
+```
+
+*For "zn", "rm", "rad", "tax" and "lstat" as predictor, the p-values suggest that the cubic coefficient is not statistically significant; for "indus", "nox", "age", "dis", "ptratio" and "medv" as predictor, the p-values suggest the adequacy of the cubic fit; for "black" as predictor, the p-values suggest that the quandratic and cubic coefficients are not statistically significant, so in this latter case no non-linear effect is visible.*

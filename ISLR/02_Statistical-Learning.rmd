@@ -1,0 +1,562 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 2}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Introduction to Statistical Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+```
+
+## Chapter 2
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+### R Lab
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+x <- seq(-pi, pi, length.out = 50); y <- x
+
+f <- outer(x, y, function(x, y) cos(y)/(1+x^2))
+
+contour(x, y, f)
+
+contour(x, y, f, nlevels = 45, add = T)
+
+fa <- (f - t(f)) / 2
+
+contour(x, y, fa, nlevels = 15)
+```
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+image(x, y, fa)
+
+persp(x, y, fa)
+
+persp(x, y, fa, theta = 30)
+
+persp(x, y, fa, theta = 30, phi = 20)
+persp(x, y, fa, theta = 30, phi = 70)
+persp(x, y, fa, theta = 30, phi = 40)
+```
+
+### Conceptual
+
+#### 1.)
+
+For each of parts (a) through (d), indicate whether i. or ii. is correct, and explain your answer. In general, do we expect the performance of a flexible statistical learning method to perform better or worse than an inflexible method when:
+
+a.)The sample size n is extremely large, and the number of predictors p is small ?
+
+_Better. A flexible method will fit the data closer and with the large sample size, would perform better than an inflexible approach._
+
+b.) The number of predictors p is extremely large, and the number of observations n is small ?
+
+_Worse. A flexible method would overfit the small number of observations._
+
+c.) The relationship between the predictors and response is highly non-linear ?
+
+_Better. With more degrees of freedom, a flexible method would fit better than an inflexible one._
+
+d.) The variance of the error terms, i.e. σ2=Var(ε), is extremely high ?
+
+_Worse. A flexible method would fit to the noise in the error terms and increase variance._
+
+#### 2.) 
+
+Explain whether each scenario is a classification or regression problem, and indicate whether we are most interested in inference or prediction. Finally, provide n and p.
+
+a.) We collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in understanding which factors affect CEO salary.
+
+_Regression. n = 500, p = 3_ 
+
+b.) We are considering launching a new product and wish to know whether it will be a success or a failure. We collect data on 20 similar products that were previously launched. For each product we have recorded whether it was a success or failure, price charged for the product, marketing budget, competition price, and ten other variables.
+
+_Classification. n = 20, p = 13_
+
+c.) We are interesting in predicting the % change in the US dollar in relation to the weekly changes in the world stock markets. Hence we collect weekly data for all of 2012. For each week we record the % change in the dollar, the % change in the US market, the % change in the British market, and the % change in the German market.
+
+_Regression. n = 52, p = 3_
+
+#### 3.) 
+
+We now revisit the bias-variance decomposition.
+
+a.) Provide a sketch of typical (squared) bias, variance, training error, test error, and Bayes (or irreducible) error curves, on a single plot, as we go from less flexible statistical learning methods towards more flexible approaches. The x-axis should represent the amount of flexibility in the method, and the y-axis should represent the values for each curve. There should be five curves. Make sure to label each one.
+
+```{r, echo = T, fig.width=8, fig.height=4}
+mu <- 2
+
+Z <- rnorm(20000, mu)
+
+MSE <- function(estimate, mu) {
+   return(sum((estimate - mu)^2) / length(estimate))
+}
+
+n <- 50
+shrink <- seq(0,0.5, length=n)
+test.mse <- numeric(n)
+train.mse <- numeric(n)
+bias <- numeric(n)
+variance <- numeric(n)
+
+for (i in 1:n) {
+   test.mse[i] <- MSE((1 - shrink[i]) * Z, mu)
+   bias[i] <- mu * shrink[i]
+   variance[i] <- (1 - shrink[i])^2
+   train.mse[i] <- (variance[i] - bias[i] ) ^2
+}
+
+data.table(x = shrink, var = variance, bias = bias^2, test.mse = test.mse, train.mse = train.mse) %>%
+   ggplot(data = .) +
+   geom_line(aes(x, var, col = "Variance"), lwd = .8, lty = 2,) +
+   geom_line(aes(x, bias, col = "Bias^2"), lwd = .8, lty = 2) +
+   geom_line(aes(x, test.mse, col = "Test MSE"), lwd = .8) +
+   geom_line(aes(x, train.mse, col = "Train MSE"), lwd = .8) +
+   geom_hline(aes(yintercept = .8, col = "Irreduciable"), lty = 3) +
+   scale_colour_manual(values=c("cornflowerblue", "black", "darkorange", "darkred", "darkgreen")) +
+   labs(title = "Bias vs Variance Trade-off", y = "Variance", x = "Flexibility") +
+   theme(legend.title = element_blank(),
+      axis.text.x=element_blank(), axis.text.y=element_blank())
+
+```
+
+b.) Explain why each of the five curves has the shape displayed in part (a
+
+#### 4.) 
+
+You will now think of some real-life applications for statistical learning.
+
+a.) Describe three real-life applications in which classification might be useful. Describe the response, as well as the predictors. Is the goal of each application inference or prediction ? Explain your answer.
+
++ Infering if an e-mail is spam/ham. Y = Spam {Y|No}, Y = {words in email, subject, from addr}.
+
++ Predicting if a customer will redeemd a coupon. Y = Redeem {Y||No}, X = {purchase history, coupon value, frequency of store visit}.
+
++ Predicting if an inmate will recidivate. Y = Recid {Y|N}, X = {crime type, age, release date, time served}
+
+b.) Describe three real-life applications in which regression might be useful. Describe the response, as well as the predictors. Is the goal of each application inference or prediction ? Explain your answer.
+
++ Predicting the sale price of a home. Y = sale price, X = {year built, sq footage, quality}.
+
++ Predicting the next day return of a stock. Y = log(Return), X = {prior returns}
+
++ Predicting the customer annual spend on clothing. Y = {Spend? $}, X = {num of items purchased last 1 year, inventory}
+
+#### 5.)
+
+What are the advantages and disadvantages of a very flexible (versus a less flexible) approach for regression or classification ? Under what circumstances might a more flexible approach be preferred to a less flexible approach? When might a less flexible approach be preferred ?
+
+_The advantages of a very flexible approach are that it may give a better fit for non-linear models and it decreases the bias.
+
+The disadvantages of a very flexible approach are that it requires estimating a greater number of parameters, it follows the noise too closely (overfit) and it increases the variance.
+
+A more flexible approach would be preferred to a less flexible approach when we are interested in prediction and not the interpretability of the results.
+
+A less flexible approach would be preferred to a more flexible approach when we are interested in inference and the interpretability of the results._
+
+#### 6.) 
+
+Describe the differences between a parametric and a non-parametric statistical learning approach. What are the advantages of a parametric approach to regression or classification (as opposed to a nonparametric approach) ? What are its disadvantages ?
+
+_A parametric approach reduces the problem of estimating f down to one of estimating a set of parameters because it assumes a form for f.
+
+A non-parametric approach does not assume a patricular form of f and so requires a very large sample to accurately estimate f.
+
+The advantages of a parametric approach to regression or classification are the simplifying of modeling f to a few parameters and not as many observations are required compared to a non-parametric approach.
+
+The disadvantages of a parametric approach to regression or classification are a potentially inaccurate estimate f if the form of f assumed is wrong or to overfit the observations if more flexible models are used._
+
+#### 7.) 
+
+The table below provides a training data set containing 6 observations, 3 predictors, and 1 qualitative response variable. Suppose we wish to use this data set to make a prediction for Y when X1 = X2 = X3 = 0 using K-nearest neighbors.
+
+```{r, echo = T}
+dat <- data.table(Obs = 1:6, 
+           X1 = c(0, 2, 0, 0, -1, 1),
+           X2 = c(3, 0, 1, 1, 0, 1),
+           X3 = c(0, 0, 3, 2, 1, 1),
+           Y = c("Red", "Red", "Red", "Green", "Green", "Red"))
+
+dat
+```
+
+a.) Compute the Euclidean distance between each observation and the test point, X1 = X2 = X3 = 0.
+
+```{r, echo = T}
+dat[, Distance := ( (X1 - 0)^2 + (X2 - 0)^2 + (X3 - 0)^2 )^.5 ]
+dat
+```
+
+b.) What is our prediction with K=1 ? Why ?
+
+If $K = 1$ then $X_5 \in N_0$, so that: 
+
+$P(Y = Red | X = x_0) = \frac{1}{1}\sum_{i\in N_0} I(y_i = Red) = 0$
+
+and
+
+$P(Y = Green | X = x_0) = \frac{1}{1}\sum_{i\in N_0} I(y_i = Greeen) = 1$
+
+or:
+
+```{r, echo = T}
+setorder(dat, Distance)
+
+dat[1]$Y
+```
+
+Our prediction is _green._
+
+c.) What is our prediction with K=3 ? Why ?
+
+```{r, echo = T}
+dat[1:3]
+```
+
+_2 out of the closest 3 points are red, so we would predict red._
+
+d.) If the Bayes decision boundary in this problem is highly nonlinear, then would we expect the best value for K to be large or small ? Why ?
+
+_As K becomes larger, the boundary becomes inflexible (linear). So in this case we would expect the best value for K to be small._
+
+### Applied
+
+#### 8.)
+
+This exercise relates to the “College” data set, which can be found in the file “College.csv”. It contains a number of variables for 777 different universities and colleges in the US.
+
+a.) Use the read.csv() function to read the data into R. Call the loaded data “college”. Make sure that you have the directory set to the correct location for the data.
+
+```{r, echo = T}
+data(College)
+```
+
+b.) Look at the data using the fix() function. You should notice that the first column is just the name of each university. We don’t really want R to treat this as data. However, it may be handy to have these names for later.
+
+```{r, echo = T}
+# fix(College)
+
+head(College)
+```
+
+c.) Use the summary() function to produce a numerical summary of the variables in the data set.
+
+```{r, echo = T}
+summary(College)
+```
+
+Use the pairs() function to produce a scatterplot matrix of the first ten columns or variables of the data.
+
+```{r, echo = T, fig.width=8, fig.height=7}
+ggpairs(College)
+```
+
+Use the plot() function to produce side-by-side boxplots of “Outstate” versus “Private”.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+ggplot(College, aes(Private, Outstate)) +
+   geom_boxplot(fill = "cornflowerblue") +
+   scale_y_continuous(label = dollar) +
+   labs(title = "Private Schools Tuition")
+```
+
+Create a new qualitative variable, called “Elite”, by binning the “Top10perc” variable. Use the summary() function to see how many elite universities there are. Now use the plot() function to produce side-by-side boxplots of “Outstate” versus “Elite”.
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+college <- as.data.table(College)
+college[, Elite := ifelse(Top10perc > 50, "Yes", "No")]
+   
+summary(college)
+
+ggplot(college, aes(Elite, Outstate)) +
+   geom_boxplot(fill = "cornflowerblue") +
+   scale_y_continuous(label = dollar) +
+   labs(title = "Elite Schools Tuition")
+```
+
+Use the hist() function to produce some histograms with numbers of bins for a few of the quantitative variables.
+
+```{r, echo=T, fig.width=8, fig.height=8}
+
+p1 <- ggplot(college) +
+   geom_histogram(aes(Books), fill = "darkred", bins = 30) +
+   labs(title = "Books")
+
+p2 <-ggplot(college) +
+   geom_histogram(aes(PhD), fill = "cornflowerblue", bins = 30) +
+   labs(title = "Ph.D")
+
+p3 <-ggplot(college) +
+   geom_histogram(aes(Grad.Rate), fill = "darkgreen", bins = 30) +
+   labs(title = "Graduation Rate")
+
+p4 <- ggplot(college) +
+   geom_histogram(aes(perc.alumni), fill = "darkorange", bins = 30) +
+   labs(title = "% Alumni")
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+#### 9.)
+
+This exercise involves the “Auto” data set studied in the lab. Make sure the missing values have been removed from the data.
+
+a.) Which of the predictors are quantitative, and which are qualitative ?
+
+```{r, echo = T}
+auto <- ISLR::Auto
+str(auto)
+```
+
+_All variables except “horsepower” and “name” are quantitative._
+
+b.) What is the range of each quantitative predictor ?
+
+```{r, echo = T}
+summary(auto[, -c(4, 9)])
+```
+
+c.) What is the mean and standard deviation of each quantitative predictor ?
+
+```{r, echo = T}
+sapply(auto[, -c(4, 9)], mean)
+sapply(auto[, -c(4, 9)], sd)
+```
+
+d.) Now remove the 10th through 85th observations. What is the range, mean, and standard deviation of each predictor in the subset of the data that remains ?
+
+```{r, echo = T}
+subset <- auto[-c(10:85), -c(4,9)]
+sapply(subset, range)
+
+sapply(subset, mean)
+
+sapply(subset, sd)
+```
+
+e.) Using the full data set, investigate the predictors graphically, using scatterplots or other tools of your choice. Create some plots highlighting the relationships among the predictors. Comment on your findings.
+
+```{r, echo = T, fig.width=8, fig.height=4}
+auto$cylinders <- as.factor(auto$cylinders)
+auto$year <- as.factor(auto$year)
+auto$origin <- as.factor(auto$origin)
+
+ggpairs(auto[, c("cylinders", "year", "origin")])
+```
+
+f.) Suppose that we wish to predict gas mileage (“mpg”) on the basis of other variables. Do your plots suggest that any of the other variables might be useful in predicting “mpg” ?
+
+From the plots above, the cylinders, horsepower, year and origin can be used as predictors. Displacement and weight were not used because they are highly correlated with horespower and with each other.
+
+```{r, echo = T}
+auto$horsepower <- as.numeric(auto$horsepower)
+cor(auto$weight, auto$horsepower)
+
+cor(auto$weight, auto$displacement)
+
+cor(auto$displacement, auto$horsepower)
+```
+
+#### 10.)
+
+This exercise involves the “Boston” housing data set.
+
+a.) To begin, load in the “Boston” data set.
+
+```{r, echo = T}
+boston <- MASS::Boston
+
+boston$chas <- as.factor(boston$chas)
+dim(Boston)
+```
+
+b.) Make some pairwise scatterplots of the predictors in this data set.
+
+```{r, echo=T, fig.width=8, fig.height=4}
+
+p1 <- ggplot(boston) +
+   geom_point(aes(nox, crim))
+
+p2 <- ggplot(boston) +
+   geom_point(aes(rm, crim))
+
+p3 <- ggplot(boston) +
+   geom_point(aes(age, crim))
+
+p4 <- ggplot(boston) +
+   geom_point(aes(dis, crim))
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+c.) Are any of the predictors associated with per capita crime rate ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+ggplot(boston) +
+   geom_histogram(aes(crim, fill = ..count..), bins = 40)
+```
+
+Most suburbs do not have any crime (80% of data falls in crim < 20).
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+ggpairs(boston[boston$crim < 20,])
+```
+
+d.) Do any of the suburbs of Boston appear to have particularly high crime rates ? Tax rates ? Pupil-teacher ratios ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+nrow(Boston[Boston$tax == 666, ])
+```
+
+e.) How many of the suburbs in this data set bound the Charles river ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+nrow(Boston[Boston$chas == 1, ])
+```
+
+f.) What is the median pupil-teacher ratio among the towns in this data set ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+median(Boston$ptratio)
+```
+
+g.) Which suburb of Boston has lowest median value of owner-occupied homes ? What are the values of the other predictors for that suburb, and how do those values compare to the overall ranges for those predictors ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+row.names(Boston[min(Boston$medv), ])
+range(Boston$tax)
+boston[min(boston$medv), ]$tax
+```
+
+h.) In this data set, how many of the suburbs average more than seven rooms per dwelling ? More than eight rooms per dwelling ?
+
+```{r, echo = T, fig.width=8, fig.height=3.5}
+row.names(Boston[min(boston$medv), ])
+
+nrow(boston[boston$rm > 7, ])
+
+nrow(boston[boston$rm > 8, ])
+```

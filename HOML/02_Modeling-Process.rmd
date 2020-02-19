@@ -1,0 +1,406 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Modeling Process}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 2}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, dev = 'png')
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init()
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Modeling Process
+
+### Data Sets
+
+#### Ames
+
+```{r, echo = T}
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+```
+
+#### Attrition
+
+```{r, echo = T}
+attrition <- rsample::attrition
+
+churn <- attrition %>%
+   mutate_if(is.ordered, .funs = factor, ordered = F)
+
+churn <- as.h2o(churn)
+```
+
+### Splitting
+
+```{r, echo = T}
+set.seed(123)
+
+# Base R
+
+index_1 <- sample(1:nrow(ames), round(nrow(ames) * .7), replace = F)
+train_1 <- ames[index_1, ]
+test_1 <- ames[-index_1, ]
+
+# Using caret package
+
+set.seed(123)
+
+index_2 <- createDataPartition(ames$Sale_Price, p = 0.7,
+                               list = F)
+train_2 <- ames[index_2, ]
+test_2 <- ames[-index_2, ]
+
+# Using rsample package
+
+set.seed(123)
+
+split_1 <- initial_split(ames, prop = 0.7)
+train_3 <- training(split_1)
+test_3 <- testing(split_1)
+
+# Using h20 package
+
+split_2 <- h2o.splitFrame(ames.h2o, ratios = 0.7,
+                          seed = 123)
+
+train_4 <- split_2[[1]]
+test_4 <- split_2[[2]]
+
+```
+
+```{r, echo = T, fig.width=8, fig.height=4}
+
+p1 <- ggplot() +
+   geom_density(data = train_1, aes(Sale_Price), col = "cornflowerblue") +
+   geom_density(data = test_1, aes(Sale_Price), col = "darkred") +
+   labs(title = "Base R")
+
+p2 <- ggplot() +
+   geom_density(data = train_2, aes(Sale_Price), col = "cornflowerblue") +
+   geom_density(data = test_2, aes(Sale_Price), col = "darkred") +
+   labs(title = "caret")
+
+p3 <- ggplot() +
+   geom_density(data = train_3, aes(Sale_Price), col = "cornflowerblue") +
+   geom_density(data = test_3, aes(Sale_Price), col = "darkred") +
+   labs(title = "rsample")
+
+p4 <- ggplot() +
+   geom_density(data = as.data.table(train_4), aes(Sale_Price), col = "cornflowerblue") +
+   geom_density(data = as.data.table(test_4), aes(Sale_Price), col = "darkred") +
+   labs(title = "h2o")
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+### Stratified sampling
+
+Original Response Distribution
+
+```{r, echo = T}
+table(as.data.table(churn)$Attrition) %>% prop.table()
+```
+
+Stratified Sampling with the rsample package
+
+```{r, echo = T}
+set.seed(123)
+
+split_strat <- initial_split(attrition, prop = 0.7,
+                             strata = "Attrition")
+
+train_strat <- training(split_strat)
+test_strat <- testing(split_strat)
+
+table(train_strat$Attrition) %>% prop.table()
+table(test_strat$Attrition) %>% prop.table()
+```
+
+### Class Imbalances
+
+Imbalanced data can have significant impact on model perfomance and predictions. A class imbalance is when there is a disproportionate distribution of a specific value.
+
+Example: Defaults (5%) vs Non-defaults (95%)
+
+Generally, the way to resolve is with either up-sampling or down-sampling.
+
+_Down-sampling_ balances the dataset by reducing the size of the abundant class(es) to match the frequencies in the least prevalant class. This method is used when the quantity of the data is sufficent.
+
+_Up-sampling_ is is used with the quantity of the data is insufficent for down-sampling. This technique balances the dataset by increasing the size of the rarer samples.
+
+### Cross-Validation
+
+Cross-validation is a resampling method that randomly divides the training data into _k_ groups (aka folds) of approximately equal size. The model is fit on k - 1 folds and then the remaining folds are used for performance evaluation. This procedure is repeated _k_ times; each time a different fold is treated as the validtion set. After the model runs on all folds, the results are averaged across all runs for the final indicator.
+
++ Rules of thumb for size of _k_: 5, 10
++ Most extreme k = n (or leave-one-out cross validation)
+
+Examples:
+
++ h2o CV
+
+```{r, echo = T}
+h2o.cv <- h2o.glm(
+   x = c("Sale_Condition"),
+   y = c("Sale_Price"),
+   training_frame = ames.h2o,
+   nfolds = 10 # perform 10-fold CV
+)
+```
+
++ rsample CV
+
+```{r, echo = T}
+rsample::vfold_cv(ames, v = 10) # nested df
+```
+
+### Bootstrapping
+
+Bootstrapping is another resampling technique that uses random sampling _with replacement_. A bootstrap sample is constructed using the same size as the origional sample.
+
+Observations not contained in a particular bootstrap sample are called out-of-bag (__OOB__).
+
+r+ sample bootstrap
+
+```{r, echo = T}
+bootstraps(ames, times = 10)
+```
+
+### Bias / Variance trade-off
+
+__Bias__ is the difference between the expected (or average) prediction of our model and the correct value which we are trying to predict. It measures how far off in general a model's predictions are from the correct value.
+
+Models with high bias are rarely affected by the noise introduced by resampling.
+
+__Variance__ is the error due to the variabiliy of the data vs a models prediction at that point.
+
+_High variance models are more prone to overfitting, using resampling procedures are critical to reduce this risk._
+
+### Hyperparameter Tuning
+
+Hyperparameters (aka _tuning parameters_) are the "knobs to twiddle" to control the complexity of a machine learning algorithm, and therefor the bias/variance trade-off.
+
++ One way to perform hyperparameter tuning is to fiddle with hyperparamters manually until you find a great combination.
++ There are several automated mechanism that can help here: cartesian grid search, random grid search, etc.
+
+### Model Evaluation
+
+The traditional approach to assessing model fit is to assess the residuals of the model and goodness-of-fit ($R^2$). However, this can lead to misleading conclusions.
+
+A more robust approach is to use a loss fuction. Loss fuctions are metrics that compare the predicted value to the actual value, the output of this function is often referred to as the _error_ or the _pseudo residual_.
+
+### Regression Models
+
++ __MSE__: Mean squared error is the average of the squared error (MSE = $\frac{1}{n}\sum^{n}_{i=1}(Y_i - \hat{Y}_i)$). The sqquared component results in larger errors having larger penalties. This (along with RMSE) is the most common error metric to use. __Objective: minimize__
+
++ __RMSE__: Root mean squared error. This simply takes the square root of the MSE metric (RMSE = $\sqrt{\frac{1}{n}\sum^n_{i=1}{(y_i - \hat{y}_i)}^2}$) so that your error is in the same units as your response variable. If your response variable units are dollars, the units of MSE are dollars-squared, but the RMSE will be in dollars. __Objective: minimize__
+
++ __Deviance__: Short for mean residual deviance. In essence, it provides a degree to which a model explains the variation in the set of data when using maximum likelihood estimation. Essentially, this computes a saturated model (i.e., fully featured model) to an unsaturaded model (i.e., the intercept model or the average model). If the response variable distribution is Gaussian, then it will be approximately equal to MSE. When not, it usually gives a more usefull estimate of error. Deviance is often used with classification models. __Objective: minimize__
+
++ __MAE__: Mean absolute error. Similar to MSE but rather than squaring, it just takes the mean absolute difference between the actual and predicted values (MAE = $\frac{1}{n}\sum^n_{i=1}{({|y_i - \hat{y}_i|})}$). This results in less emphasis on larger errors than MSE. __Objective: minimize__
+
++ __RMSLE__: Root mean squared logarithmic error. Similar to RMSE but it performs a _log()_ transform on the actual and predicted values prior to computing the difference (RMSLE = $\sqrt{\frac{1}{n}\sum^n_{i=1}{(log(y_i + 1) - log(\hat{y}_i + 1)})^2}$). When your response variable has a wide range of values, large response values with large errors can dominate the MSE/RMSE metric. RMSLE minimizes this impact so that small response values with large errors can have just as meaningful of an impact as large response values with large errors. __Objective: minimize__
+
++ $R^2$: This is a popular metric that represents the proportion of the variance in the dependent variable that is predictable from the independent variable(s). Unfortunately, it has several limitations. For example, two models built from two different data sets could have the exact same RMSE, but if one has less variability in the response variable, then it would have a lower $R^2$ than the other. Should not place too much emphasis on this metric. __Objective: maximize__
+
+### Classification Models
+
++ __Misclassification:__ This is the overall error. For example, say you are predicting 3 classes (_high, medium, low_) and each class has 25, 30, 35 observations, respectfully (90 total). If you misclassify 3 observations of class _high_, 6 of class _medium_, and 4 of class _low_, then you misclassifiedd _13_ out of 90 observations resulting in a 14% misclassification rate. __Objective: minimize__
+
++ Mean per class error: This is the average error rate for each class. For the above example, this would be the mean of $\frac{3}{25},\frac{6}{30},\frac{34}{35}$, which is 14.5%. If your classes are balanced this will be identical to misclassification. __Objective: minimize__
+
++ MSE: Mean squared error. Computes the distance from 1.0 to the probability suggested. So, say we have three classes, A, B and C and your model predicts a probability of 0.91 for A, 0.07 for B, and 0.02 for C. For example, if the correct answer was A the MSE = $0.09^2 = 0.0081$. __Objective: minimize__
+
++ __Cross-enthropy (aka Log Loss or Deviance)__: Similar to MSE but it incorporates a log of the predicted probability multiplied by the true class. Consequently, this metric disproportionately punished predictions where we predict a small probability for the true class, which is another way of saying having high confidence in the wrong answer is really bad. __Objective: minimize__
+
++ __Gini index__: Mainly used with tree-based methods and commonly referred to as a measure of _purity_ where a small value indicates that a node contains predominately observations from a single class. __Objective: minimize__
+
++ __Accuracy__: Overall, how often is the classifier correct? Opposite of misclassification above. Example: $\frac{TP+TN}{total}$. __Objective: maximize__
+
++ __Precision__: How accurately does the classifier predict events? This metric is concerned with maximizing the true positives to false positive ratio. In other words, for the number of predictions that we made, how many were correct? Example: $\frac{TP}{TP+FP}$. __Objective: maximize__
+
++ __Sensitivity (aka recall)__: How accurately does the classifier classify actual events? This metric is concerned with maximizing the true positives to false negatives ratio. In other words, for the events that occurred, how many did we predict? Example: $\frac{TP}{TP+FN}$. __Objective: maximize__
+
++ __Specificity:__ How accurately does the classifier classify actual non-events? Example: $\frac{TN}{TN + FP}$. __Objective: maximize__
+
++ __AUC__: Area under the curve. A good classifier will have high precision and sensitivity. This means the classifier does well when it predicts and event will and will not occur, which minimizes false positives and false negatives. __Objective: maximize__
+
+### Putting it together
+
+Stratified Sample:
+
+```{r, echo = T}
+set.seed(123)
+
+split <- initial_split(ames, prop = 0.7,
+                       strata = "Sale_Price")
+
+ames_train <- training(split)
+ames_test <- testing(split)
+```
+
+Use a k-nearest neighbor regressor (via caret)
+
++ Resample method: 10-fold CV
++ Grid search: hyperparameter k
++ Model training & validation: train a k-nn model using our pre-specified resampling procedure (trControl = cv)
+
+```{r, echo = T}
+
+# Resampling strategy
+cv <- trainControl(
+   method = "repeatedcv",
+   number = 10,
+   repeats = 5
+)
+
+# Create grid of hyperparameter values
+hyper_grid <- expand.grid(k = seq(2, 25, by = 1))
+
+# Tune a knn model using grid search
+knn_fit <- train(
+   Sale_Price ~.,
+   data = ames_train,
+   method = "knn",
+   trControl = cv,
+   tuneGrid = hyper_grid,
+   metric = "RMSE"
+)
+
+```
+
+```{r, echo = T}
+knn_fit
+```
+
+```{r, echo = T, fig.width=8, fig.height=4}
+ggplot(knn_fit) + labs(title = "KNN Grid Search")
+```

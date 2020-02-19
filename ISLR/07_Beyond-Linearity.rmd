@@ -1,0 +1,961 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+fig_width: 9
+fig_height: 3.5
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 7}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Beyond Linearity}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(class, quietly = TRUE, warn.conflicts = FALSE)
+library(boot, quietly = TRUE, warn.conflicts = FALSE)
+library(leaps, quietly = TRUE, warn.conflicts = FALSE)
+library(glmnet, quietly = TRUE, warn.conflicts = FALSE)
+library(pls, quietly = TRUE, warn.conflicts = FALSE)
+library(splines, quietly = TRUE, warn.conflicts = FALSE)
+library(gam, quietly = TRUE, warn.conflicts = FALSE)
+library(akima, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+
+```
+
+## Chapter 7
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Lab
+
+### Polynomial Functions and Cut Points
+
+```{r}
+load(paste0(here::here(), "/ISLR/7.R.RData"))
+
+plot(x, y)
+
+fit <- lm(y ~ x)
+fit2 <- lm(y ~ 1 + x + I(x^2))
+```
+
+```{r}
+wage <- data.table(ISLR::Wage)
+```
+
+### Polynomial Regression and Step Functions
+
+```{r}
+fit <- lm(wage ~ poly(age, 4), data = wage)
+
+summary(fit)
+
+plot(fit)
+
+coef(summary(fit))
+```
+
+```{r}
+fit2 <- lm(wage ~ poly(age, 4, raw = T), data = wage)
+coef(summary(fit2))
+```
+
+Alternative:
+
+```{r}
+fit2a <- lm(wage ~ age + I(age^2) + I(age^3) + I(age^4), data = wage)
+coef(summary(fit2a))
+```
+
+```{r}
+fit2b <- lm(wage ~ cbind(age, age^2, age^3, age^4), data = wage)
+coef(fit2b)
+```
+
+```{r}
+agelims <- range(wage$age)
+age.grid <- seq(from = agelims[1], to = agelims[2])
+
+pred <- predict(fit, newdata = list(age = age.grid), se = T)
+
+se.bands <- cbind(pred$fit + 2*pred$se.fit, pred$fit - 2*pred$se.fit)
+
+par(mfrow = c(1, 1), mar = c(4.5, 4.5, 1, 1), oma = c(0, 0, 4, 0))
+plot(wage$age, wage$wage, xlim = agelims, cex = .5, col = "darkgrey")
+title("Degree-4 Polynomial", outer = T)
+lines(age.grid, pred$fit, lwd = 2, col = "blue")
+matlines(age.grid, se.bands, lwd = 1, col = "blue", lty = 3)
+```
+
+```{r}
+pred2 <- predict(fit2, newdata = list(age = age.grid), se = T)
+max(abs(pred$fit - pred2$fit))
+```
+
+```{r}
+fit1 <- lm(wage ~ age, data = wage)
+fit2 <- lm(wage ~ poly(age, 2), data = wage)
+fit3 <- lm(wage ~ poly(age, 3), data = wage)
+fit4 <- lm(wage ~ poly(age, 4), data = wage)
+fit5 <- lm(wage ~ poly(age, 5), data = wage)
+
+anova(fit1, fit2, fit3, fit4, fit5)
+
+coef(summary(fit5))
+```
+
+```{r}
+fit1 <- lm(wage ~ education + age, data = wage)
+fit2 <- lm(wage ~ education + poly(age, 2), data = wage)
+fit3 <- lm(wage ~ education + poly(age, 3), data = wage)
+
+anova(fit1, fit2, fit3)
+```
+
+```{r}
+fit <- glm(I(wage > 250) ~ poly(age, 4), data = wage, family = "binomial")
+
+pred <- predict(fit, newdata = list(age = age.grid), se = T)
+
+pfit <- exp(pred$fit) / (1 + exp(pred$fit))
+
+se.bands.logit <- cbind(pred$fit + 2 * pred$se.fit, pred$fit - 2*pred$se.fit)
+
+se.bands <- exp(se.bands.logit) / (1 + exp(se.bands.logit))
+
+```
+
+Alternatively:
+
+```{r}
+pred <- predict(fit, newdata = list(age = age.grid), type = "response", se = T)
+
+with(wage, {
+   plot(age, I(wage > 250), xlim = agelims, type = "n")
+   points(jitter(age), I((wage > 250)/5), cex = .5, pch = "|", col = "darkgrey")
+   lines(age.grid, pfit, lwd = 2, col = "blue")
+   matlines(age.grid, se.bands, lwd = 1, col = "blue", lty = 3)
+})
+```
+
+```{r}
+table(cut(wage$age, 4))
+```
+
+```{r}
+fit <- lm(wage ~ cut(age, 4), data = wage)
+coef(summary(fit))
+```
+
+### Splines
+
+```{r}
+fit <- lm(wage ~ bs(age, knots = c(25, 40, 60)), data = wage)
+
+pred <- predict(fit, newdata = list(age = age.grid), se = T)
+
+with(wage, {
+   plot(age, wage, col = "gray")
+   lines(age.grid, pred$fit, lwd=2)
+   lines(age.grid, pred$fit+2*pred$se.fit, lty="dashed")
+   lines(age.grid, pred$fit-2*pred$se.fit, lty="dashed")
+})
+```
+
+```{r}
+dim(bs(wage$age, knots = c(25, 40, 60)))
+dim(bs(wage$age, df = 6))
+attr(bs(wage$age, df = 6), "knots")
+```
+
+```{r}
+fit2 <- lm(wage ~ ns(age, df = 4), data = wage)
+pred2 <- predict(fit2, newdata =  list(age = age.grid), se = T)
+par(mfrow=c(1,1))
+plot(wage$age, wage$wage, col = "gray")
+lines(age.grid, pred2$fit, col = "red", lwd = 2)
+```
+
+```{r}
+with(wage,{
+   plot(age, wage, xlim = agelims, cex = .5, col = "darkgrey")
+   title("Smoothing Spline")
+   fit <- smooth.spline(age, wage, df = 16)
+   fit2 <- smooth.spline(age, wage, cv = T)
+   
+   lines(fit, col = "red", lwd = 2)
+   lines(fit2, col = "blue", lwd = 2)
+})
+```
+
+```{r}
+with(wage, {
+   plot(age, wage, xlim = agelims, cex = .5, col = "darkgrey")
+   title("Local Regression")
+   fit <- loess(wage ~ age, span = .2)
+   fit2 <- loess(wage ~ age, span = .5)
+   lines(age.grid, predict(fit, data.frame(age = age.grid)), col = "red", lwd = 2)
+   lines(age.grid, predict(fit2, data.frame(age = age.grid)), col = "blue", lwd = 2)
+   legend("topright", legend = c("Span = 0.2", "Span = 0.5"), col = c("red", "blue"), lty = 1, lwd = 2, cex = .8)
+})
+```
+
+### GAMs
+
+```{r}
+gam1 <- lm(wage ~ ns(year, 4) + ns(age, 5) + education, data = wage)
+
+gam.m3 <- gam(wage ~ s(year, 4) + s(age, 5) + education, data = wage)
+par(mfrow = c(1, 3))
+plot.Gam(gam.m3, se = T)
+```
+
+```{r}
+par(mfrow = c(1, 3))
+plot(gam.m3, se = T, col = "blue")
+
+plot.Gam(gam1, se = T, col = "red")
+```
+
+```{r}
+gam.m1 <- gam(wage ~ s(age, 5) + education, data = wage)
+gam.m2 <- gam(wage ~ year + s(age, 5) + education, data = wage)
+
+anova(gam.m1, gam.m2, gam.m3)
+```
+
+```{r}
+summary(gam.m3)
+```
+
+```{r}
+pred <- predict(gam.m2, newdata = wage)
+
+gam.lo <- gam(wage ~ s(year, df = 4) + lo(age, span = 0.7) + education, data = wage)
+plot.Gam(gam.lo, se = T, col = "green")
+```
+
+```{r}
+plot(gam.lo)
+```
+
+```{r}
+gam.lr <- gam(I(wage > 250) ~ year + s(age, df = 5) + education, family = binomial, data = wage)
+par(mfrow = c(1, 3))
+plot(gam.lr, se = T, col = "green")
+```
+
+```{r}
+table(wage$education, I(wage$wage > 250))
+```
+
+```{r}
+levels(wage$education)
+
+gam.lr.s <- gam(I(wage > 250) ~ year + s(age, df = 5) + education, family = binomial, data = wage, subset = (education != "1. < HS Grad"))
+plot(gam.lr.s, se = T, col = "green")
+```
+
+### Applied
+
+In this exercise, you will further analyze the wage data set considered throughout this chapter.
+
+```{r}
+test.size <- .7
+index <- sample(nrow(wage), nrow(wage) * test.size, replace = F)
+
+train <- wage[index]
+test <- wage[!index]
+
+```
+
+a.) Perform polynomial regression to predict wage using age. Use cross-validation to select the optimal degree d for the polynomial. What degree was chosen, and how does this compare to the result of hypothesis testing using ANOVA? Make a plot of the fit obtained.
+
+```{r}
+degree <- 20; folds = 10
+cv.errors <- numeric(degree)
+
+fold.size <- nrow(train) / folds
+
+for(deg in 1:degree)
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(wage ~ poly(age, deg), data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean((cv.test$wage - pred)^2))
+   }
+   cv.errors[deg] <- mean(errors)
+}
+
+lowest.error <- which.min(cv.errors)
+
+cv.results <- data.table(degree = 1:degree, error = cv.errors)[, lowest := degree == lowest.error]
+
+ggplot(cv.results, aes(degree, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Degree")
+```
+
+```{r}
+model <- lm(wage ~ poly(age, lowest.error), data = train)
+
+test %>%
+    mutate(predictions = predict(model, test)) %>%
+    ggplot(aes(age, wage, col = 'darkgrey')) +
+    geom_point(alpha = .65) +
+    geom_line(aes(age, predictions, col = 'cornflowerblue'), size = 1.5) +
+    scale_color_manual(name = 'Value Type',
+                         labels = c('Observed', 'Predicted'),
+                         values = c('cornflowerblue', 'darkgrey' )) +
+    labs(x = 'Age', y = 'Wage', 
+         title = paste0('Predictions from polynomial model of degree ', lowest.error))
+```
+
+b.) Fit a step function to predict wage using age, and perform cross-validation to choose the optimal number of cuts. Make a plot of the fit obtained.
+
+```{r}
+cuts <- 20; folds = 10
+cv.errors <- numeric(degree)
+
+fold.size <- nrow(train) / folds
+
+for(cuts in 2:cuts)
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   
+   # apply cut here so CV train/test have same levels
+   train$AgeGroup <- cut(train$age, cuts)
+   
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(wage ~ I(AgeGroup), data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean((cv.test$wage - pred)^2))
+   }
+   
+   cv.errors[cuts] <- mean(errors)
+}
+
+lowest.error <- which.min(cv.errors[cv.errors != 0])
+
+cv.results <- data.table(cuts = 1:cuts, error = cv.errors)[, lowest := cuts == lowest.error]
+
+ggplot(cv.results, aes(cuts, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Age Group")
+```
+
+```{r}
+wage.grouped <- wage
+wage.grouped$AgeGroup <- cut(wage.grouped$age, lowest.error)
+
+test.size <- .7
+index <- sample(nrow(wage), nrow(wage) * test.size, replace = F)
+
+train <- wage.grouped[index]
+test <- wage.grouped[!index]
+
+model <- lm(wage ~ I(AgeGroup), data = train)
+
+test %>%
+    mutate(predictions = predict(model, test)) %>%
+    ggplot(aes(age, wage, col = 'darkgrey')) +
+    geom_point(alpha = .65) +
+    geom_line(aes(age, predictions, col = 'cornflowerblue'), size = 1.5) +
+    scale_color_manual(name = 'Value Type',
+                         labels = c('Observed', 'Predicted'),
+                         values = c('cornflowerblue', 'darkgrey' )) +
+    labs(x = 'Age', y = 'Wage', 
+         title = paste0('Predictions from polynomial model of age group ', lowest.error))
+```
+
+The wage data set contains a number of other features not explored in this chapter, such as marital status (*marit1*), job class (*jobclass*), and others. Explore the relationships between some of these other predictors and wage, and use non-linear fitting techniques in order to fit flexible models to the data. Create plots of the results obtained, and write a summary of your findings.
+
+```{r}
+head(wage)
+
+ggplot(wage, aes(wage, group = race, fill = race)) +
+   geom_density(alpha = .65)
+
+ggplot(wage, aes(race, wage, fill = race)) +
+   geom_boxplot()
+
+ggplot(wage, aes(age, wage)) +
+   geom_point() +
+   geom_smooth() +
+   facet_wrap(~race)
+
+ggplot(wage, aes(maritl, wage, fill = maritl)) +
+   geom_boxplot()
+
+ggplot(wage, aes(wage, fill = maritl)) +
+   geom_density(alpha = .65)
+
+ggplot(wage, aes(age, wage)) +
+   geom_point() +
+   geom_smooth() +
+   facet_wrap(~maritl)
+
+ggplot(wage, aes(jobclass, wage, fill = jobclass)) +
+   geom_boxplot()
+
+```
+
+Fit some non-linear models investigated in this chapter to the **Auto** data set. Is there evidence for non-linear relationships in this data set? Create some informative plots to justify your answer.
+
+```{r}
+auto <- as.data.table(ISLR::Auto)
+
+auto$cylinders <- as.factor(auto$cylinders)
+
+head(auto)
+
+ggplot(auto, aes(mpg, group = cylinders, fill = cylinders)) +
+   geom_density(alpha = .65)
+
+ggplot(auto, aes(y = mpg, group = cylinders, fill = cylinders)) +
+   geom_boxplot()
+
+ggplot(auto, aes(acceleration, mpg, col = cylinders)) +
+   geom_point()
+
+ggplot(auto[cylinders %in% c(4, 6, 8)], aes(acceleration, mpg)) +
+   geom_point() +
+   geom_smooth() +
+   facet_wrap(~cylinders)
+
+ggplot(auto[cylinders %in% c(4, 6, 8)], aes(horsepower, mpg)) +
+   geom_point() +
+   geom_smooth() +
+   facet_wrap(~cylinders)
+
+ggplot(auto, aes(displacement, mpg, col = cylinders)) +
+   geom_point()
+
+ggplot(auto[cylinders %in% c(4, 6, 8)], aes(displacement, mpg, col = cylinders)) +
+   geom_point() +
+   facet_wrap(~cylinders)
+
+```
+
+```{r}
+# suggests quadratic and quintic are better than linear
+
+with(auto, {
+   fit1 <- lm(mpg ~ horsepower + cylinders)
+   fit2 <- lm(mpg ~ poly(horsepower, 2) + cylinders)
+   fit3 <- lm(mpg ~ poly(horsepower, 3) + cylinders)
+   fit4 <- lm(mpg ~ poly(horsepower, 4) + cylinders)
+   fit5 <- lm(mpg ~ poly(horsepower, 5) + cylinders)
+   
+   anova(fit1, fit2, fit3, fit4, fit5)
+})
+
+```
+
+```{r}
+n <- nrow(auto)
+
+index <- sample(n, n * .7, replace = F)
+
+train <- auto[index]
+test <- auto[!index]
+
+n; nrow(train); nrow(test)
+
+degree <- 10; folds = 10
+cv.errors <- numeric(degree)
+
+fold.size <- nrow(train) / folds
+
+for(deg in 1:degree)
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(mpg ~ poly(horsepower, deg) + cylinders, data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean((cv.test$mpg - pred)^2))
+   }
+   cv.errors[deg] <- mean(errors)
+}
+
+lowest.error <- which.min(cv.errors)
+
+cv.results <- data.table(degree = 1:degree, error = cv.errors)[, lowest := degree == lowest.error]
+
+ggplot(cv.results, aes(degree, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Degree")
+```
+
+```{r}
+model <- lm(mpg ~ poly(horsepower, lowest.error), data = train)
+
+test %>%
+    mutate(predictions = predict(model, test)) %>%
+    ggplot(aes(horsepower, mpg, col = 'darkgrey')) +
+    geom_point(alpha = .65) +
+    geom_line(aes(horsepower, predictions, col = 'cornflowerblue'), size = 1.5) +
+    scale_color_manual(name = 'Value Type',
+                         labels = c('Observed', 'Predicted'),
+                         values = c('cornflowerblue', 'darkgrey' )) +
+    labs(x = 'hoursepower^2', y = 'MPG', 
+         title = paste0('Predictions from polynomial model of degree ', lowest.error))
+```
+
+```{r}
+for(deg in 1:degree)
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(mpg ~ poly(displacement, deg) + cylinders, data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean((cv.test$mpg - pred)^2))
+   }
+   cv.errors[deg] <- mean(errors)
+}
+
+lowest.error <- which.min(cv.errors)
+
+cv.results <- data.table(degree = 1:degree, error = cv.errors)[, lowest := degree == lowest.error]
+
+ggplot(cv.results, aes(degree, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Degree")
+```
+
+
+```{r}
+model <- lm(mpg ~ poly(displacement, lowest.error), data = train)
+
+test %>%
+    mutate(predictions = predict(model, test)) %>%
+    ggplot(aes(displacement, mpg, col = 'darkgrey')) +
+    geom_point(alpha = .65) +
+    geom_line(aes(displacement, predictions, col = 'cornflowerblue'), size = 1.5) +
+    scale_color_manual(name = 'Value Type',
+                         labels = c('Observed', 'Predicted'),
+                         values = c('cornflowerblue', 'darkgrey' )) +
+    labs(x = 'displacement', y = 'MPG', 
+         title = paste0('Predictions from polynomial model of degree ', lowest.error))
+```
+
+```{r}
+polyfit <- gam(mpg ~ ns(horsepower, 2) + ns(displacement, 4) + cylinders, data = auto)
+par(mfrow = c(1, 3))
+plot(polyfit, se = T, col = "cornflowerblue")
+```
+
+```{r}
+pred <- data.table(actual = test$mpg, pred = predict(polyfit, test, type = "response"))
+
+ggplot(pred, aes(actual, pred)) +
+   geom_point() +
+   geom_smooth()
+```
+
+### Boston
+
+This question uses the variables dis (the weighed mean of distances to five Boston employment centers) and nox (nitrogen oxides concendrated in parts per 10 million) from the boston data set. We will treat dis as the predictor and nox as the response.
+
+```{r}
+boston <- data.table(Boston)
+```
+
+a.) Use the poly() function to fit a cubic polynomial regression to predict nox using dis. Report the regression output, and plot the resulting data using polynomial fits.
+
+```{r}
+fit1 <- lm(nox ~ poly(dis, 3), data = boston)
+summary(fit)
+```
+
+```{r}
+ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth()
+```
+
+Plot the polynomial fits for a range of different polynomial degrees (say, 1 to 10), and report the associated RSS.
+
+```{r}
+p1 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 3)) +
+   labs(title = "x^3")
+
+p2 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 4)) +
+   labs(title = "x^4")
+
+p3 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 5)) +
+   labs(title = "x^5")
+
+grid.arrange(p1, p2, p3, nrow = 1)
+
+p4 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 6)) +
+   labs(title = "x^6")
+
+p5 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 7)) +
+   labs(title = "x^7")
+
+p6 <- ggplot(boston, aes(dis, nox)) +
+   geom_point() +
+   geom_smooth(method = lm, formula = y ~ splines::bs(x, 8)) +
+   labs(title = "x^8")
+
+grid.arrange(p4, p5, p6, nrow = 1)
+
+```
+
+Perform cross-validation or another approach to select the optimal degree for the polynomial, and explain your results.
+
+```{r}
+n <- nrow(boston)
+
+index <- sample(n, n * .7, replace = F)
+
+train <- boston[index]
+test <- boston[!index]
+
+n; nrow(train); nrow(test)
+
+degree <- 10; folds = 10
+cv.errors <- numeric(degree)
+
+fold.size <- nrow(train) / folds
+
+for(deg in 1:degree)
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(nox ~ poly(dis, deg), data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sum( (cv.test$nox - pred)^2 ) # RSS
+   }
+   cv.errors[deg] <- mean(errors)
+}
+
+lowest.error <- which.min(cv.errors)
+
+cv.results <- data.table(degree = 1:degree, error = cv.errors)[, lowest := degree == lowest.error]
+
+ggplot(cv.results, aes(degree, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Degree")
+```
+
+Use the *bs()* function to fit a regression spline to predict nox using dis. Report the output for the fit using for degrees of freedom. How did you choose the knots? Plot the fit.
+
+```{r}
+n <- nrow(boston)
+
+index <- sample(n, n * .7, replace = F)
+
+train <- boston[index]
+test <- boston[!index]
+
+n; nrow(train); nrow(test)
+
+range(boston$dis)
+
+knots <- seq(1, 15, 1); folds = 10
+cv.errors <- numeric(length(knots))
+
+fold.size <- nrow(train) / folds
+
+index <- 1
+
+for(index in 1:length(knots))
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(nox ~ bs(dis, knots[index]), data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean( (cv.test$nox - pred)^2 )) # RMSE
+   }
+   cv.errors[index] <- mean(errors)
+}
+
+lowest.error <- knots[which.min(cv.errors)]
+
+cv.results <- data.table(knots = knots, error = cv.errors)[, lowest := knots == lowest.error]
+
+ggplot(cv.results, aes(knots, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by Knots")
+```
+
+Use CV to select the best degrees of freedom for a regression spline.
+
+```{r}
+n <- nrow(boston)
+
+index <- sample(n, n * .7, replace = F)
+
+train <- boston[index]
+test <- boston[!index]
+
+n; nrow(train); nrow(test)
+
+range(boston$dis)
+
+df <- seq(1, 15, 1); folds = 10
+cv.errors <- numeric(length(knots))
+
+fold.size <- nrow(train) / folds
+
+index <- 1
+
+for(index in 1:length(df))
+{
+   # 10 fold cv
+   errors <- numeric(folds)
+   for(fold in 1:folds)
+   {
+      holdout <- seq((fold - 1) * fold.size, fold * fold.size)
+      
+      cv.train <- train[!holdout]
+      cv.test <- train[holdout]
+      
+      fit <- lm(nox ~ ns(dis, df[index]), data = cv.train)
+      
+      pred <- predict(fit, newdata = cv.test, type = "response")
+      
+      errors[fold] <- sqrt(mean( (cv.test$nox - pred)^2 )) # RMSE
+   }
+   cv.errors[index] <- mean(errors)
+}
+
+lowest.error <- knots[which.min(cv.errors)]
+
+cv.results <- data.table(df = df, error = cv.errors)[, lowest := df == lowest.error]
+
+ggplot(cv.results, aes(knots, error, fill = lowest)) +
+   geom_bar(stat = "identity") +
+   labs(title = "RMSE by df")
+```
+
+### College
+
+This question uses the college data set.
+
+```{r}
+college <- data.table(ISLR::College)
+```
+
+a.) Split the data into a training set and a test set. Using out-of-state tuition as the response and the other variables as the predictors, perform forward stepwise selection on the training data in order to identify a satisfactory model that uses just a subset of the predictors.
+
+```{r}
+n <- nrow(college)
+
+index <- sample(n, n * .7)
+
+train <- college[index]
+test <- college[!index]
+
+null <- lm(Outstate ~ 1, data = train)
+full <- formula(lm(Outstate ~ ., data = train))
+
+forward.fit <- step(null, direction = 'forward', scope = full)
+
+summary(forward.fit)
+
+best.model <- formula(forward.fit)
+
+coef(forward.fit)
+```
+
+Fit a GAM on the training data, using out-of-state tuition as the response and the features selected in the previous step as the predictors.
+
+```{r}
+fit <- gam(Outstate ~ Private + s(Room.Board, df = 2) + s(PhD, df = 2) + s(perc.alumni, df = 2) + s(Expend, df = 5) + s(Grad.Rate, df = 2), data=train)
+par(mfrow = c(2, 3))
+plot.Gam(fit, se = T, col = "blue")
+```

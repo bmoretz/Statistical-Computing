@@ -1,0 +1,859 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+fig_width: 9
+fig_height: 3.5
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 5}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Resampling Methods}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(class, quietly = TRUE, warn.conflicts = FALSE)
+library(boot, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+```
+
+## Chapter 5
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+### Notes
+
+```{r}
+load(paste0(here::here(), "/ISLR/5.R.RData"))
+
+summary(lm(y ~ X1 + X2, data = Xy))
+
+par(mfrow=c(1,1))
+matplot(Xy,type="l")
+
+alpha = function(x,y){
+  vx = var(x)
+  vy = var(y)
+  cxy= cov(x,y)
+  (vy-cxy)/(vx+vy-2*cxy)
+}
+alpha(Xy$X1,Xy$y)
+
+alpha.fn = function(data,index){
+  with(data[index,],alpha(Xy$X1,Xy$y))
+}
+
+alpha.fn<-function(data, index) {
+  fit1<-lm(y~., data=Xy[index,])
+  coefficients(fit1)[['X1']]
+}
+
+set.seed(1)
+alpha.fn(Xy, sample(1:100,100,replace=TRUE))
+
+boot.out <- boot(Xy,alpha.fn,R=1000)
+
+?tsboot
+
+se_stat <- function(data, index) {
+   fit1 <- lm(y ~., data = data[index,])
+   coefficients(fit1)[['X1']]
+}
+
+tsboot.out <- tsboot(Xy, se_stat, R = 1000, l = 100, sim = "fixed")
+tsboot.out
+```
+
+#### Cross-Validation
+
+Cross-validation is the process of splitting the training data into multiple subsets that can be used for evaluating the out-of-sample performance of a statistical model.
+
+There are multiple strategies for this technique.
+
+#### The Validation Set approach
+
+The most basic strategy for CV is a training/test split of the sample.
+
+Additionally, stratification can be used to ensure even splitting when the response variable is unevenly distributed in the sample (low response logistic regression, for example).
+
+Using Auto:
+
+```{r}
+auto <- data.table(ISLR::Auto)
+```
+
+```{r}
+models <- list()
+
+base.model <- "mpg ~ horsepower"
+
+prev <- ""
+for(term in 1:10)
+{
+   cur <- ifelse(term > 1, paste(prev, rep(paste0("+ I(horsepower^", term,")"))), "")
+   fmla <- as.formula(paste0(base.model, cur))
+   
+   train.error <- numeric(10); test.error <- numeric(10)
+   
+   for(iter in 1:10)
+   {
+      auto.split <- initial_split(auto, prop = .5)
+      
+      auto.train <- training(auto.split)
+      model <- lm(fmla, data = auto.train)
+      train.error[iter] <- mean(model$residuals^2)
+      
+      auto.test <- testing(auto.split)
+      auto.test$pred <- predict(model, newdata = auto.test)
+      test.error[iter] <- with(auto.test, mean( (mpg - pred)^2 ) )
+   }
+   
+   models[[term]] <- list(terms = term, train.error = train.error, test.error = test.error)
+   prev <- cur
+}
+
+auto.fits <- rbindlist(models, fill = F)
+
+p1 <- auto.fits %>%
+   group_by(terms) %>%
+   summarise(mean_error = mean(train.error)) %>%
+   ggplot(., aes(terms, mean_error)) +
+      geom_point(col = "cornflowerblue") +
+      geom_line(alpha = .15) +
+      labs(title = "Horsepower Model vs Polynomial Degree", x = "Polynomial Degree", y = "Avg. Training MSE") +
+      scale_y_continuous(limits = c(10, 30))
+
+p2 <- auto.fits[, .(num = 1:.N, train.error), by = list(terms)] %>%
+   ggplot() +
+   geom_line(aes(num, train.error, group = terms, col = terms)) +
+   labs(title = "Train Sample vs Error (MSE)", x = "Sample Number", y = "Training MSE") +
+   theme(legend.position = "none")
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+
+ggplot(auto.fits[, .(train = mean(train.error), test = mean(test.error)), by = list(terms)]) +
+   geom_point(aes(terms, train), col = "cornflowerblue") +
+   geom_point(aes(terms, test), col = "darkorange") +
+   labs(x = "Polynomial Terms", y = "Avg. Error")
+
+p1 <- ggplot(auto.fits) +
+   geom_boxplot(aes(y = train.error, group = terms, fill = terms))
+
+p2 <- ggplot(auto.fits) +
+   geom_boxplot(aes(y = test.error, group = terms, fill = terms))
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+Drawbacks:
+
++ 1.) The validation estimate of the test error rate can be highly variable, depending on precisely which observations are included in the training set and which observations are in the validation set.
+
++ 2.) In the validation approach, only a subset of the observations - those that are included in the training set rather than the validation set - are used to fit the model. This can lead to overestimation of model performance.
+
+
+#### Leave-One-Out Cross-Validation
+
+Leave-one-out cross-validation (LOOCV) is closely related to the validation set approach, but attempts to address some of the drawbacks.
+
+The basic premise of LOOCV is to leave exactly 1 observation out of the data to test against, and use the remaining n-1 observations to train the model.
+
+After each resample, the final test error is produced by:
+
+$CV_{(n)} = \frac{1}{n}\sum^{n}_{i=1}{MSE_i}$
+
+This is more of systematic approach to model training/validation.
+
+Advantages:
+
++ Far less bias than the validation/test set.
+
+#### k-Fold Cross-Validation
+
+An alternative to LOOCV is k-Fold CV. This approach randomly divides the set of observations into *k* groups, or *k*-folds, of approximately equal size.
+
+The first fold is treated as a validation set, and the method is fit on the remaining *k-1* folds. LOOCV is a special case of k-Fold, (k = n).
+
+However, there is a bias/variance trade-off associated with the choice of k. If you have a large number of k (example, n), then each model output will be highly correlated to each other.
+
+Typically, a good choice of k is 5 or 10.
+
+#### Cross-Validation on Classification
+
+Instead of MSE for error metric, we will use:
+
+$CV_{(n)} = \frac{1}{n}\sum^{n}_{i=1}Err_i$
+
+#### The Bootstrap
+
+Bootstrapping is the process of resampling a data set (with replacement) to obtain confidence intervals (SE) for unknown population parameters.
+
+### R lab
+
+#### The Validation Set Approach
+
+```{r}
+set.seed(1)
+
+train <- sample(392, 196)
+
+lm.fit <- lm(mpg ~ horsepower, data = auto, subset = train)
+
+mean(lm.fit$residuals^2) # train MSE
+
+test <- auto[!train]
+test$pred <- predict(lm.fit, newdata = test)
+with(test, mean((mpg - pred)^2)) # test MSE
+
+lm.fit2 <- lm(mpg ~ poly(horsepower, 2), data = auto, subset = train)
+test$pred <- predict(lm.fit2, newdata = test) # update predictions
+with(test, mean((mpg - pred)^2)) # model 2 MSE
+
+lm.fit3 <- lm(mpg ~ poly(horsepower, 3), data = auto, subset = train)
+test$pred <- predict(lm.fit3, newdata = test) # update predictions
+with(test, mean((mpg - pred)^2)) # model 2 MSE
+
+```
+
+#### Leave-One-Out CV
+
+```{r}
+glm.fit <- glm(mpg ~ horsepower, data = auto)
+coef(glm.fit)
+
+glm.fit <- glm(mpg ~ horsepower, data = auto)
+cv.err <- cv.glm(auto, glm.fit)
+
+cv.err$delta
+
+cv.error <- rep(0, 5)
+for( i in 1:5 )
+{
+   glm.fit <- glm(mpg ~ poly(horsepower, i), data = auto)
+   cv.error[i] <- cv.glm(auto, glm.fit)$delta[1]
+}
+
+cv.error
+```
+
+#### k-Fold Cross-Validation
+
+```{r}
+set.seed(7)
+
+cv.error.10 <- rep(0, 10)
+for( i in 1:10 )
+{
+   glm.fit <- glm(mpg ~ poly(horsepower, i), data = auto)
+   cv.error.10[i] <- cv.glm(auto, glm.fit)$delta[1]
+}
+
+cv.error.10
+```
+
+#### The Bootstrap
+
+```{r}
+portfolio <- data.table(ISLR::Portfolio)
+
+alpha.fn <- function(data, index ) {
+   X <- data$X; Y <- data$Y
+   return ((var(Y)-cov(X, Y)) / (var(X) + var(Y) - 2*cov(X, Y)))
+}
+
+alpha.fn(portfolio, 1:100)
+```
+
+```{r}
+set.seed(1)
+
+alpha.fn(portfolio, sample(100, 100, replace = T))
+
+boot(data = portfolio, statistic = alpha.fn, R = 1000)
+```
+
+#### Estimating the Accuracy of a Linear Regression Model
+
+```{r}
+boot.fn <- function(data, index) {
+   return (coef(lm(mpg ~ horsepower, data = data, subset = index)))
+}
+
+boot.fn(auto, 1:396)
+```
+
+```{r}
+set.seed(1)
+
+boot.fn(auto, sample(392, 392, replace = T))
+```
+
+```{r}
+boot(auto, boot.fn, 1000)
+summary(lm(mpg ~ horsepower, data = auto))
+```
+
+```{r}
+boot.fn <- function(data, index){
+   coefficients(lm(mpg ~ horsepower + I(horsepower^2), data = data), subset = index)
+}
+
+set.seed(1)
+
+boot(data = auto, statistic = boot.fn, R = 1000)
+```
+
+## Conceptual
+
+### 1.) Using the statistical properties of the variance as well as single variable calculus, derive 5.6. In other words, prove that $\alpha$ given by 5.6 does indeed minimize $Var(\alpha X + (1 - \alpha)Y$
+
+$Var(\alpha X + (1 - \alpha)Y = \alpha^2\sigma^2_X + (1 - \alpha)^2\sigma^2_Y + 2\alpha(1 - \alpha)\sigma_{XY}$
+
+### 2.) We now derive the probability that a given observation is part of a bootstrap sample. Suppose that we obtain a bootstrap sample from a set of *n* observations.
+
+a.) What is the probability that the first bootstrap observation is *not* the *j*th observation from the original sample?
+
+$1- \frac{1}{n}$
+
+b.) What is the probability that the second bootstrap observation is *not* the *j*th observation from the original sample?
+
+$1- \frac{1}{n}$
+
+c.) Argue that the probability that the *j*th observation is not in the bootstrap sample is $(1- \frac{1}{n})^n$.
+
+d.) When $n = 5$, what is the probability that the *j*th observation is in the bootstrap sample?
+
+$1 - (1- \frac{1}{5})^5 = .672$
+
+e.) When $n = 100$, what is the probability that the *j*th observation is in the bootstrap sample?
+
+$1 - (1- \frac{1}{100})^100 = .634$
+
+f.) When $n = 1000$, what is the probability that the *j*th observation is in the bootstrap sample?
+
+$1 - (1- \frac{1}{1000})^{1000} = .632$
+
+g.) Create a plot that displays, for each integer value of n from 1 to 100,000, the probability that the *j*th observation is in the bootstrap sample. Comment on what you observe.
+
+```{r}
+data <- data.table(index = 1:1e5)
+data[, prob := 1 - (1 - 1/index)^index ]
+
+ggplot(data, aes(index, prob)) +
+   geom_point() +
+   scale_x_continuous(labels = scales::comma)
+```
+
+Quickly approaches asymptote of .632
+
+h.) We will now investigate the numerical probability that a bootstrap sample of size $n = 100$ contains the *j*th observation. Here j = 4. We repeatedly create bootstrap samples, and each time we record whether or not the fourth observation is contained in the bootstrap sample.
+
+```{r}
+store <- rep(NA, 1e5)
+
+for(i in 1:1e5)
+{
+   store[i] <- sum(sample(1:100, rep = T) == 4) > 0 
+}
+
+mean(store)
+```
+
+### 3.) We now review k-fold cross-validation.
+
+a.) Explain how k-fold cross validation is implemented:
+
+_The data is split up into k (roughly equal) parts, k-1 of which is used to train the model that is then tested on the hold-out set._
+
+b.) What are the advantages and disadvantages of k-fold cross-validation relative to:
+
+i.) The validation set approach?
+
+_The validation set approach has two main drawbacks compared to k-fold cross-validation. First, the validation estimate of the test error rate can be highly variable (depending on precisely which observations are included in the training set and which observations are included in the validation set). Second, only a subset of the observations are used to fit the model. Since statistical methods tend to perform worse when trained on fewer observations, this suggests that the validation set error rate may tend to overestimate the test error rate for the model fit on the entire data set._
+
+ii.) LOOCV?
+
+_k-Fold CV is computationally faster than LOOCV._
+
+_LOOCV cross-validation approach may give approximately unbiased estimates of the test error, since each training set contains n−1 observations; however, this approach has higher variance than k-fold cross-validation (since we are averaging the outputs of n fitted models trained on an almost identical set of observations, these outputs are highly correlated, and the mean of highly correlated quantities has higher variance than less correlated ones). So, there is a bias-variance trade-off associated with the choice of k in k-fold cross-validation; typically using k=5 or k=10 yield test error rate estimates that suffer neither from excessively high bias nor from very high variance._
+
+### 4.) Suppose that we use some sttatistical learning method to make a prediction for the response Y for a particular value of the predictor X. Carefully describe how we might estimate the standard deviation of our prediction.
+
+_We may estimate the standard deviation of our prediction by using the bootstrap method. In this case, rather than obtaining new independant data sets from the population and fitting our model on those data sets, we instead obtain repeated random samples from the original data set. In this case, we perform sampling with replacement B times and then find the corresponding estimates and the standard deviation of those B estimates by using equation (5.8)._
+
+## Applied
+
+### 5.) In Chapter 4, we used logistic regression to predict the probability of default using income and balance on the default data set. We will now estimate the test error of this logistic regression model using the validation set approach.
+
+```{r}
+
+set.seed(1)
+
+default <- data.table(ISLR::Default)
+
+default.split <- initial_split(default, 
+                               prop = .5, 
+                               strata = default)
+
+default.train <- training(default.split)
+default.test <- testing(default.split)
+```
+
+a.) Fit a logistic regression model that uses income and balance to predict default.
+
+```{r}
+summary(fit1 <- glm(default ~ income + balance, family = binomial, data = default.train))
+```
+
+b.) Using the validation set approach, estimate the test error of this model.
+
+```{r}
+default.test$pred <- ifelse( predict(fit1, newdata = default.test, type = "response") > .5, "Yes", "No")
+
+with(default.test, mean(default != pred))
+```
+
+c.) Repeat the process in b three times, using three different splits of the observations into a training set and a validation set.
+
+```{r}
+set.seed(1)
+
+trials <- 3
+
+results <- numeric(trials)
+
+for( i in 1:trials )
+{
+   default.split <- initial_split(default, 
+                                  prob = .5, 
+                                  strata = default)
+   
+   default.train <- training(default.split)
+   default.test <- testing(default.split)
+   
+   model <- glm(default ~ income + balance, family = binomial, data = default.train)
+   
+   pred <- ifelse( predict(model, newdata = default.test, type = "response") > .5, "Yes", "No")
+   
+   results[i] <- mean(default.test$default != pred)
+}
+
+results
+```
+
+The test error rates vary with sampling randomness.
+
+d.) Now consider a logistic regression model that predicts the probability of default using income, balance and a dummy variable for student. Estimate the test error for this model using the validation set approach.
+
+```{r}
+
+set.seed(1)
+
+default <- data.table(ISLR::Default)
+
+# one-hot encode student
+default[, ':='(student_Yes = ifelse(student == "Yes", 1, 0), student_No = ifelse(student == "No", 1, 0))][, student := NULL]
+
+default.split <- initial_split(default, 
+                               prob = .5, 
+                               strata = default)
+
+default.train <- training(default.split)
+default.test <- testing(default.split)
+
+summary(fit2 <- glm(default ~ income + balance + student_Yes, data = default.train, family = binomial))
+
+default.test$pred <- ifelse(predict(fit2, newdata = default.test, type = "response") > .5, "Yes", "No")
+
+with(default.test, mean(default != pred))
+```
+
+Student dummy coding slighly reduces the test error rate for the probability of default model.
+
+#### 6.) We continue to consider the use of a logistic regression model to predict the probability of “default” using “income” and “balance” on the “Default” data set. In particular, we will now computes estimates for the standard errors of the “income” and “balance” logistic regression coefficients in two different ways : (1) using the bootstrap, and (2) using the standard formula for computing the standard errors in the glm() function. Do not forget to set a random seed before beginning your analysis.
+
+a.) Using the summary() and glm() functions, determine the estimated standard errors for the coefficients associated with “income” and “balance” in a multiple logistic regression model that uses both predictors.
+
+```{r}
+set.seed(1)
+
+summary(fit1 <- glm(default ~ income + balance, data = default.train, family = binomial))
+```
+
+b.) Write a function, boot.fn(), that takes as input the default data set as well as an index of the observations, and that outputs the coefficient estimates for income and balance in the multiple logistic regression model.
+
+```{r}
+boot.fn <- function(data, index) {
+   coefficients(glm(default ~ income + balance, family = binomial, data = data, subset = index))
+}
+
+```
+
+c.) Use boot() function together with your boot.fn() function to estimate the standard errors of the logistic regression coefficents for income and balance.
+
+```{r}
+boot(data = default, statistic = boot.fn, R = 1000)
+```
+
+#### 7.) We saw that cv.glm() function can be used in order to compute the LOOCV test error estimate. Alternatively, one could compute those quantities using just the glm() and predict.glm() functions, and a for loop. You will now take this approach in order to compute the LOOCY error for a simple logistic regresion model on the Weekly data set.
+
+```{r}
+set.seed(1)
+
+weekly <- data.table(ISLR::Weekly)
+
+weekly.split <- initial_split(weekly, prop = .5)
+
+weekly.train <- training(weekly.split); weekly.test <- testing(weekly.split)
+```
+
+a.) Fit a logistic regression model that predicts Direction using the Lag1 and Lag2.
+
+```{r}
+summary(fit1 <- glm(Direction ~ Lag1 + Lag2, data = weekly.train, family = binomial))
+```
+
+b.) Fit a logistic regresion model that predicts direction using Lag1 and Lag2 using *all but the first observation.*
+
+```{r}
+holdout <- weekly[1]
+
+summary(fit1 <- glm(Direction ~ Lag1 + Lag2, data = weekly[-1], family = binomial))
+```
+
+c.) Use the model from the previous to predict the first observation.
+
+```{r}
+holdout$Direction == ifelse( predict(fit1, newdata = holdout, type = "response") > .5, "Up", "Down")
+```
+
+The model did not predict this correctly.
+
+d.) Write a for loop from i = 1 to i = n, where n is the number of observations in the data set, that performs each of the following steps:
+
+i.) Fit a logistic regresion model using all but the *i*th observation.
+ii.) Compute the posterior probability of the market moving up for the ith observation.
+
+```{r}
+n <- nrow(weekly)
+results <- logical()
+for(i in 1:n)
+{
+    model <- glm(Direction ~ Lag1 + Lag2, data = weekly[-i,], family = binomial)
+    pred <- ifelse( predict(model, newdata = weekly[i,], type = "response") > .5, "Up", "Down")
+    results[i] <- weekly[i,]$Direction != pred
+}
+
+```
+
+iii.) Take the average of the n numbers obtained in d.) in order to obtain the LOOCV estimate for the test error:
+
+```{r}
+mean(results)
+```
+
+#### 8.)
+
+We will now perform cross-validation on a simulated data set.
+
+a.) Generate a simulated data set as follows:
+
+```{r}
+set.seed(1)
+x <- rnorm(100); y <- x - 2 * x^2 + rnorm(100)
+
+data <- data.table(x, y)
+```
+
+In this data set, what is n and what is p?
+
+n = 100, p = 2, $Y = X - 2 * X^2 + \epsilon$
+
+b.) Create a scatterplot of x, y
+
+```{r}
+plot(x, y)
+```
+
+c.) Set a random seed, and then compute the LOOCV errors that result from fitting the following four models using the least squares:
+
+i.) $Y = \beta_0 + \beta_1X + \epsilon$
+
+```{r}
+set.seed(1)
+fit1 <- glm(y ~ x, data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+ii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \epsilon$
+
+```{r}
+set.seed(1)
+fit1 <- glm(y ~ poly(x, 2), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+iii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \epsilon$
+
+```{r}
+set.seed(1)
+fit1 <- glm(y ~ poly(x, 3), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+iiii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \beta_4X^4 \epsilon$
+
+```{r}
+set.seed(1)
+fit1 <- glm(y ~ poly(x, 4), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+d.) Repeat c using another random seed, and report results.
+
+i.) $Y = \beta_0 + \beta_1X + \epsilon$
+
+```{r}
+set.seed(100)
+fit1 <- glm(y ~ x, data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+ii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \epsilon$
+
+```{r}
+set.seed(100)
+fit1 <- glm(y ~ poly(x, 2), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+iii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \epsilon$
+
+```{r}
+set.seed(100)
+fit1 <- glm(y ~ poly(x, 3), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+iiii.) $Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \beta_4X^4 \epsilon$
+
+```{r}
+set.seed(100)
+fit1 <- glm(y ~ poly(x, 4), data = data)
+cv.glm(data, fit1)$delta[1]
+```
+
+e.) What model had the smallest LOOCV ?
+
+_The second degree polynomial had the best fit, which is to be expected given that the underlying function is polynomial._
+
+f.) Comment on the statistical significance of the coefficient estimates that result from fitting the models.
+
+```{r}
+summary(fit1)
+```
+
+_We can see that the 1 and 2 term coefficents are statistically significant, which agree to our CV results._
+
+#### 9.) We will now consider the Boston housing data set, from the MASS library.
+
+a.) Based on this data set, provide an estimate for the population mean of medv. Call this estimate $\hat{\mu}$
+
+```{r}
+boston <- data.table(MASS::Boston)
+
+mu.hat <- mean(boston$medv)
+```
+
+b.) Provide an estimate of the standard error of $\hat{\mu}$
+
+```{r}
+mu.se <- sd(boston$medv) / sqrt(nrow(boston))
+mu.se
+```
+
+c.) Now estimate the standard error of $\hat{\mu}$ using the bootstrap.
+
+```{r}
+boot.fn <- function(data, index) {
+   mean(data[index]$medv)
+}
+
+t.boot <- boot(boston, boot.fn, R = 1000)
+
+```
+
+d.) Based on your bootstrap estimate from (c), provide a 95% confidence interval for the mean of medv.
+
+```{r}
+alpha <- .95
+
+t.boot$t0 + qnorm(c(1 - alpha/2, alpha/2)) * 0.411978
+```
+
+Compare to the t-test:
+
+```{r}
+t.test(boston$medv)
+```
+
+e.) Based on this data set, provide an estimate $\hat{\mu}_{med}$, for the median value of medv in the population.
+
+```{r}
+med.hat <- median(boston$medv)
+```
+
+f.) We now would like to estimate the standard error of $\hat{\mu}_{med}$. Unfortunately, there is no simple formula for computing the standard error of the median.
+
+Instead, estimate the standard error using the bootstrap.
+
+```{r}
+boot.fn <- function(data, index) {
+   median(data[index]$medv)
+}
+
+t.boot <- boot(boston, boot.fn, R = 1000)
+t.boot
+```
+
+g.) Based on this data set, provide an estimate for the tenth percentile of medv in the Boston suburbs. Call this quantity $\hat{\mu}_{0.1}$
+
+```{r}
+quantile(boston$medv, .1)
+```
+
+h.) Use the bootstrap to estimate the standard error of $\hat{\mu}_{0.1}$
+
+```{r}
+boot.fn <- function(data, index) {
+   quantile(data[index]$medv, .1)
+}
+
+t.boot <- boot(boston, boot.fn, R = 1000)
+t.boot
+```
+

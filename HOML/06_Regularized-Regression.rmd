@@ -1,0 +1,653 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Regularized Regression}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 6}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+library(forecast, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+library(glmnet, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init()
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Regularized Regression
+
+### Data Sets
+
+```{r, echo = T}
+attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
+attrition.h2o <- as.h2o(attrition)
+```
+
+```{r, echo = T}
+set.seed(123)
+
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+
+ames.split <- initial_split(ames, prop =.7, strata = "Sale_Price")
+
+ames.train <- training(ames.split)
+ames.test <- testing(ames.split)
+```
+
+### Overview
+
+Regularization methods provide a means to constrain or regularize the estimated coefficients, which can reduce the variance and decrease out of sample error.
+
+### Why regularize?
+
+Linear Model:
+
+```{r}
+ames_sub <- ames.train %>%
+   filter(Gr_Liv_Area > 1000 & Gr_Liv_Area < 3000) %>%
+   sample_frac(.5)
+
+model1 <- lm(Sale_Price ~ Gr_Liv_Area, data = ames_sub)
+
+model1 %>%
+   broom::augment() %>%
+   ggplot(aes(Gr_Liv_Area, Sale_Price)) +
+   geom_segment(aes(x = Gr_Liv_Area, y = Sale_Price,
+                    xend = Gr_Liv_Area, yend = .fitted),
+                alpha = 0.3) +
+   geom_point(size = 1, color = "red") +
+   geom_smooth(se = F, method = "lm") +
+   scale_y_continuous(labels = scales::dollar)
+```
+
+Linear assumptions:
+
+1.) Linear relationship
+
+2.) More observations than features (n > p)
+
+3.) Little to no multicolinearity
+
+4.) Homoscedasticity (constant error variance)
+
+When linear assumptions break-down, especially with large p, regularization methods are useful.
+
++ Linear OLS: min SSE = $\sum_{i=1}^n{(y_i - \hat{y})^2}$
+
+### Feature Selection
+
+In OLS, we have "hard threshold" methods for variable selection (forward selection, backward elimination, step-wise)
+
+More modern approach is called "soft thresholds", which slowly pushes the effects of irrelevant features toward zero, and in some cases will zero out entire coefficients.
+
+With wide data sets (or ones that exhibit multicolinearity) we have regularization methods (or penalized models / shrinkage methods).
+
+**Reduces variance at expense being unbiased.**
+
+Regularization parameter:
+
++ min SSE = $\sum_{i=1}^n{(y_i - \bar{y})^2} + P$
+
+Basically, we can think of the regularization parameter as a constraint to the size of the coefficients such that the only way the coefficients can increase is if we experience a comparable decrease in the model's loss function.
+
+Three common regularization methods:
+
+1.) Ridge
+
+2.) Lasso (or LASSO)
+
+3.) Elastic net (or ENET), which is a combination of ridge and lasso.
+
+### Ridge Penalty
+
+Ridge penalty: $\lambda\sum^p_{j=1}\beta^2_j$
+
+So the minimization function becomes:
+
+$\sum_{i=1}^n{(y_i - \hat{y})^2} + \lambda\sum^p_{j=1}\beta^2_j$
+
+The size of this penalty, referred to as $L^2$ (or Euclidiean) norm, can take on a wide range of values, which is controlled by the tuning parameter $\lambda$.
+
+When $L^2$ is zero, there is no effect (reverts back to OLS).
+
+However, as $\lambda \to \inf$, the penalty becomes large and forces the coefficients toward zero (but not all the way).
+
+Ridge Penalty visually:
+
+```{r}
+boston_train_x <- model.matrix(cmedv ~ ., pdp::boston)[, -1]
+boston_train_y <- pdp::boston$cmedv
+
+# model
+boston_ridge <- glmnet::glmnet(
+   x = boston_train_x,
+   y = boston_train_y,
+   alpha = 0
+)
+
+lam <- boston_ridge$lambda %>%
+   as.data.frame() %>%
+   mutate(penalty = boston_ridge$a0 %>% names()) %>%
+   rename(lambda = ".")
+
+results <- boston_ridge$beta %>%
+   as.matrix() %>%
+   as.data.frame() %>%
+   rownames_to_column() %>%
+   gather(penalty, coefficients, -rowname) %>%
+   left_join(lam)
+
+result_labels <- results %>%
+   group_by(rowname) %>%
+   filter(lambda == min(lambda)) %>%
+   ungroup() %>%
+   top_n(5, wt = abs(coefficients)) %>%
+   mutate(var = paste0("x", 1:5))
+
+ggplot() +
+   geom_line(data = results, aes(lambda, coefficients, group = rowname, color = rowname), show.legend = F) +
+   scale_x_log10() +
+   geom_text(data = result_labels, aes(lambda, coefficients, label = var, color = rowname), nudge_x = -0.06, show.legend = F)
+```
+
+In essence, the ridge penalty pushes muticolinear features together rather than allowing one to be wildy positive and one widly negative. Additionally, many of the less-imporant features also get pushed toward zero.
+
+What ridge regression is **NOT**:
+
+A feature selection technique. It will retain all features in the final model. Therefore, ridge regression is appropriate if you need to retain all the features, yet reduce the noise that less influential variables may create.
+
+### Lasso penalty
+
+Lasso stands for **L**east **A**bsolute **S**hrinkage and **S**election **O**perator.
+
+Lasso penalty: $\lambda\sum^p_{j=1}{|\beta_j|}$
+
+Lasso Regresion Function: $\sum_{i=1}^n{(y_i - \hat{y})^2} + \lambda\sum^p_{j=1}{|\beta_j|}$
+
+As $\lambda \to \inf$, the lasso penalty will actually push feature coefficents to zero.
+
+This model serves as a sort of automatic feature selection.
+
+Visually:
+
+```{r}
+
+# model
+boston_lasso <- glmnet::glmnet(
+   x = boston_train_x,
+   y = boston_train_y,
+   alpha = 1
+)
+
+lam <- boston_lasso$lambda %>%
+   as.data.frame() %>%
+   mutate(penalty = boston_lasso$a0 %>% names()) %>%
+   rename(lambda = ".")
+
+results <- boston_lasso$beta %>%
+   as.matrix() %>%
+   as.data.frame() %>%
+   rownames_to_column() %>%
+   gather(penalty, coefficients, -rowname) %>%
+   left_join(lam)
+
+result_labels <- results %>%
+   group_by(rowname) %>%
+   filter(lambda == min(lambda)) %>%
+   ungroup() %>%
+   top_n(5, wt = abs(coefficients)) %>%
+   mutate(var = paste0("x", 1:5))
+
+ggplot() +
+   geom_line(data = results, aes(lambda, coefficients, group = rowname, color = rowname), show.legend = F) +
+   scale_x_log10() +
+   geom_text(data = result_labels, aes(lambda, coefficients, label = var, color = rowname), nudge_x = -0.05, show.legend = F)
+```
+
+We can see that as $\lambda$ grows, the number of features retained decreases.
+
+Lasso regression can be a good tool to extract the most consistent features.
+
+### Elastic nets
+
+A generalization of the ridge and lasso penalties, called _elastic nets_, combines the two penalties.
+
+Elastic net function: min $\sum_{i=1}^n{(y_i - \hat{y})^2} + \lambda\sum^p_{j=1}\beta^2_j + \lambda\sum^p_{j=1}{|\beta_j|}$
+
+Visually:
+
+```{r}
+# model
+boston_elastic <- glmnet::glmnet(
+   x = boston_train_x,
+   y = boston_train_y,
+   alpha = .2
+)
+
+lam <- boston_elastic$lambda %>%
+   as.data.frame() %>%
+   mutate(penalty = boston_elastic$a0 %>% names()) %>%
+   rename(lambda = ".")
+
+results <- boston_elastic$beta %>%
+   as.matrix() %>%
+   as.data.frame() %>%
+   rownames_to_column() %>%
+   gather(penalty, coefficients, -rowname) %>%
+   left_join(lam)
+
+result_labels <- results %>%
+   group_by(rowname) %>%
+   filter(lambda == min(lambda)) %>%
+   ungroup() %>%
+   top_n(5, wt = abs(coefficients)) %>%
+   mutate(var = paste0("x", 1:5))
+
+ggplot() +
+   geom_line(data = results, aes(lambda, coefficients, group = rowname, color = rowname), show.legend = F) +
+   scale_x_log10() +
+   geom_text(data = result_labels, aes(lambda, coefficients, label = var, color = rowname), nudge_x = -0.05, show.legend = F)
+```
+
+### Implementation
+
+glmnet: *alpha* parameter = penalty weight
+
+$\alpha = 0$, ridge
+
+$\alpha = 1$, lasso
+
+$0 < \alpha < 1$, elastic net
+
+```{r}
+X <- model.matrix(Sale_Price ~., data = ames.train)[, -1]
+
+Y <- log(ames.train$Sale_Price)
+```
+
+We need to ensure that all features are on a common scale (otherwise large magnitude features will have more weight).
+
+(standardization is done automatically with _glmnet_)
+
+```{r}
+# Apply ridge regression to ames data
+
+ridge <- glmnet(
+   x = X,
+   y = Y,
+   alpha = 0
+)
+```
+
+glmnet automatically fits models across a wide range of $\lambda$ values.
+
+```{r}
+plot(ridge, xvar = "lambda")
+```
+
+coefficients:
+
+```{r}
+
+params <- coef(ridge)
+
+ridge$lambda %>% head()
+
+coef(ridge)[c("Latitude", "Overall_QualVery_Excellent"), 100]
+
+coef(ridge)[c("Latitude", "Overall_QualVery_Excellent"), 1]
+```
+
+### Tuning
+
+To help find the optimal value of $\lambda$ we use k-fold cross validation.
+
+Note: by default glmnet::cv.glmnet uses MSE as the loss function, this can be changed by altering the 'type.measurement'
+
+```{r}
+# ?glmnet::cv.glmnet
+
+ridge <- cv.glmnet(
+   x = X,
+   y = Y,
+   alpha = 0
+)
+
+lasso <- cv.glmnet(
+   x = X,
+   y = Y,
+   alpha = 1
+)
+
+# plot results
+
+par(mfrow = c(1, 2))
+plot(ridge, main = "Ridge penalty\n\n")
+plot(lasso, main = "Lasso penalty\n\n")
+```
+
+```{r}
+# Ridge model
+min(ridge$cvm)
+
+ridge$lambda.min # lambda for this min MSE
+
+ridge$cvm[ridge$lambda == ridge$lambda.1se] # 1-SE rule
+
+ridge$lambda.1se # lambda for this MSE
+
+# Lasso model
+min(lasso$cvm)
+
+lasso$lambda.min
+
+lasso$cvm[lasso$lambda == lasso$lambda.1se]
+```
+
+Feature Reduction
+
+```{r}
+ridge_min <- glmnet(
+   x = X,
+   y = Y,
+   alpha = 0
+)
+
+lasso_min <- glmnet(
+   x = X,
+   y = Y,
+   alpha = 1
+)
+
+par(mfrow = c(1, 2))
+
+# plot ridge model
+plot(ridge_min, xvar = "lambda", main = "Ridge penalty\n\n")
+abline(v = log(ridge$lambda.min), col = "red", lty = "dashed")
+abline(v = log(ridge$lambda.1se), col = "blue", lty = "dashed")
+
+# plot lasso model
+plot(lasso_min, xvar = "lambda", main = "Lasso penalty\n\n")
+abline(v = log(lasso$lambda.min), col = "red", lty = "dashed")
+abline(v = log(lasso$lambda.1se), col = "blue", lty = "dashed")
+```
+
+```{r}
+
+lasso    <- glmnet(X, Y, alpha = 1.0) 
+elastic1 <- glmnet(X, Y, alpha = 0.25) 
+elastic2 <- glmnet(X, Y, alpha = 0.75) 
+ridge    <- glmnet(X, Y, alpha = 0.0)
+
+par(mfrow = c(2, 2))
+plot(lasso, xvar = "lambda", main = "Lasso (Alpha = 1)\n\n\n")
+plot(elastic1, xvar = "lambda", main = "Elastic Net (Alpha = .25)\n\n\n")
+plot(elastic2, xvar = "lambda", main = "Elastic Net (Alpha = .75)\n\n\n")
+plot(ridge, xvar = "lambda", main = "Ridge (Alpha = 0)\n\n\n")
+
+```
+
+Grid Search for auto-tune
+
+```{r}
+set.seed(123)
+
+cv_glmnet <- train(
+   x = X,
+   y = Y,
+   method = "glmnet",
+   preProc = c("zv", "center", "scale"),
+   trControl = trainControl(method = "cv", number = 10),
+   tuneLength = 10
+)
+
+# model with lowest RMSE
+cv_glmnet$bestTune
+
+ggplot(cv_glmnet)
+```
+
+Evaluate performance:
+
+```{r}
+pred <- predict(cv_glmnet, X)
+
+# compute RMSE of transformed predictors
+RMSE(exp(pred), exp(Y))
+```
+
+### Feature Interpretation
+
+Feature interpretation is roughly the same as in PSL.
+
+```{r}
+vip(cv_glmnet, num_features = 20, bar = F)
+```
+
+```{r}
+p1 <- pdp::partial(cv_glmnet, pred.var = "Gr_Liv_Area", grid.resolution = 20) %>%
+  mutate(yhat = exp(yhat)) %>%
+  ggplot(aes(Gr_Liv_Area, yhat)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p2 <- pdp::partial(cv_glmnet, pred.var = "Overall_QualExcellent") %>%
+  mutate(
+    yhat = exp(yhat),
+    Overall_QualExcellent = factor(Overall_QualExcellent)
+    ) %>%
+  ggplot(aes(Overall_QualExcellent, yhat)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p3 <- pdp::partial(cv_glmnet, pred.var = "First_Flr_SF", grid.resolution = 20) %>%
+  mutate(yhat = exp(yhat)) %>%
+  ggplot(aes(First_Flr_SF, yhat)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p4 <- pdp::partial(cv_glmnet, pred.var = "Garage_Cars") %>%
+  mutate(yhat = exp(yhat)) %>%
+  ggplot(aes(Garage_Cars, yhat)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r}
+pdp::partial(cv_glmnet, pred.var = "Overall_QualPoor") %>%
+  mutate(
+    yhat = exp(yhat),
+    Overall_QualPoor = factor(Overall_QualPoor)
+    ) %>%
+  ggplot(aes(Overall_QualPoor, yhat)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+```
+
+### Attrition
+
+```{r}
+set.seed(123)
+
+churn_split <- initial_split(attrition, prop = .7, strata = "Attrition")
+churn.train <- training(churn_split)
+churn.test <- testing(churn_split)
+
+glm_mod <- train(
+   Attrition ~.,
+   data = churn.train,
+   method = "glm",
+   family = "binomial",
+   preProc = c("zv", "center", "scale"),
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+# train regularized logistic regression model
+
+set.seed(123)
+
+penalized_mod <- train(
+   Attrition ~.,
+   data = churn.train,
+   method = "glmnet",
+   family = "binomial",
+   preProc = c("zv", "center", "scale"),
+   trControl = trainControl(method = "cv", number = 10),
+   tuneLength = 10
+)
+
+summary(resamples(list(
+   logistic_model = glm_mod,
+   penalized_model = penalized_mod
+)))$statistics$Accuracy
+
+```
+
+```{r}
+# clean up
+rm(list = ls())
+```
+

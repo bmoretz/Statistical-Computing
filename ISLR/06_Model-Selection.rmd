@@ -1,0 +1,845 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+fig_width: 9
+fig_height: 3.5
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 6}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Model Selection}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(class, quietly = TRUE, warn.conflicts = FALSE)
+library(boot, quietly = TRUE, warn.conflicts = FALSE)
+library(leaps, quietly = TRUE, warn.conflicts = FALSE)
+library(glmnet, quietly = TRUE, warn.conflicts = FALSE)
+library(pls, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+```
+
+## Chapter 6
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+### Lab
+
+```{r}
+hitters <- as.data.table(ISLR::Hitters)
+
+# ggpairs(hitters)
+```
+
+```{r}
+sum(is.na(hitters$Salary))
+full <- nrow(hitters)
+```
+
+```{r}
+hitters <- hitters[ complete.cases(hitters), ]
+
+1 - (nrow(hitters) / full) # drop about 18% of the data
+
+regfit.full <- regsubsets(Salary ~., hitters)
+summary(regfit.full)
+```
+
+```{r}
+regfit.full <- regsubsets(Salary ~., data = hitters, nvmax = 19)
+reg.summary <- summary(regfit.full)
+
+names(reg.summary)
+```
+
+```{r}
+reg.summary$rsq
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(reg.summary$rss, xlab = "Number of Variables", ylab = "RSS")
+which.min(reg.summary$rss)
+points(19, reg.summary$rss[19], col="red", cex=2, pch=20)
+plot(reg.summary$adjr2, xlab = "Number of Variables", ylab = "Adj. R^2")
+which.max(reg.summary$adjr2)
+points(11, reg.summary$adjr2[11], col="red", cex=2, pch=20)
+plot(reg.summary$cp, xlab = "Number of Variables", ylab = "Cp", type = "l")
+which.min(reg.summary$cp)
+points(10, reg.summary$cp[10], col="red", cex=2, pch=20)
+which.min(reg.summary$bic)
+plot(reg.summary$bic, xlab = "Number of Variables", ylab = "BIC", type = "l")
+points(6, reg.summary$bic[6], col = "red", cex = 2, pch = 20)
+```
+
+```{r}
+plot(regfit.full, scale = "r2")
+plot(regfit.full, scale = "adjr2")
+plot(regfit.full, scale = "Cp")
+plot(regfit.full, scale = "bic")
+```
+
+```{r}
+coef(regfit.full, 6)
+```
+
+```{r}
+regfit.fwd <- regsubsets(Salary ~., data = hitters, nvmax = 19)
+summary(regfit.full)
+```
+
+```{r}
+regfit.bwd <- regsubsets(Salary ~., data = hitters, nvmax = 19)
+summary(regfit.bwd)
+```
+
+Cross-Validation using best subset selection:
+
+```{r}
+train <- sample(c(T, F), size = nrow(hitters), replace = T)
+test <- (!train)
+```
+
+```{r}
+regfit.best <- regsubsets(Salary ~., data = hitters[train,], nvmax = 19)
+test_mat <- model.matrix(Salary ~., data = hitters)
+
+val_errors <- rep(NA, 19)
+for(i in 1:19)
+{
+   coefi <- coef(regfit.best, id = i)
+   pred <- test_mat[, names(coefi)] %*% coefi
+   val_errors[i] <- mean((hitters$Salary[test] - pred)^2)
+}
+
+which.min(val_errors)
+```
+
+```{r}
+predict_regsubsets <- function(object, newdata, id, ...)
+{
+   form <- as.formula(object$call[[2]])
+   mat <- model.matrix(form, newdata)
+   coefi <- coef(object, id = id)
+   xvars <- names(coefi)
+   mat[, xvars] %*% coefi
+}
+
+regfit.best <- regsubsets(Salary ~ ., data = hitters, nvmax = 19)
+coef(regfit.best, 10)
+```
+
+```{r}
+k <- 10
+set.seed(1)
+folds <- sample(1:k, nrow(hitters), replace = T)
+cv.errors <- matrix(NA, k, 19, dimnames = list(NULL, paste(1:19)))
+
+for(j in 1:k)
+{
+   best.fit <- regsubsets(Salary ~ ., data = hitters[folds != j, ], nvmax = 19)
+   for(i in 1:19) {
+      pred <- predict_regsubsets(best.fit, hitters[folds == j, ], id = i)
+      cv.errors[j, i] <- mean( (hitters$Salary[folds == j] - pred)^2)
+   }
+}
+
+mean.cv.errors <- apply(cv.errors, 2, mean)
+mean.cv.errors
+
+par(mfrow = c(1,1))
+plot(mean.cv.errors, type ='b')
+```
+
+### Ridge Regression
+
+```{r}
+x <- model.matrix(Salary ~ ., hitters)[, -1]
+y <- hitters$Salary
+
+grid <- 10^seq(10, -2, length = 100)
+
+ridge.mod <- glmnet(x, y, alpha = 0, lambda = grid)
+plot(ridge.mod)
+
+dim(coef(ridge.mod))
+```
+
+```{r}
+ridge.mod$lambda[50]
+coef(ridge.mod)[,50]
+
+sqrt(sum(coef(ridge.mod)[-1, 50])^2)
+```
+
+```{r}
+index <- 60
+ridge.mod$lambda[index]
+coef(ridge.mod)[, index]
+
+sqrt(sum(coef(ridge.mod)[-1, index])^2)
+```
+
+```{r}
+set.seed(1)
+train <- sample(1:nrow(x), nrow(x)/2)
+test <- (-train)
+
+y.test <- y[test]
+
+ridge.mod <- glmnet(x[train,], y[train], alpha = 0, lambda = grid, threshold = 1e-12)
+
+ridge.pred <- predict(ridge.mod, s = 4, newx = x[test,])
+mean((ridge.pred - y.test)^2)
+
+```
+
+### Lasso
+
+```{r}
+lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = grid)
+plot(lasso.mod)
+```
+
+```{r}
+set.seed(1)
+
+cv.out <- cv.glmnet(x[train, ], y[train], alpha = 1)
+
+plot(cv.out)
+
+bestlam <- cv.out$lambda.min
+lasso.pred <- predict(lasso.mod, s = bestlam, newx = x[test,])
+
+mean((lasso.pred - y.test)^2)
+```
+
+```{r}
+out <- glmnet(x, y, alpha = 1, lambda = grid)
+lasso.coef <- predict(out, type = "coefficients", s = bestlam)[1:20,]
+lasso.coef
+```
+
+### Principal Components Regression
+
+```{r}
+set.seed(2)
+
+pcr.fit <- pcr(Salary ~., data = hitters, scale = T, validation = "CV")
+
+summary(pcr.fit)
+
+validationplot(pcr.fit, val.type = "MSEP")
+```
+
+```{r}
+set.seed(1)
+
+pcr.fit <- pcr(Salary ~ ., data = hitters, subset = train, scale = T,
+               validation = "CV")
+validationplot(pcr.fit, val.type = "MSEP")
+```
+
+```{r}
+pcr.pred <- predict(pcr.fit, x[test,], ncomp = 7)
+mean((pcr.pred - y.test)^2)
+```
+
+### Partial Least Squares
+
+```{r}
+set.seed(1)
+
+pls.fit <- plsr(Salary ~ ., data = hitters, subset = train, scale = T,
+                validation = "CV")
+
+summary(pls.fit)
+
+pls.pred <- predict(pls.fit, x[test, ], ncomp = 2)
+mean((pls.pred - y.test)^2)
+
+pls.fit <- plsr(Salary ~ ., data = hitters, scale = T, ncomp = 2)
+summary(pls.fit)
+```
+
+
+## Conceptual
+
+### 1.)
+
+We perform best subset, forward stepwise, and backward stepwise selection on a single data set. For each approach, we obtain $p + 1$ models, containing $0, 1, 2, \ldots, p$ predictors.
+
+a.) Which of the three models with k predictors has the smallest *training* RSS?
+
+_The model with the smallest training RSS will be the $C{k \choose p}$ model with p = k._
+
+b.) Which of the three models with k predictors has the smallest *test* RSS?
+
+_Difficult to say. The best subset selection technique looks at more models, however, forward or backward selection could pick a better model by chance._
+
+c.) T/F
+
+i.) The predictors in the k-variable model identified by foward stepwise selection are a subset of the predictors in the (k+1)-variable model identified by forward stepwise selection.
+ 
+__T__
+
+ii.) The predictors isn the k-variable model identified by backward stepwise are a subset of the predictors in the (k+1)-variable model identified by backward stepwise selection.
+
+__T__
+
+iii.) The predictors in the k-variable model identified by backward stepwise are a subset of the predictors in the (k+1)-variable model identified by forward stepwise selection.
+
+__F__. There is no link between these models predictors.
+
+iv.) The predictors in the k-variable model identifed by forward stepwise are a subset of the predictors in the (k+1)-variable model identifed by backward stepwise selection.
+
+__F__. There is no link between these models predictors.
+
+v.) The predictors in the k-variable model identified by best subset are a subset of the predictors in the (k+1)-variable model identifed by best subset selection.
+
+__F__. There is no link between these models predictors.
+
+### 2.)
+
+For parts (a) through (c), indicate which of i through iv. is correct.
+
+a.) The lasso, relative to least squares, is:
+
+i.) More flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
+
+__T__
+
+ii.) More flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+
+__F__
+
+iii.) Less flexible and hence will give improved prediction accuracyt when its increase in bias is less than its decrease in variance.
+
+__F__
+
+iv.) Less flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+
+__F__
+
+### 3.)
+
+Suppose we estimate the regression coefficients in a linear regression model by minimizing:
+
+$\sum^n_{i=1}{(y_i - \beta_0 - \sum^p_{j=1}\beta_jx_{i,j})}$
+
+subject to,
+
+$\sum^p_{j=1}(|\beta_j|) \le s$
+
+a.) As we increase s from 0, the training RSS will:
+
+Steadily decrease. As we increase s from 0, we are restricting the βj coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes a steady decrease in the training RSS.
+
+b.) Test RSS will:
+
+Decrease initially, and then eventually start increasing in a U shape. As we increase s from 0, we are restricting the βj coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes at first a decrease in the test RSS before increasing again after that in a typical U shape.
+
+c.) Variance will:
+
+Steadily increase. As we increase s from 0, we are restricting the βj coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes a steady increase in variance.
+
+d.) (squared) bias will:
+
+Steadily decrease. As we increase s from 0, we are restricting the βj coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes a steady decrease in bias.
+
+e.) irreducible error will:
+
+remain unchanged.
+
+### 4.)
+
+Suppose we estimate the regression coefficients in a linear regression model by minimizing:
+
+$\sum^n_{i=1}(y_i - \beta_0 - \sum^p_{j=1}\beta_jx_{ij}) + \lambda\sum^p_{j=1}\beta^2_j$
+
+for a particular value of $\lambda$.
+
+a.) As we increase $\lambda$ from 0, the training RSS will:
+
+Steadily increase.
+
+b.) Test RSS will:
+
+Decrease initially, then turn to a U shape.
+
+c.) Variance will:
+
+Steadly decrease.
+
+d.) (squared) bias will:
+
+Steadily increase
+
+e.) Irreducible error will:
+
+Remain constant.
+
+### 5.)
+
+It is well-known that ridge regression tends to give similar coefficient values to correlated variables, whereas the lasso may give quite different coefficient values to correlated variables. We will now explore this property in a very simple setting.
+
+Suppose that $n = 2, p = 2, x_{11} = x_{12} = x_{21} = x_{22}$. Furthermore, suppose that $y_1 + y_2 = 0$ and $x_{11} + x_{21} = 0$ so the estimate for the intercept in a least squares, ridge regresion or lasso model is zero: $\hat{\beta}_0 = 0$
+
+Write out the ridge regression optimization problem in this setting:
+
+$(y_1 - \hat{\beta_1}x_1 - \hat{\beta_2})^2 + (y_2 - \hat{\beta_1}x_2 - \hat{\beta_2}x_2)^2 + \lambda(\hat{\beta^2_1} + \hat{\beta^2_2})$
+
+### 6.)
+
+We will now explore (6.12) and (6.13) further.
+
+a.) Consider (6.12) with p=1. For some choice of y1 and λ>0, plot (6.12) as a function of β1. Your plot should confirm that (6.12) is solved by (6.14).
+
+```{r}
+y <- 3
+lambda <- 2
+beta <- seq(-10, 10, 0.1)
+plot(beta, (y - beta)^2 + lambda * beta^2, pch = 20, xlab = "beta", ylab = "Ridge optimization")
+beta.est <- y / (1 + lambda)
+points(beta.est, (y - beta.est)^2 + lambda * beta.est^2, col = "red", pch = 4, lwd = 5)
+```
+
+We may see that the function is minimized at β=y/(1+λ).
+
+b.) Consider (6.13) with p=1. For some choice of y1 and λ>0, plot (6.13) as a function of β1. Your plot should confirm that (6.13) is solved by (6.15).
+
+```{r}
+y <- 3
+lambda <- 2
+beta <- seq(-10, 10, 0.1)
+plot(beta, (y - beta)^2 + lambda * abs(beta), pch = 20, xlab = "beta", ylab = "Lasso optimization")
+beta.est <- y - lambda / 2
+points(beta.est, (y - beta.est)^2 + lambda * abs(beta.est), col = "red", pch = 4, lwd = 5)
+```
+
+We may see that the function is minimized at β=y−λ/2 as y>λ/2.
+
+## Applied
+
+### 8.)
+
+In this exercise, we will generate simulated data, and will then use this data to perform best subset selection.
+
+a.) Use the rnorm() function to generate a predictor X of length n=100, as well as a noise vector ε of length n=100.
+
+```{r}
+set.seed(1)
+
+n <- 100
+
+x = rnorm(n)
+eps = rnorm(n)
+```
+
+b.) Generate a response vector Y of length n=100 according to the model
+
+Y=β0+β1X+β2X2+β3X3+ε
+
+where β0, β1, β2 and β3 are constants of your choice.
+
+```{r}
+b0 <- 2
+b1 <- 3
+b2 <- 0.3
+b3 <- -1
+
+y <- b0 + b1 * x + b2 * x^2 + b3 * x^3 + eps
+```
+
+c.) Use the regsubsets() function to perform best subset selection in order to choose the best model containing the predictors X,X2,⋯,X10. What is the best model obtained according to Cp, BIC, and adjusted R2 ? Show some plots to provide evidence for your answer, and report the coefficients of the best model obtained. Note you will need to use the data.frame() function to create a single data set containing both X and Y.
+
+```{r}
+data.full <- data.frame(y = y, x = x)
+regfit.full <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10), data = data.full, nvmax = 10)
+reg.summary <- summary(regfit.full)
+
+par(mfrow = c(2, 2))
+plot(reg.summary$cp, xlab = "Number of variables", ylab = "C_p", type = "l")
+points(which.min(reg.summary$cp), reg.summary$cp[which.min(reg.summary$cp)], col = "red", cex = 2, pch = 20)
+plot(reg.summary$bic, xlab = "Number of variables", ylab = "BIC", type = "l")
+points(which.min(reg.summary$bic), reg.summary$bic[which.min(reg.summary$bic)], col = "red", cex = 2, pch = 20)
+plot(reg.summary$adjr2, xlab = "Number of variables", ylab = "Adjusted R^2", type = "l")
+points(which.max(reg.summary$adjr2), reg.summary$adjr2[which.max(reg.summary$adjr2)], col = "red", cex = 2, pch = 20)
+```
+
+d.) Repeat (c), using forward stepwise selection and also using backwards stepwise selection. How does your answer compare to the results in (c) ?
+
+```{r}
+regfit.fwd <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10), data = data.full, nvmax = 10, method = "forward")
+reg.summary.fwd <- summary(regfit.fwd)
+
+par(mfrow = c(2, 2))
+plot(reg.summary.fwd$cp, xlab = "Number of variables", ylab = "C_p", type = "l")
+points(which.min(reg.summary.fwd$cp), reg.summary.fwd$cp[which.min(reg.summary.fwd$cp)], col = "red", cex = 2, pch = 20)
+plot(reg.summary.fwd$bic, xlab = "Number of variables", ylab = "BIC", type = "l")
+points(which.min(reg.summary.fwd$bic), reg.summary.fwd$bic[which.min(reg.summary.fwd$bic)], col = "red", cex = 2, pch = 20)
+plot(reg.summary.fwd$adjr2, xlab = "Number of variables", ylab = "Adjusted R^2", type = "l")
+points(which.max(reg.summary.fwd$adjr2), reg.summary.fwd$adjr2[which.max(reg.summary.fwd$adjr2)], col = "red", cex = 2, pch = 20)
+mtext("Plots of C_p, BIC and adjusted R^2 for forward stepwise selection", side = 3, line = -2, outer = TRUE)
+```
+
+e.) Now fit a lasso model to the simulated data, again using $X, X^2, \ldots, x^{10}$
+
+```{r}
+xmat <- model.matrix(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10), data = data.full)
+
+cv.lasso <- cv.glmnet(xmat, y, alpha = 1)
+
+par(mfrow = c(1, 1))
+plot(cv.lasso)
+
+bestlam <- cv.lasso$lambda.min
+bestlam
+
+fit.lasso <- glmnet(xmat, y, alpha = 1)
+predict(fit.lasso, s = bestlam, type = "coefficients")[1:11, ]
+```
+
+The lasso method picks X, X2, X3 and X5 as variables for the model.
+
+#### 9.)
+
+In this exercise, we will predict the number of applications recieved using the other variables in the **College** data set.
+
+a.) Split the data into a training set and a test set.
+
+```{r}
+college <- as.data.table(ISLR::College)
+
+unif <- runif(nrow(college))
+
+train <- unif < .7
+test <- !(train) 
+
+train <- college[train]
+test <- college[test]
+```
+
+b.) Fit a linear model using least squares on the training set, and repor the test error obtained.
+
+```{r}
+lm.fit <- lm(Apps ~ ., data = train)
+
+mean((test$Apps - predict(lm.fit, newdata = test))^2)
+```
+
+c.) Fit a ridge regression on the training set, with $\lambda$ chosen by cross-validation. Report the error.
+
+```{r}
+train.mat <- model.matrix(Apps ~ ., data = train)
+
+cv.ridge <- cv.glmnet(train.mat, train$Apps, data = train, alpha = 0)
+
+bestlam <- cv.ridge$lambda.min
+bestlam
+
+test.mat <- model.matrix(Apps ~ ., data = test)
+
+fit.ridge <- glmnet(test.mat, test$Apps, alpha = 1, lambda = bestlam)
+pred <- predict(fit.ridge, s = bestlam, newx = test.mat, type = "response")
+
+mean( (test$Apps - pred )^2 )
+
+```
+
+d.) Fit a lasso regresion on the training set, with $\lambda$ chosen by cross-validation. Report the error.
+
+```{r}
+cv.lasso <- cv.glmnet(train.mat, train$Apps, data = train, alpha = 1)
+
+bestlam <- cv.lasso$lambda.min
+bestlam
+
+fit.lasso <- glmnet(test.mat, test$Apps, alpha = 1, lambda = bestlam)
+
+pred <- predict(fit.lasso, test.mat, s = bestlam)
+
+mean( (test$Apps - pred)^2)
+```
+
+e.) Fit a PCR model on the training set, with M chosen by cross-validation. Report the test error, along with the value of M.
+
+```{r}
+fit.pcr <- pcr(Apps ~ ., data = train, scale = T, validation = "CV")
+validationplot(fit.pcr)
+
+fit.pcr$ncomp
+
+pred.pcr <- predict(fit.pcr, test, ncomp = 10)
+mean((pred.pcr - test$Apps)^2)
+```
+
+f.) Fit a PLS model on the training set, with M chosen by cross-validation. Report the test error and M.
+
+```{r}
+pls.fit <- plsr(Apps ~ ., data = train, scale = T,
+                validation = "CV")
+
+validationplot(pls.fit)
+
+pred.pls <- predict(pls.fit, test, ncomp = 10)
+mean((pred.pls - test$Apps)^2)
+```
+
+#### 10.)
+
+We have seen that as the number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated data set.
+
+a.) Generate a data set with p = 20 features, n = 1,000 observations, and an associated quantitative response vector generated according to the model:
+
+$Y = X\beta + \epsilon$
+
+```{r}
+set.seed(1)
+x <- matrix(rnorm(1000 * 20), 1000, 20)
+b <- rnorm(20)
+b[3] <- 0
+b[4] <- 0
+b[9] <- 0
+b[19] <- 0
+b[10] <- 0
+eps <- rnorm(1000)
+y <- x %*% b + eps
+```
+
+b.) Split your data set into a training set containing 100 observations and a test set containing 900 observations.
+
+```{r}
+train <- sample(seq(1000), 100, replace = FALSE)
+test <- -train
+x.train <- x[train, ]
+x.test <- x[test, ]
+y.train <- y[train]
+y.test <- y[test]
+```
+
+c.) Perform best subset selection on the training set, and plot the training set MSE associated with the best model of each size.
+
+```{r}
+data.train <- data.frame(y = y.train, x = x.train)
+regfit.full <- regsubsets(y ~ ., data = data.train, nvmax = 20)
+train.mat <- model.matrix(y ~ ., data = data.train, nvmax = 20)
+val.errors <- rep(NA, 20)
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    pred <- train.mat[, names(coefi)] %*% coefi
+    val.errors[i] <- mean((pred - y.train)^2)
+}
+plot(val.errors, xlab = "Number of predictors", ylab = "Training MSE", pch = 19, type = "b")
+```
+
+d.) Plot the test MSE associated with the best model of each size.
+
+```{r}
+data.test <- data.frame(y = y.test, x = x.test)
+test.mat <- model.matrix(y ~ ., data = data.test, nvmax = 20)
+val.errors <- rep(NA, 20)
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    pred <- test.mat[, names(coefi)] %*% coefi
+    val.errors[i] <- mean((pred - y.test)^2)
+}
+plot(val.errors, xlab = "Number of predictors", ylab = "Test MSE", pch = 19, type = "b")
+```
+
+e.) For which model size does the test set MSE take on its minimum value ? Comment on your results. It it takes on its minimum value for a model containing only an intercept or a model containing all the features, then play around with the way that you are generating the data in (a) until you come up with a scenario in which the test MSE is minimized for an intermediate model size.
+
+```{r}
+which.min(val.errors)
+```
+
+f.) How does the model at which the test set MSE is minimized compare to the true model used to generate the data ? Comment on the coefficient values.
+
+```{r}
+coef(regfit.full, which.min(val.errors))
+```
+
+g.) Create a plot displaying:
+
+$\sqrt({\sum^p_{j=1}(\beta_j - \hat{\beta}_j^r)^2})$
+
+```{r}
+val.errors <- rep(NA, 20)
+x_cols = colnames(x, do.NULL = FALSE, prefix = "x.")
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    val.errors[i] <- sqrt(sum((b[x_cols %in% names(coefi)] - coefi[names(coefi) %in% x_cols])^2) + sum(b[!(x_cols %in% names(coefi))])^2)
+}
+plot(val.errors, xlab = "Number of coefficients", ylab = "Error between estimated and true coefficients", pch = 19, type = "b")
+```
+
+#### 11.)
+
+We will now try to predict per capita crime rate in the “Boston” data set.
+
+a.) Try out some of the regression methods explored in this chapter, such as best subset selection, the lasso, ridge regression and PCR. Present and discuss results for the approaches that you consider.
+
+```{r}
+data(Boston)
+set.seed(1)
+
+predict.regsubsets <- function(object, newdata, id, ...) {
+    form <- as.formula(object$call[[2]])
+    mat <- model.matrix(form, newdata)
+    coefi <- coef(object, id = id)
+    xvars <- names(coefi)
+    mat[, xvars] %*% coefi
+}
+
+k = 10
+folds <- sample(1:k, nrow(Boston), replace = TRUE)
+cv.errors <- matrix(NA, k, 13, dimnames = list(NULL, paste(1:13)))
+for (j in 1:k) {
+    best.fit <- regsubsets(crim ~ ., data = Boston[folds != j, ], nvmax = 13)
+    for (i in 1:13) {
+        pred <- predict(best.fit, Boston[folds == j, ], id = i)
+        cv.errors[j, i] <- mean((Boston$crim[folds == j] - pred)^2)
+    }
+}
+
+mean.cv.errors <- apply(cv.errors, 2, mean)
+plot(mean.cv.errors, type = "b", xlab = "Number of variables", ylab = "CV error")
+```
+
+```{r}
+x <- model.matrix(crim ~ ., Boston)[, -1]
+y <- Boston$crim
+cv.out <- cv.glmnet(x, y, alpha = 1, type.measure = "mse")
+plot(cv.out)
+```
+
+```{r}
+cv.out <- cv.glmnet(x, y, alpha = 0, type.measure = "mse")
+plot(cv.out)
+```
+

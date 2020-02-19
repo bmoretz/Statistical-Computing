@@ -1,0 +1,527 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}K-Nearest Neighbors}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 8}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+library(ggmap, quietly = T, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+library(forecast, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+library(glmnet, quietly = TRUE, warn.conflicts = FALSE)
+library(earth, quietly = TRUE, warn.conflicts = FALSE)
+library(mda, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init(strict_version_check = F)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Multivariate Adaptive Regression Splines
+
+### Data Sets
+
+Attrition
+
+```{r, echo = T}
+attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
+attrition.h2o <- as.h2o(attrition)
+
+churn <- initial_split(attrition, prop = .7, strata = "Attrition")
+churn.train <- training(churn)
+churn.test <- testing(churn)
+
+```
+
+Ames, Iowa housing data.
+
+```{r, echo = T}
+set.seed(123)
+
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+
+ames.split <- initial_split(ames, prop =.7, strata = "Sale_Price")
+
+ames.train <- training(ames.split)
+ames.test <- testing(ames.split)
+```
+
+MNIST
+
+```{r}
+mnist <- dslabs::read_mnist()
+names(mnist)
+```
+
+### Overview
+
+K-nearest neighbors (KNN) is a very simple algorithm in which each observation is predicted based on its "similarity" to other observations.
+
+
+```{r}
+df <- recipe(Sale_Price ~., data = ames.train) %>%
+   step_nzv(all_nominal()) %>%
+   step_integer(matches("Qual|Cond|QC|Qu")) %>%
+   step_center(all_numeric(), -all_outcomes()) %>%
+   step_scale(all_numeric(), -all_outcomes()) %>%
+   step_dummy(all_nominal(), -all_outcomes(), one_hot = T) %>%
+   prep(training = ames.train, retain = T) %>%
+   juice() %>%
+   select(-Sale_Price)
+
+home <- 30
+k <- 10
+index <- as.vector(FNN::knnx.index(df[-home, ], df[home, ], k = k))
+knn.homes <- ames.train[c(home, index), ]
+
+knn.homes %>%
+   select(Longitude, Latitude) %>%
+   mutate(desc = factor(c('House of Interest', rep('Closest Neighbors', k)),
+                        levels = c("House of interest", "Closest Neighbors"))) %>%
+   qmplot(Longitude, Latitude, data = .,
+          maptype = "toner-background", darken = .7, color = desc, size = I(2.5)) +
+   theme(legend.position = "top",
+         legend.title = element_blank())
+```
+
+### Distance Measures
+
+Euclidean: $\sqrt{\sum^{P}_{j=1}(x_{aj} - x_{bj})^2}$
+
+Manhattan: $\sum^{P}_{j=1}|x_{aj} - x_{bj}|$
+
+Example:
+
+```{r}
+two.homes <- ames.train %>%
+   select(Gr_Liv_Area, Year_Built) %>%
+   sample_n(2)
+
+two.homes
+
+# Euclidean
+dist(two.homes, method = "euclidean")
+
+# Manhattan
+dist(two.homes, method = "manhattan")
+```
+
+Visually:
+
+```{r}
+p1 <- ggplot(two.homes, aes(Gr_Liv_Area, Year_Built)) +
+  geom_point() +
+  geom_line(lty = "dashed") +
+  ggtitle("(A) Euclidean distance")
+  
+p2 <- ggplot(two.homes, aes(Gr_Liv_Area, Year_Built)) +
+  geom_point() +
+  geom_step(lty = "dashed") +
+  ggtitle("(B) Manhattan distance")
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+### Pre-processing
+
+```{r}
+home1 <- ames %>%
+  mutate(id = row_number()) %>%
+  select(Bedroom_AbvGr, Year_Built, id) %>%
+  filter(Bedroom_AbvGr == 4 & Year_Built == 2008) %>%
+  slice(1) %>%
+  mutate(home = "home1") %>%
+  select(home, everything())
+
+home2 <- ames %>%
+  mutate(id = row_number()) %>%
+  select(Bedroom_AbvGr, Year_Built, id) %>%
+  filter(Bedroom_AbvGr == 2 & Year_Built == 2008) %>%
+  slice(1) %>%
+  mutate(home = "home2") %>%
+  select(home, everything())
+
+home3 <- ames %>%
+  mutate(id = row_number()) %>%
+  select(Bedroom_AbvGr, Year_Built, id) %>%
+  filter(Bedroom_AbvGr == 3 & Year_Built == 1998) %>%
+  slice(1) %>%
+  mutate(home = "home3") %>%
+  select(home, everything())
+
+features <- c("Bedroom_AbvGr", "Year_Built")
+
+# distance between home 1 and 2
+dist(rbind(home1[,features], home2[,features]))
+
+# distance between home 1 and 3
+dist(rbind(home1[,features], home3[,features]))
+```
+
+```{r}
+scaled.ames <- recipe(Sale_Price ~., ames.train) %>%
+   step_center(all_numeric()) %>%
+   step_scale(all_numeric()) %>%
+   prep(training = ames, retain = T) %>%
+   juice()
+
+home1.std <- scaled.ames %>%
+   mutate(id = row_number()) %>%
+   filter(id == home1$id) %>%
+   select(Bedroom_AbvGr, Year_Built, id) %>%
+   mutate(home = "home1") %>%
+   select(home, everything())
+
+home2.std <- scaled.ames %>%
+   mutate(id = row_number()) %>%
+   filter(id == home2$id) %>%
+   select(Bedroom_AbvGr, Year_Built, id) %>%
+   mutate(home = "home2") %>%
+   select(home, everything())
+
+home3.std <- scaled.ames %>%
+   mutate(id = row_number()) %>%
+   filter(id == home1$id) %>%
+   select(Bedroom_AbvGr, Year_Built, id) %>%
+   mutate(home = "home3") %>%
+   select(home, everything())
+
+dist(rbind(home1.std[, features], home2.std[, features]))
+
+dist(rbind(home1.std[, features], home3.std[, features]))
+```
+
+### Choosing K
+
+Blueprint
+
+```{r}
+blueprint <- recipe(Attrition ~., data = churn.train) %>%
+   step_nzv(all_nominal()) %>%
+   step_integer(contains("Satisfaction")) %>%
+   step_integer(WorkLifeBalance) %>%
+   step_integer(JobInvolvement) %>%
+   step_dummy(all_nominal(), -all_outcomes(), one_hot = T) %>%
+   step_center(all_numeric(), -all_outcomes()) %>%
+   step_scale(all_numeric(), -all_outcomes())
+
+# Create a resampling method
+cv <- trainControl(
+   method = "repeatedcv",
+   number = 10,
+   repeats = 5,
+   classProbs = T,
+   summaryFunction = twoClassSummary
+)
+
+# Create a hyperparameter grid search
+hyper.grid <- expand.grid(
+   k = floor(seq(1, nrow(churn.train)/3, length.out = 20))
+)
+
+# Fit knn model and perform grid search
+knn.grid <- train(
+   blueprint,
+   data = churn.train,
+   method = "knn",
+   trControl = cv,
+   tuneGrid = hyper.grid,
+   metric = "ROC"
+)
+
+ggplot(knn.grid)
+```
+
+MNIST
+
+KNN doesn't work well with zero (or near zero) variance features. This is a particularly bad problem with MNIST:
+
+```{r}
+set.seed(123)
+
+index <- sample(nrow(mnist$train$images), size = 10e3)
+
+mnist.x <- mnist$train$images[index, ]
+mnist.y <- factor(mnist$train$labels[index])
+
+mnist.x %>%
+   as.data.frame() %>%
+   map_df(sd) %>%
+   gather(feature, sd) %>%
+   ggplot(aes(sd)) +
+   geom_histogram(binwidth = 1)
+```
+
+```{r}
+nzv <- nearZeroVar(mnist.x)
+
+par(mfrow = c(1, 4))
+i <- 2
+image(1:28, 1:28, matrix(mnist$test$images[i,], nrow=28)[ , 28:1], 
+      col = gray(seq(0, 1, 0.05)), xlab = "", ylab="", 
+      xaxt="n", yaxt="n", main = "(A) Example image \nfor digit 2")
+i <- 7
+image(1:28, 1:28, matrix(mnist$test$images[i,], nrow=28)[ , 28:1], 
+      col = gray(seq(0, 1, 0.05)), xlab = "", ylab="", 
+      xaxt="n", yaxt="n", main = "(B) Example image \nfor digit 4")
+
+i <- 9
+image(1:28, 1:28, matrix(mnist$test$images[i,], nrow=28)[ , 28:1], 
+      col = gray(seq(0, 1, 0.05)), xlab = "", ylab="", 
+      xaxt="n", yaxt="n", main = "(C) Example image \nfor digit 5")
+image(matrix(!(1:784 %in% nzv), 28, 28), col = gray(seq(0, 1, 0.05)), 
+      xaxt="n", yaxt="n", main = "(D) Typical variability \nin images.")
+```
+
+Clean-up features w/ carat
+
+```{r}
+colnames(mnist.x) <- paste0("V", 1:ncol(mnist.x))
+
+# Remove near zero variance
+
+nzv <- nearZeroVar(mnist.x)
+index <- setdiff(1:ncol(mnist.x), nzv)
+mnist.x <- mnist.x[, index]
+```
+
+hyper-parameter search
+
+```{r}
+cv <- trainControl(
+   method = "LGOCV",
+   p = 0.7,
+   number = 1,
+   savePredictions = T
+)
+
+hyper.grid <- expand.grid(k = seq(3, 25, by = 2))
+
+knn.mnist <- train(
+   mnist.x,
+   mnist.y,
+   method = "knn",
+   tuneGrid = hyper.grid,
+   preProc = c("center", "scale"),
+   trControl = cv
+)
+
+ggplot(knn.mnist)
+```
+
+Diagnostics
+
+```{r}
+cm <- confusionMatrix(knn.mnist$pred$pred, knn.mnist$pred$obs)
+cm$byClass[, c(1:2, 11)] # sensitivity, specificity & accuracy
+```
+
+```{r}
+vi <- varImp(knn.mnist)
+vi
+```
+
+Most influential areas of the image:
+
+```{r}
+par(mfrow = c(1,1))
+# Get median value for feature importance
+imp <- vi$importance %>%
+   rownames_to_column(var = "feature") %>%
+   gather(response, imp, -feature) %>%
+   group_by(feature) %>%
+   summarize(imp = median(imp))
+
+# Create tibble for all edge pixels
+edges <- tibble(
+   feature = paste0("V", nzv),
+   imp = 0
+)
+
+# Combine and plot
+imp <- rbind(imp, edges) %>%
+   mutate(ID = as.numeric(str_extract(feature, "\\d+"))) %>%
+   arrange(ID)
+
+image(matrix(imp$imp, 28, 28), col = gray(seq(0, 1, 0.05)),
+      xaxt = "n", yaxt = "n")
+```
+
+```{r}
+# Get a few accurate predictions
+set.seed(9)
+good <- knn_mnist$pred %>%
+  filter(pred == obs) %>%
+  sample_n(4)
+
+# Get a few inaccurate predictions
+set.seed(9)
+bad <- knn_mnist$pred %>%
+  filter(pred != obs) %>%
+  sample_n(4)
+
+combine <- bind_rows(good, bad)
+
+# Get original feature set with all pixel features
+set.seed(123)
+index <- sample(nrow(mnist$train$images), 10000)
+X <- mnist$train$images[index,]
+
+# Plot results
+par(mfrow = c(4, 2), mar=c(1, 1, 1, 1))
+layout(matrix(seq_len(nrow(combine)), 4, 2, byrow = FALSE))
+for(i in seq_len(nrow(combine))) {
+  image(matrix(X[combine$rowIndex[i],], 28, 28)[, 28:1], 
+        col = gray(seq(0, 1, 0.05)),
+        main = paste("Actual:", combine$obs[i], "  ", 
+                     "Predicted:", combine$pred[i]),
+        xaxt="n", yaxt="n") 
+}
+```
+ 
+```{r}
+# clean up
+rm(list = ls())
+```
+

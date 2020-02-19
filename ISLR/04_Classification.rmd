@@ -1,0 +1,894 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+fig_width: 9
+fig_height: 3.5
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 4}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Classification}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(class, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+```
+
+## Chapter 4
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+### Book Work
+
+#### Simple Logistic Regression
+
+```{r}
+data.default <- data.table(ISLR::Default)[, dflt := ifelse(default == "Yes", 1, 0)]
+
+summary(model1 <- glm(dflt ~ balance, data = data.default, family = "binomial"))
+
+predict(model1, newdata = data.frame( balance = c(1000, 2000) ), type = "response")
+
+data.default[, is_student := ifelse(student == "Yes", 1, 0)]
+
+summary(model2 <- glm(dflt ~ is_student, data = data.default, family = "binomial"))
+
+predict(model2, newdata = data.frame( is_student = c(1, 0) ), type = "response")
+```
+
+#### Multiple Logistic Regression
+
+```{r}
+summary(model3 <- glm(dflt ~ balance + is_student, data = data.default, family = "binomial"))
+
+p1 <- ggplot(data.default, aes(balance, dflt, color = student)) +
+   stat_ecdf() +
+   geom_rug(aes(balance, dflt)) +
+   labs(x = "Balance", y = "Default Rate", title = "Default Rate by Student/Balance")
+
+p2 <- ggplot(data.default, aes(student, balance, fill = student)) +
+   geom_boxplot()
+
+grid.arrange(p1, p2, nrow = 1)
+
+predict(model3, newdata = 
+           data.frame( balance = c(1500, 1500), 
+                       is_student = c(1, 0) ), 
+        type = "response")
+```
+
+### R Lab
+
+```{r}
+Smarket <- as.data.table(ISLR::Smarket)
+
+names(Smarket)
+
+dim(Smarket)
+
+summary(Smarket)
+```
+
+Pairs
+```{r}
+ggpairs(Smarket) %>%
+   print(progress = F)
+```
+
+```{r}
+cor(Smarket %>% select(-Direction))
+```
+
+```{r, fig.height=5}
+ggplot(Smarket) +
+   geom_boxplot(aes(Year, Volume, group = Year))
+```
+
+### Logistic Regression
+
+```{r}
+summary(glm.fits <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
+                 data = Smarket, family = binomial))
+
+coef(glm.fits)
+```
+
+Probabilites of going up (first 10 trading days)
+
+```{r}
+glm.probs <- predict(glm.fits, type = "response")
+head(glm.probs, 10)
+```
+
+```{r}
+contrasts(Smarket$Direction)
+```
+
+Predictions
+
+```{r}
+glm.pred <- rep("Down", nrow(Smarket))
+glm.pred[glm.probs > 0.5] <- "Up"
+```
+
+```{r}
+table(glm.pred, Smarket$Direction)
+
+mean(glm.pred == Smarket$Direction)
+```
+
+#### Validation
+
+Get the holdout set.
+
+```{r}
+train <- (Smarket$Year < 2005)
+Smarket.2005 <- Smarket[!train]
+dim(Smarket.2005)
+
+Direction.2005 <- Smarket$Direction[!train]
+```
+
+Train the logistic regression model.
+
+```{r}
+glm.fits <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
+                data = Smarket, family = binomial, subset = train)
+
+glm.probs <- predict(glm.fits, Smarket.2005, type = "response")
+```
+
+Test
+
+```{r}
+glm.pred <- rep("Down", 252)
+glm.pred[glm.probs > 0.5] <- "Up"
+
+table(glm.pred, Direction.2005)
+
+mean(glm.pred == Direction.2005)
+```
+
+Model 2
+
+```{r}
+summary(glm.fits <- glm(Direction ~ Lag1 + Lag2, data = Smarket, family = binomial, subset = train))
+
+glm.probs <- predict(glm.fits, Smarket.2005, type = "response")
+glm.pred <- rep("Down", nrow(Smarket.2005))
+
+glm.pred[glm.probs >= 0.5] <- "Up"
+
+table(glm.pred, Direction.2005)
+
+mean(glm.pred == Direction.2005)
+```
+
+
+```{r}
+predict(glm.fits, newdata = data.table(Lag1 = c(1.2, 1.5),
+                                       Lag2 = c(1.1, -0.8)), 
+        type = "response")
+```
+
+
+#### Linear Discriminant Analysis
+
+*LDA* is from **MASS** package.
+
+```{r}
+summary(lda.fit <- lda(Direction ~ Lag1 + Lag2, data = Smarket, subset = train))
+
+lda.fit
+```
+
+```{r}
+lda.pred <- predict(lda.fit, Smarket.2005)
+
+names(lda.pred)
+```
+
+Predictions:
+
+```{r}
+lda.class <- lda.pred$class
+table(lda.class, Direction.2005)
+```
+
+Note: almost identical to logistic regression.
+
+```{r}
+mean(lda.class == Direction.2005)
+```
+
+```{r}
+sum(lda.pred$posterior[, 1] >= 0.5)
+sum(lda.pred$posterior[, 1] < 0.5)
+```
+
+The posterior probabilites output by the model corresponds to the probability that the market will decrease.
+
+```{r}
+lda.pred$posterior[1:20, 1]
+lda.class[1:20]
+```
+
+Apply a threshold of 90% to predictions:
+
+```{r}
+sum(lda.pred$posterior[, 1] > .9)
+```
+
+#### Quadratic Discriminant Analysis
+
+```{r}
+summary(qda.fit <- qda(Direction ~ Lag1 + Lag2, data = Smarket, subset = train))
+
+qda.fit
+```
+
+Predictions
+
+```{r}
+qda.class <- predict(qda.fit, Smarket.2005)$class
+table(qda.class, Direction.2005)
+
+mean(qda.class == Direction.2005)
+```
+
+#### K-Nearest Neighbors
+
+Data Setup
+
+```{r}
+train.X <- with(Smarket, cbind(Lag1, Lag2))[train, ]
+test.X <- with(Smarket, cbind(Lag1, Lag2))[!train, ]
+train.Direction <- Smarket$Direction[train]
+```
+
+KNN
+
+```{r}
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Direction, k = 1)
+table(knn.pred, Direction.2005)
+```
+
+```{r}
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Direction, k = 3)
+table(knn.pred, Direction.2005)
+```
+
+#### Caravan Insurance Data
+
+```{r}
+caravan <- Caravan
+
+dim(caravan)
+
+summary(caravan$Purchase)
+
+table(caravan$Purchase) %>% prop.table()
+```
+
+```{r}
+standardized.X <- scale(caravan[, -86])
+
+var(caravan[, 1])
+var(caravan[, 2])
+
+var(standardized.X[, 1])
+var(standardized.X[, 2])
+```
+
++ K=1
+```{r}
+test <- 1:1000
+train.X <- standardized.X[-test,]
+test.X <- standardized.X[test,]
+
+train.Y <- caravan$Purchase[-test]
+test.Y <- caravan$Purchase[test]
+
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Y, k = 1)
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+
+result <- table(knn.pred, test.Y)
+result
+
+result %>% prop.table()
+```
+
++ K=3
+
+```{r}
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Y, k = 3)
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+
+result <- table(knn.pred, test.Y)
+result
+
+result %>% prop.table()
+```
+
++ K=5
+
+```{r}
+set.seed(1)
+
+knn.pred <- knn(train.X, test.X, train.Y, k = 5)
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+
+result <- table(knn.pred, test.Y)
+result
+
+result %>% prop.table()
+```
+
+Logistic Regression Alternative
+
+```{r}
+glm.fits <- glm(Purchase ~ ., data = caravan, family = binomial,
+                subset = -test)
+glm.probs <- predict(glm.fits, caravan[test,], type = "response")
+
+# .5 cut-off
+glm.pred <- rep("No", 1000)
+glm.pred[glm.probs > .5] <- "Yes"
+
+results <- table(glm.pred, test.Y)
+results %>% prop.table()
+
+# .25 cut-off
+glm.pred <- rep("No", 1000)
+glm.pred[glm.probs > .25] <- "Yes"
+
+results <- table(glm.pred, test.Y)
+results %>% prop.table()
+```
+
+```{r}
+
+# Quiz
+
+bal <- 1936.75
+
+exp(-10.6513 + 0.0055 * bal) / ( 1 + exp(-10.6513 + 0.0055*bal))
+
+b0 <- -6; b1 <- 0.05; b2 <- 1
+x1 <- 50; x2 <- 3.5
+exp(b0 + b1 * x1 + b2 * x2) / ( 1 + exp(b0 + b1 * x1 + b2 * x2))
+
+```
+
+### Conceptual
+
+#### 1.) 
+
+Using a little bit of algebra, prove that (4.2) is equivalent to (4.3). In other words, the logistic function representaion and logit representation for the logistic regression models are equivalent.
+
+4.2) $p(x) = \frac{e^{(\beta_0 + \beta_1X)}}{1 + e^{\beta_0 + \beta_1X}}$
+
+4.3) $\frac{p(x)}{1 - p(x)} = e^{\beta_0 + \beta_1X}$
+
+**Solution**
+
+$1 - p(x) = 1 - \frac{e^{(\beta_0 + \beta_1X)}}{1 + e^{\beta_0 + \beta_1X}} = \frac{1}{1 + e^{\beta_0 + \beta_1X}}$
+
+$\frac{1}{1 - p(x)} = 1 + e^{\beta_0 + \beta_1X}$
+
+#### 2.)
+
+It was stated in the text that classifying an observation to the class for which (4.13) is largest. Prove that this is the case. In other words, under the assumption that the observations in the *k*th class are drawn from a $N \sim (\mu, \sigma^2)$ distribution, the Bayes' clssifier assigns an observation to the class for which the discriminant function is maximized.
+
+4.12:
+
+$p_k(x) = \frac{\pi_k\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{1}{2\sigma^2}(x - \mu_k)^2}}{\sum^K_{l=1}{\pi_le^{-\frac{1}{2\sigma^2}(x - \mu_k)^2}}}$
+
+**Solution**
+
+$f''_x = ln\pi_k + ln(\frac{1}{\sqrt{2\pi\sigma}}) + ln \ e^{- \frac{1}{2\sigma^2}(x - \mu_k)^2}$
+
+$f'''_x = ln \ \pi_k - \frac{1}{2\sigma^2}(x - \mu_k)^2$
+
+$f'''_x = ln \ \pi_k + \frac{x\mu_k}{\sigma^2} - \frac{\mu^2_k}{2\sigma^2}$
+
+$\delta_k(x) = \frac{\mu_k}{\sigma^2}x - \frac{\mu^2_k}{2\sigma^2} + log(\pi_k)$
+
+#### 3.) 
+
+This problem relates to the QDA model, in which the observations within each class are drawn from a normal distribution with a class-specific mean vector and a class specific covariance matrix. We consider the simple case where p=1; i.e. there is only one feature.
+Suppose that we have K classes, and if an observation belongs to the kth class then X comes from a one-dimensional normal distribution, $X \sim N(\mu_k, \sigma^2_k)$. Recall that the density function for the one-dimensional normal distribution is given in (4.11). Prove that in this case, the Bayes’ classifier is not linear. Argue that it is in fact quadratic.
+
+**Solution**
+
+From the previous answer, we can expand the last term which is not linear in x.
+
+#### 4.)
+
+When the number of features p is large, there tends to be a deterioration in the performance of KNN and other local approaches that perform prediction using only observations that are near the test observation for which a prediction must be made. This phenomenon is known as the curse of dimensionality, and it ties into the fact that non-parametric approaches often perform poorly when p is large. We will now investigate this curse.
+
+a.) Suppose that we have a set of observations, each with measurements on p=1 feature, X. We assume that X is uniformly (evenly) distributed on [0,1]. Associated with each observation is a response value. Suppose that we wish to predict a test observation’s response using only observations that are within 10% of the range of X closest to that test observation. For instance, in order to predict the response for a test observation with X=0.6, we will use observations in the range [0.55,0.65]. On average, what fraction of the available observations will we use to make the prediction ?
+
+### Applied
+
+#### 10.)
+
+This question should be answered using the “Weekly” data set, which is part of the “ISLR” package. This data is similar in nature to the “Smarket” data from this chapter’s lab, except that it contains 1089 weekly returns for 21 years, from the beginning of 1990 to the end of 2010.
+
+```{r}
+weekly <- as.data.table(ISLR::Weekly)
+
+head(weekly)
+```
+
+a.) Produce some numerical and graphical summaries of the “Weekly” data. Do there appear to be any patterns ?
+
+```{r}
+weekly %>% ggplot() +
+   geom_point(aes(Year, Lag1))
+
+p1 <- weekly %>% ggplot() +
+   geom_density(aes(Lag1, group = Year, fill = Year), alpha = .4)
+
+p2 <- weekly %>% ggplot() +
+   geom_density(aes(Lag2, group = Year, fill = Year), alpha = .4)
+
+p3 <- weekly %>% ggplot() +
+   geom_density(aes(Lag3, group = Year, fill = Year), alpha = .4)
+
+p4 <- weekly %>% ggplot() +
+   geom_density(aes(Lag4, group = Year, fill = Year), alpha = .4)
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r}
+cor <- cor(weekly %>% select(-Direction))
+cor
+
+ggcorr(cor)
+```
+
+b.) Use the full data set to perform a logistic regression with “Direction” as the response and the five lag variables plus “Volume” as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant ? If so, which ones ?
+
+```{r}
+summary(glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = weekly, family = binomial))
+
+glm.fit
+```
+
+It appears only **Lag2** is statistically significant.
+
+c.) Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
+
+```{r}
+glm.pred <- ifelse(predict(glm.fit, type = "response") > .5, "Up", "Down")
+
+table(glm.pred, weekly$Direction) %>% prop.table()
+```
+
+We may conclude that the percentage of correct predictions on the training data is (54+557)/1089 wich is equal to 56.1065197%. In other words 43.8934803% is the training error rate, which is often overly optimistic. We could also say that for weeks when the market goes up, the model is right 92.0661157% of the time (557/(48+557)). For weeks when the market goes down, the model is right only 11.1570248% of the time (54/(54+430)).
+
+d.) Now fit the logistic regression model using a training data period from 1990 to 2008, with “Lag2” as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 to 2010).
+
+```{r}
+train <- weekly[Year < 2009,]
+test <- weekly[Year > 2009, .(Direction, Lag2)]
+
+summary(glm.fit <- glm(Direction ~ Lag2, data = train, family = binomial))
+
+test$pred <- ifelse(predict(glm.fit, newdata = test[, .(Lag2)], type = "response") > .5, "Up", "Down")
+
+table(test$Direction, test$pred) %>% prop.table() * 100
+
+mean(test$Direction == test$pred)
+```
+
+e.) Repeat (d) using LDA.
+
+```{r}
+summary(lda.fit <- lda(Direction ~ Lag2, data = train))
+lda.fit
+
+test$pred <- predict(lda.fit, newdata = test[, .(Lag2)], type = "response")$class
+
+mean(test$Direction == test$pred)
+
+table(test$Direction, test$pred) %>% prop.table() * 100
+```
+
+f.) Repeat (d) using QDA.
+
+```{r}
+summary(qda.fit <- qda(Direction ~ Lag2, data = train))
+qda.fit
+
+lda.test <- test[, .(Direction, Lag2)]
+
+lda.pred <- predict(qda.fit, newdata = lda.test, type = "response")
+
+lda.test[, pred := lda.pred$class]
+
+with(lda.test, mean(Direction == pred))
+
+with(lda.test, table(Direction, pred)) %>% prop.table() * 100
+```
+
+g.) Repeat (d) using KNN with k = 1.
+
+```{r}
+train <- weekly[Year < 2009,]
+test <- weekly[Year > 2009, .(Direction, Lag2)]
+
+train.X <- train[, .(Lag2)]
+test.X <- test[, .(Lag2)]
+train.Direction <- train$Direction
+
+knn.pred <- knn(train.X, test.X, train.Direction, k = 1)
+
+table(test$Direction, knn.pred) %>% prop.table()
+
+mean(test$Direction == knn.pred)
+```
+
+h.) Which of these methods appear to provide the best results on this data?
+
+LDA and Logistic Regression appear to have the best performance on this particular set of data.
+
+#### 11.)
+
+In this problem, you will develop a model to predict whether a given car gets high or low gas mileage based on the *Auto* data set.
+
+```{r}
+auto <- as.data.table(ISLR::Auto)
+
+auto %>% glimpse()
+```
+
+a.) Create a binary variable, *mpg01*, that contains a 1 if mpg contains a value above its median. You can compute the median using the median() function. Note you may find it helpful to use the *data.frame()* function to create a single data set containing both *mpg01* and other Auto variables.
+
+```{r}
+cutpoint <- median(auto$mpg)
+
+auto[, mpg01 := mpg > cutpoint]
+
+```
+
+b.) Explore the data graphically in order to investigate the association between mpg01 and the other features. Which of the other features seem most likely to be useful in predicting mpg01? Scatterplots and boxplots may be useful tools to answer this question.
+
+```{r}
+summary(auto)
+
+ggpairs(auto %>% select(-name))
+
+ggplot(auto, aes(cylinders, mpg, fill = cylinders)) +
+   geom_boxplot(aes(group = cylinders)) +
+   geom_hline(yintercept = cutpoint, col = "darkred")
+
+ggplot(auto, aes(displacement, mpg)) +
+   geom_point(aes(color = cylinders)) +
+   geom_smooth(method = "auto") +
+   scale_y_continuous(trans = "log10")
+
+ggplot(auto, aes(horsepower, mpg)) +
+   geom_point(aes(color = mpg)) +
+   geom_smooth(method = "auto") +
+   scale_y_continuous(trans = "log10")
+
+```
+
+c.) Split the data in to training / test sets.
+
+```{r}
+auto[, prob := ifelse(mpg01 == T, 1, 0)]
+
+auto.split <- initial_split(auto, prop = 0.7, strata = "mpg01")
+
+auto.train <- training(auto.split)
+auto.test <- testing(auto.split)
+```
+
+d.) Perform Logistic Regression.
+
+```{r}
+
+auto.train %>% glimpse()
+
+glm.fit1 <- glm(mpg01 ~ cylinders, data = auto.train, family = binomial)
+glm.fit2 <- glm(mpg01 ~ horsepower, data = auto.train, family = binomial)
+
+auto.train1 <- broom::augment(glm.fit1, auto.train) %>% mutate(.fitted = exp(.fitted))
+auto.train2 <- broom::augment(glm.fit2, auto.train) %>% mutate(.fitted = exp(.fitted))
+
+auto.train1 %>% summary()
+auto.train2 %>% summary()
+
+p1 <- ggplot(auto.train1, aes(cylinders, prob)) +
+   geom_point(alpha = 0.15) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial"))
+
+p2 <- ggplot(auto.train2, aes(horsepower, prob)) +
+   geom_point(alpha = 0.15) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial"))
+
+gridExtra::grid.arrange(p1, p2, nrow = 2)
+```
+
+
+```{r}
+tidy(glm.fit1)
+tidy(glm.fit2)
+
+exp(coef(glm.fit1))
+exp(coef(glm.fit2))
+
+confint(glm.fit1)
+confint(glm.fit2)
+```
+
+Cross-validated Logistic Regression
+
+```{r}
+
+cols.exclude <- c("name", "mpg", "prob")
+auto.train3 <- auto.train[, -cols.exclude, with = F]
+
+summary(glm.fit3 <- glm(mpg01 ~ ., data = auto.train3, family = binomial))
+
+auto.train3 <- auto.train[, -cols.exclude, with = F][, mpg01 := as.factor(mpg01)]
+
+cv.model.logit <- train(
+   mpg01 ~ .,
+   data = auto.train3,
+   method = "glm",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+auto.train3$pred <- predict(cv.model.logit, auto.train3)
+
+# in-sample performance
+table(auto.train3$mpg01, auto.train3$pred) %>% prop.table()
+
+# out of sample results
+auto.test$pred <- predict(cv.model.logit, newdata = auto.test, type = "raw")
+
+table(auto.test$mpg01, auto.test$pred) %>% prop.table() %>% round(digits = 3)
+```
+
+```{r}
+ggplot(auto.train, aes(weight, prob, color = year)) +
+   geom_point(alpha = 0.25) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+   scale_x_continuous(labels = scales::comma)
+```
+
+e.) Perform Linear Discriminant Analysis
+
+Cross-validated Linear Discriminant Analysis
+
+```{r}
+
+auto.train.lda <- auto.train[, -cols.exclude, with = F][, mpg01 := as.factor(mpg01)]
+
+summary(lda.fit1 <- lda(mpg01 ~ ., data = auto.train.lda))
+
+cv.model.lda <- train(
+   mpg01 ~ .,
+   auto.train.lda,
+   method = "lda",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+# in-sample performance
+auto.train.lda$pred <- predict(cv.model.lda)
+
+with(auto.train.lda, mean(mpg01 == pred))
+
+with(auto.train.lda, table(mpg01, pred)) %>% prop.table()
+
+# out of sample performance
+
+auto.test.lda <- auto.test
+auto.test.lda$pred <- predict(cv.model.lda, newdata = auto.test.lda)
+
+with(auto.test.lda, mean(mpg01 == pred))
+
+with(auto.test.lda, table(mpg01, pred)) %>% prop.table()
+```
+
+Cross-validated KNN
+
+```{r}
+
+auto.train.X <- auto.train[, .(mpg01, weight, year)][, mpg01 := as.factor(mpg01)]
+auto.test.X <- auto.test[, .(mpg01, weight, year)]
+
+knn.fit <- train(
+   mpg01 ~ weight + year,
+   data = auto.train.X,
+   method = "knn",
+   trControl = trainControl(method = "cv", number = 10),
+   tuneLength = 20
+)
+
+summary(knn.fit)
+
+auto.knn <- auto.train
+# in-sample performance
+auto.knn$pred <- predict(knn.fit)
+
+with(auto.knn, mean(mpg01 == pred))
+with(auto.knn, table(mpg01, pred)) %>% prop.table()
+
+# out of sample performance
+auto.test.knn <- auto.test
+
+auto.test.knn$pred <- predict(knn.fit, newdata = auto.test.knn)
+
+with(auto.test.knn, mean(mpg01 == pred))
+with(auto.test.knn, table(mpg01, pred)) %>% prop.table()
+
+```
+
+#### 12.)
+
+a.) Write a function, Power(), that prints out the result of rasing 2 to the 3rd power. In other words, your function should compute 2^3.
+
+```{r}
+Power <- function(x) {
+   print(2^3)
+}
+Power()
+```
+
+b.) Create a new function, Power2, that allows you to pass any two numbers, x and a, and prints out the value of x^a.
+
+```{r}
+Power2 <- function(a, x) paste(a, "to the", x, "is", a ^ x)
+Power2(3, 8)
+```
+
+clean-up workspace
+```{r}
+rm(list = ls())
+```
+

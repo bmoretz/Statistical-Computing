@@ -1,0 +1,412 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Logistic Regression}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 5}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+library(forecast, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init()
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Logistic Regression
+
+### Data Set
+
+```{r, echo = T}
+attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
+attrition.h2o <- as.h2o(attrition)
+```
+### Overview
+
+Linear Regression vs Logistic Regression
+
+```{r, fig.height=3}
+p1 <- ISLR::Default %>%
+   mutate(prob = ifelse(default == "Yes", 1, 0)) %>%
+   ggplot(aes(balance, prob)) +
+   geom_point(alpha = .15) +
+   geom_smooth(method = "lm") +
+   ggtitle("Linear Regression model fit") +
+   ylab("Balance") + xlab("Probability of Default")
+
+p2 <- ISLR::Default %>%
+   mutate(prob = ifelse(default == "Yes", 1, 0)) %>%
+   ggplot(aes(balance, prob)) +
+   geom_point(alpha = .15) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+   ggtitle("Logistic regression model fit") +
+   xlab("Balance") + ylab("Probability of Default")
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+Create training (70%) and test (30%) tests.
+
+```{r, echo = T}
+set.seed(123)
+
+churn_split <- initial_split(attrition, 
+                             prop = 0.7, strata = "Attrition")
+
+churn_train <- training(churn_split)
+churn_test <- testing(churn_split)
+```
+
+### Simple Logistic Regression
+
+Fit two generalized linear models to predict attrition.
+
+```{r}
+model1 <- glm(Attrition ~ MonthlyIncome, family = "binomial",
+              data = churn_train)
+
+model2 <- glm(Attrition ~ OverTime, family = "binomial",
+              data = churn_train)
+
+```
+
+```{r}
+churn_train2 <- churn_train %>% mutate(prob = ifelse(Attrition == "Yes", 1, 0))
+churn_train2 <- broom::augment(model2, churn_train2) %>% mutate(.fitted = exp(.fitted))
+
+p1 <- ggplot(churn_train2, aes(MonthlyIncome, prob)) +
+   geom_point(alpha = 0.15) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+   ggtitle("Predicted probabilities for model1") +
+   xlab("Monthly Income") +
+   ylab("Probability of Attrition")
+
+p2 <- ggplot(churn_train2, aes(OverTime, .fitted, color = OverTime)) +
+   geom_boxplot(show.legend = F) +
+   geom_rug(sides = "b", position = "jitter", alpha = 0.2, show.legend = F) +
+   ggtitle("Predicted probabilities for model2") +
+   xlab("Over Time") +
+   scale_y_continuous("Probability of Attrition", limits = c(0, 1))
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+Model Diagnostics
+
+```{r}
+tidy(model1)
+
+tidy(model2)
+```
+
+```{r}
+exp(coef(model1))
+
+exp(coef(model2))
+```
+
+```{r}
+confint(model1)
+
+confint(model2)
+```
+
+### Multiple Logistic Regression
+
+```{r}
+model3 <- glm(
+   Attrition ~ MonthlyIncome + OverTime,
+   family = "binomial",
+   data = churn_train
+)
+
+tidy(model3)
+```
+
+```{r}
+churn_train3 <- churn_train %>% mutate(prob = ifelse(Attrition == "Yes", 1, 0))
+churn_train3 <- broom::augment(model3, churn_train3) %>% mutate(.fitted = exp(.fitted))
+
+ggplot(churn_train3, aes(MonthlyIncome, prob, color = OverTime)) +
+   geom_point(alpha = .15) +
+   geom_smooth(method = "glm", method.args = list(family = "binomial"), se = F) +
+   ggtitle("Predicted probabilites for model3") +
+   xlab("Monthly Income") +
+   ylab("Probability of Attrition")
+```
+
+### Assessing Model Accuracy
+
+```{r}
+set.seed(123)
+
+cv_model1 <- train(
+   Attrition ~ MonthlyIncome,
+   data = churn_train,
+   method = "glm",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+set.seed(123)
+
+cv_model2 <- train(
+   Attrition ~ MonthlyIncome + OverTime,
+   data = churn_train,
+   method = "glm",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+set.seed(123)
+
+cv_model3 <- train(
+   Attrition ~ .,
+   data = churn_train,
+   method = "glm",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+# extract out of sample performance measurse
+
+summary(
+   resamples(
+      list(
+         model_1 = cv_model1,
+         model_2 = cv_model2,
+         model_3 = cv_model3
+      )
+   )
+)$statistics$Accuracy
+```
+ 
+```{r}
+# predicted class
+pred_class <- predict(cv_model3, churn_train)
+
+# create confusion matrix
+confusionMatrix(
+   data = relevel(pred_class, ref = "Yes"),
+   reference = relevel(churn_train$Attrition, ref = "Yes")
+)
+```
+
+No-information rate
+
+```{r}
+table(churn_train$Attrition) %>% prop.table()
+```
+
+Basically, this is saying if we just predicted "No" for every instance we would have 83.8% accuracy.
+
+```{r}
+# Compute predicted probabilities
+m1_prob <- predict(cv_model1, churn_train, type = "prob")$Yes
+m3_prob <- predict(cv_model3, churn_train, type ="prob")$Yes
+
+# Compute AUC metrics for cv_model1 and cv_model3
+perf1 <- prediction(m1_prob, churn_train$Attrition) %>%
+   performance(measure = "tpr", x.measure = "fpr")
+
+perf2 <- prediction(m3_prob, churn_train$Attrition) %>%
+   performance(measure = "tpr", x.measure = "fpr")
+
+# Plot ROC curves for cv_model1 and cv_model3
+plot(perf1, col = "black", lty = 2)
+plot(perf2, col = "blue", add = T)
+
+legend(0.8, 0.2, legend = c("cv_model1", "cv_model3"),
+       col = c("black", "blue"), lty = 2:1, cex = 0.6)
+```
+
+
+```{r}
+set.seed(123)
+cv_model_pls <- train(
+   Attrition ~ .,
+   data = churn_train,
+   method = "pls",
+   family = "binomial",
+   trControl = trainControl(method = "cv", number = 10),
+   preProcess = c("zv", "center", "scale"),
+   tuneLength = 16
+)
+
+cv_model_pls$bestTune
+
+ggplot(cv_model_pls)
+```
+
+### Feature Interpretation
+
+```{r}
+vip::vip(cv_model3, num_features = 20)
+```
+
+```{r}
+pred.fun <- function(object, newdata) {
+   Yes <- mean(predict(object, newdata, type = "prob")$Yes)
+   as.data.frame(Yes)
+}
+
+p1 <- pdp::partial(cv_model3, pred.var = "OverTime", pred.fun = pred.fun ) %>%
+   autoplot(rug = T) + ylim(c(0, 1))
+
+p2 <- pdp::partial(cv_model3, pred.var = "JobSatisfaction", pred.fun = pred.fun) %>%
+   autoplot() + ylim(c(0, 1))
+
+p3 <- pdp::partial(cv_model3, pred.var = "NumCompaniesWorked", pred.fun = pred.fun, gr = 10) %>%
+   autoplot() + scale_x_continuous(breaks = 0:9) + ylim(c(0, 1))
+
+p4 <- pdp::partial(cv_model3, pred.var = "EnvironmentSatisfaction", pred.fun = pred.fun) %>%
+   autoplot() + ylim(c(0, 1))
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r}
+# clean up
+rm(list = ls())
+```
+

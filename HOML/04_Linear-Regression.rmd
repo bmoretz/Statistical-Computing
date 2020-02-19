@@ -1,0 +1,609 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Linear Regression}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 4}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+library(forecast, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+
+# Additional Data
+library(AppliedPredictiveModeling, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init()
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Linear Regression
+
+### Data Set
+
+h2o
+
+```{r, echo = T}
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+```
+
+stratified (_Sale_Price_) training sample
+
+```{r, echo = T}
+set.seed(123)
+
+split <- initial_split(ames, prop = 0.7,
+                       strata = "Sale_Price")
+
+ames_train <- training(split)
+ames_test <- testing(split)
+```
+
+## Simple Linear Model
+
+```{r, echo = T}
+model1 <- lm(Sale_Price ~ Gr_Liv_Area, data = ames_train)
+```
+
+```{r, echo = T, fig.height = 4.5}
+# Fitted regression line (full training)
+p1 <- model1 %>%
+   broom::augment() %>%
+   ggplot(aes(Gr_Liv_Area, Sale_Price)) +
+   geom_point(size = 1, alpha = 0.3) +
+   geom_smooth(se = F, method = "lm") +
+   scale_y_continuous(labels = scales::dollar) +
+   ggtitle("Fitted regression line")
+
+# Fitted regression line (restricted range)
+p2 <- model1 %>%
+   broom::augment() %>%
+   ggplot(aes(Gr_Liv_Area, Sale_Price)) +
+   geom_segment(aes(x = Gr_Liv_Area, y = Sale_Price,
+                    xend = Gr_Liv_Area, yend = .fitted),
+                alpha = .3) +
+   geom_point(size = 1, alpha = 0.3) +
+   geom_smooth(se = F, method = "lm") +
+   scale_y_continuous(labels = scales::dollar) +
+   ggtitle("Fitted regression line (with residuals)")
+
+grid.arrange(p1, p2, nrow = 2)
+```
+
+```{r, echo=T}
+summary(model1)
+```
+
+```{r}
+sigma(model1) # RMSE, also Residual Standard Error in summary()
+sigma(model1)^2 # MSE
+```
+
+### Inference
+
+The variability of an estimate is its _standard error (SE)_, the square root of its variance.
+
+t-test for the coefficents are simply the estimated coefficent divided by the standard error (t value = Estimate / Std. Error)
+
+t-test measure the number of standard deviations each coefficent is away from zero (basically abs(T) > 2 is significant at 95% conf)
+
+The confidence interval for coefficents is:
+
+\[\hat{\beta_j} \pm t_{1-\alpha/2, n-p}\hat{SE}(\hat{\beta_j})\]
+
+```{r, echo = T}
+confint(model1, level = .95)
+```
+
+Interpretation: We are 95% confident that each one unit increase in Gr_Liv_Area adds between 109.9 and 119.8 dollars to the sale price.
+
+Linear Regression Assumptions:
+
++ 1.) Independent observations
++ 2.) The random errors have mean zero, and constant variance
++ 3.) The random errors are normally distributed
+
+## Multiple Linear Regression
+
+```{r, echo = T}
+(model2 <- lm(Sale_Price ~ Gr_Liv_Area + Year_Built, data = ames_train))
+# Equivalent
+(model2 <- update(model1, . ~ . + Year_Built))
+
+round(coef(model2), 3)
+```
+
+```{r, echo = T}
+summary(model3 <- lm(Sale_Price ~ Gr_Liv_Area + Year_Built + Gr_Liv_Area:Year_Built, data = ames_train))
+
+round(coef(model3), 3)
+```
+
+```{r, echo = T, fig.height=5}
+fit1 <- lm(Sale_Price ~ Gr_Liv_Area + Year_Built, data = ames_train)
+fit2 <- lm(Sale_Price ~ Gr_Liv_Area * Year_Built, data = ames_train)
+
+# Regression plane
+plot_grid <- expand.grid(
+   Gr_Liv_Area = seq(from = min(ames_train$Gr_Liv_Area), to = max(ames_train$Gr_Liv_Area),
+                     length = 100),
+   Year_Built = seq(from = min(ames_train$Year_Built), to = max(ames_train$Year_Built),
+                     length = 100)
+)
+
+plot_grid$y1 <- predict(fit1, newdata = plot_grid)
+plot_grid$y2 <- predict(fit2, newdata = plot_grid)
+
+# Level plots
+p1 <- ggplot(plot_grid, aes(x = Gr_Liv_Area, y = Year_Built,
+                      z = y1, fill = y1)) +
+   geom_tile() +
+   geom_contour(color = "white") +
+   viridis::scale_fill_viridis(name = "Predicted\nvalue", option = "inferno") +
+   theme_bw() +
+   ggtitle("Main Effects Only")
+
+p2 <- ggplot(plot_grid, aes(x = Gr_Liv_Area, y = Year_Built,
+                      z = y2, fill = y2)) +
+   geom_tile() +
+   geom_contour(color = "white") +
+   viridis::scale_fill_viridis(name = "Predicted\nvalue", option = "inferno") +
+   theme_bw() +
+   ggtitle("Main effect with two-way interaction")
+
+gridExtra::grid.arrange(p1, p2, nrow = 2)
+```
+
+Full Model
+
+```{r, echo = T}
+model3 <- lm(Sale_Price ~ ., data = ames_train)
+broom::tidy(model3)
+```
+
+### Assessing Model Accuracy
+
+Models 1/2/3:
+
+```{r, echo = T}
+# Train model using 10-fold cross-validation
+
+set.seed(123) # for reproducibility
+
+(cv_model <- train(
+   form = Sale_Price ~ Gr_Liv_Area,
+   data = ames_train,
+   method = "lm",
+   trControl = trainControl(method = "cv", number = 10)
+))
+
+set.seed(123)
+
+cv_model2 <- train(
+   Sale_Price ~ Gr_Liv_Area + Year_Built,
+   data = ames_train,
+   method = "lm",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+set.seed(123)
+
+suppressWarnings({
+   cv_model3 <- train(
+      Sale_Price ~ .,
+      data = ames_train,
+      method = "lm",
+      trControl = trainControl(method = "cv", number = 10)
+   )
+})
+```
+
+__Accuracy__:
+
+```{r}
+summary(resamples(list(
+   model1 = cv_model,
+   model2 = cv_model2,
+   model3 = cv_model3
+)))
+```
+
+### Model Concerns / Assumptions
+
+#### 1.) Linear Relationships
+
+Possible solution to non-linear relationship is by variable transformations:
+
+```{r, echo = T}
+
+p1 <- ggplot(ames_train, aes(Year_Built, Sale_Price)) +
+   geom_point(size = 1, alpha = .4) +
+   geom_smooth(se = F) +
+   scale_y_continuous(labels = scales::dollar) +
+   xlab("Year Built") +
+   ggtitle(paste("Non-transformed variables with a \n", "non-linear relationship"))
+
+p2 <- ggplot(ames_train, aes(Year_Built, Sale_Price)) +
+   geom_point(size = 1, alpha = .4) +
+   geom_smooth(se = F, method = "lm") +
+   scale_y_log10("Sale Price", labels = scales::dollar, breaks = seq(0, 400000, by = 100000)) +
+   xlab("Year Built") +
+   ggtitle(paste("Transforming variables can provide a \n", "near-linear relationship"))
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+#### 2.) Constant variance among residuals
+
+Linear models assume constant variance amoung error terms (_homoscedasticity_).
+
+Notice the cone shape in Model 1:
+
+```{r, echo = T}
+df1 <- broom::augment(cv_model$finalModel, data = ames_train)
+
+p1 <- ggplot(df1, aes(.fitted, .resid)) +
+   geom_point(size = 1, alpha = .4) +
+   xlab("Predicted Values") +
+   ylab("Residuals") +
+   ggtitle("Model 1", subtitle = "Sale_Price ~ Gr_Liv_Area")
+
+df2 <- broom::augment(cv_model3$finalModel, data = ames_train)
+
+p2 <- ggplot(df2, aes(.fitted, .resid)) +
+   geom_point(size = 1, alpha = .4) +
+   xlab("Predicted Values") +
+   ylab("Residuals") +
+   ggtitle("Model 3", subtitle = "Sale_Price ~ .")
+
+gridExtra::grid.arrange(p1, p2, nrow =1)
+```
+
+#### 3.) No autocorrelation
+
+Residuals should be uncorrelated and i.i.d.
+
+```{r}
+df1 <- mutate(df1, id = row_number())
+df2 <- mutate(df2, id = row_number())
+
+p1 <- ggplot(df1, aes(id, .resid)) +
+   geom_point(size = 1, alpha = .4) +
+   geom_smooth(se = F) +
+   xlab("Row ID") +
+   ylab("Residuals") +
+   ggtitle("Model 1", subtitle = "Correlated Residuals")
+
+p2 <- ggplot(df2, aes(id, .resid)) +
+   geom_point(size = 1, alpha = .4) +
+   geom_smooth(se = F) +
+   xlab("Row ID") +
+   ylab("Residuals") +
+   ggtitle("Model 3", subtitle = "Uncorrelated Residuals")
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+
+```
+
+Model 1 has a distict pattern to the residuals (due to being ordered by neighborhood, which is unaccounted for in the model)
+
+#### 4.) More observations than predictors
+
+The number of features cannot exceed the number of observations.
+
+(not a problem in this example)
+
+#### 5.)
+
+No or little multicollinearity.
+
+Collinearity refers to the situation where two or more predictor variables are closely related to one another.
+
+```{r}
+cor(ames_train$Garage_Area, ames_train$Garage_Cars)
+```
+
+Example: _Garage_Area_ and _Garage_Cars_ are highly correlated.
+
+```{r}
+summary(cv_model3) %>%
+   broom::tidy() %>%
+   filter(term %in% c("Garage_Area", "Garage_Cars"))
+```
+
+Only _Garage_Area_ is significant (p < 0.05),
+
+However, refit w/o _Garage_Area_ term, 
+```{r}
+# model without Garage Area
+set.seed(123)
+
+mod_wo_Garage_Cars <- train(
+   Sale_Price ~ .,
+   data = select(ames_train, -Garage_Area),
+   method = "lm",
+   trControl = trainControl(method = "cv", number = 10)
+)
+
+summary(mod_wo_Garage_Cars) %>%
+   broom::tidy() %>%
+   filter(term == "Garage_Cars")
+```
+
+_Garage_Cars_ becomes significant ( p < 0.001 )
+
+Best to check VIF scores (variance inflation factor)
+
+### Principal Component Analysis
+
+PCA -> Linear factorization of features
+
+PCR -> Principal Component Regression
+
+```{r}
+# performs 10-fold cross validation on a PCR model tuning the
+# number of principal components to use as predictors from 1-20
+
+set.seed(123)
+
+cv_model_pcr <- train(
+   Sale_Price ~ .,
+   data = ames_train,
+   method = "pcr",
+   trControl = trainControl(method = "cv", number = 10),
+   preProcess = c("zv", "center", "scale"),
+   tuneLength = 20
+)
+
+cv_model_pcr$bestTune
+
+ggplot(cv_model_pcr)
+
+summary(cv_model_pcr)
+```
+
+### Partial least squares
+
+PLS can be viewed as a supervised dimension reduction procedure.
+
+Below is a comparision between PCR and PLS:
+
+```{r}
+data(solubility)
+
+df <- cbind(solTrainX, solTrainY)
+
+pca_df <- recipe(solTrainY ~ ., data = df) %>%
+   step_center(all_predictors()) %>%
+   step_scale(all_predictors()) %>%
+   step_pca(all_predictors()) %>%
+   prep(training = df, retain = T) %>%
+   juice() %>%
+   select(PC1, PC2, solTrainY) %>%
+   rename(`PCR Component 1` = "PC1", `PCR Component 2` = "PC2") %>%
+   gather(component, value, -solTrainY)
+
+pls_df <- recipe(solTrainY ~., data = df) %>%
+   step_center(all_predictors()) %>%
+   step_scale(all_predictors()) %>%
+   step_pls(all_predictors(), outcome = "solTrainY") %>%
+   prep(training = df, retain = T) %>%
+   juice() %>%
+   rename(`PLS Component 1` = "PLS1", `PLS Component 2` = "PLS2") %>%
+   gather(component, value, -solTrainY)
+   
+pca_df %>%
+   bind_rows(pls_df) %>%
+   ggplot(aes(value, solTrainY)) +
+   geom_point(alpha = .15) +
+   geom_smooth(method = "lm", se = F, lty = "dashed") +
+   facet_wrap(~ component, scales = "free") +
+   labs(x = "PC Eigenvalues", y = "Response")
+```
+
+Fit PLS to ames:
+
+```{r}
+
+# perform 10-fold cross validation on a PLS model tuning the
+# number of principal compoents to use as predictors from 1-20
+
+set.seed(123)
+
+cv_model_pls <- train(
+   Sale_Price ~ .,
+   data = ames_train,
+   method = "pls",
+   trControl = trainControl(method = "cv", number = 10),
+   preProcess = c("zv", "center", "scale"),
+   tuneLength = 20
+)
+
+# model with lowest RMSE
+
+cv_model_pls$bestTune
+
+ggplot(cv_model_pls)
+
+```
+
+### Feature interpretation
+
+Linear models are monotonic, meaning 1 unit change in X means a constant change in Y.
+
+In PLS we can measure the importance of features by an absolute weighted sum of the regression coefficents.
+
+We can use vip  to extract and plot the most important variables:
+
+```{r}
+vip(cv_model_pls, num_features = 20, method = "model")
+```
+
+Alternatively, we can use PDP (partial dependence plots) to summarize the relationship.
+
+```{r}
+p1 <- pdp::partial(cv_model_pls, pred.var = "Gr_Liv_Area", grid.resolution = 20) %>% 
+  autoplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p2 <- pdp::partial(cv_model_pls, pred.var = "First_Flr_SF", grid.resolution = 20) %>% 
+  autoplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p3 <- pdp::partial(cv_model_pls, pred.var = "Total_Bsmt_SF", grid.resolution = 20) %>% 
+  autoplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+p4 <- pdp::partial(cv_model_pls, pred.var = "Garage_Cars", grid.resolution = 4) %>% 
+  autoplot() +
+  scale_y_continuous(limits = c(0, 300000), labels = scales::dollar)
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+We see all 4 of the top predictive features have a positive linear relationship.
+
+```{r}
+# clean up
+rm(list = ls())
+```
+

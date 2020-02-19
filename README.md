@@ -15,6 +15,10 @@ Working Materials:
 
 <b>Complete</b>
 
-<strike><a href="https://people.orie.cornell.edu/davidr/SDAFE2/index.html">Statistics and Data Analysis for Financial Engineering with R Examples</a></strike>
+<strike><a href="http://faculty.marshall.usc.edu/gareth-james/ISL/">Introduction to Statistical Learning</a></strike>
 
-<strike><a href="http://bcs.wiley.com/he-bcs/Books?action=index&bcsId=10248&itemId=1119061393">Understanding and Applying Basic Statistical Methods in R</a></strike>
+<strike><a href="https://www.wiley.com/en-us/Understanding+and+Applying+Basic+Statistical+Methods+Using+R-p-9781119061397">Understanding and Applying Basic Statistical Methods with R</a></strike>
+
+<strike><a href="https://bradleyboehmke.github.io/HOML/">Hands-on Machine Learning wtih R</a></strike>
+
+<strike><a href="https://people.orie.cornell.edu/davidr/SDAFE2/index.html">Statistics and Data Analysis for Financial Engineering with R Examples</a></strike>

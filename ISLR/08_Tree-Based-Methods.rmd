@@ -105,6 +105,8 @@ library(boot, quietly = TRUE, warn.conflicts = FALSE)
 library(tree, quietly = TRUE, warn.conflicts = FALSE)
 library(randomForest, quietly = TRUE, warn.conflicts = FALSE)
 library(gbm, quietly = TRUE, warn.conflicts = FALSE)
+library(glmnet, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
 
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
@@ -269,16 +271,17 @@ bag.boston
 ```
 
 ```{r}
-yhat.bag <- predict(bag.boston, newdata = boston[-train])
-plot(yhat.bag, boston.test)
+boston.test <- boston[!train]
+yhat.bag <- predict(bag.boston, newdata = boston.test)
+plot(yhat.bag, boston.test$medv)
 abline(0, 1)
-mean((yhat.bag-boston.test)^2)
+mean((yhat.bag-boston.test$medv)^2)
 ```
 
 ```{r}
 bag.boston <- randomForest(medv ~ ., data = boston, subset = train, mtry = 13, ntree = 25)
 yhat.bag <- predict(bag.boston, newdata = boston[-train,])
-mean((yhat.bag - boston.test)^2)
+mean((yhat.bag - boston.test$medv)^2)
 ```
 
 ```{r}
@@ -329,28 +332,38 @@ boston.train <- boston[train]
 boston.test <- boston[!train]
 
 ntrees <- seq(0, 500, 10)
+n.features <- ncol(boston[, !"medv"])
 
-results <- numeric(length(ntrees))
+mtry <- round(c(n.features, n.features/2, sqrt(n.features)))
+
+results <- matrix(vector(mode = "numeric", length(ntrees) * length(mtry)), nrow = 3)
 
 for(i in 1:length(ntrees))
 {
-   tree.count <- ntrees[i]
-   
-   rf <- randomForest(medv ~ ., data = boston.train, mtry = 6, n.trees = tree.count)
-   
-   pred <- predict(rf, newdata = boston.test)
-   
-   results[i] <- sqrt(mean((pred - boston.test$medv)^2)) # store the rmse
+   for(j in 1:length(mtry))
+   {
+      tree.count <- ntrees[i]
+      
+      rf <- randomForest(medv ~ ., data = boston.train, mtry = mtry[j], n.trees = tree.count)
+      
+      pred <- predict(rf, newdata = boston.test)
+      
+      results[j, i] <- sqrt(mean((pred - boston.test$medv)^2)) # store the rmse
+   }
 }
 
-lowest.error <- which.min(results)
+df_results <- as.data.table(results)
+colnames(df_results) <- paste0(ntrees)
 
-rf.results <- data.table(trees = ntrees, errors = results)[, lowest := .I == lowest.error]
+df_results <- melt(cbind(mtry, df_results), id.vars = "mtry")
+df_results$mtry <- as.factor(df_results$mtry)
 
-ggplot(rf.results, aes(trees, errors, fill = lowest)) +
-   geom_line()
+ggplot(df_results, aes(variable, value, group = mtry)) +
+   geom_line(aes(col = mtry))
 
 ```
+
+### Carseats
 
 In the lab, a classification tree was applied to the Carseats data set after converting Sales into a qualitative response variable. Now we will seek to predict Sales using regression trees and related approaches, treating the response as a quantitaive variable.
 
@@ -444,5 +457,249 @@ results <- data.table(mtry = mtry, error = rf.error, lowest = mtry == lowest.err
 
 ggplot(results, aes(mtry, error, fill = lowest)) +
    geom_bar(stat = "identity")
+```
+
+### OJ
+
+This problem involves the **OJ** data set which is part of the ISLR package.
+
+a.) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+
+```{r}
+oj <- as.data.table(ISLR::OJ)
+n <- nrow(oj)
+
+index <- sample(1:n, n *.7, replace = F)
+
+oj.train <- oj[index]
+oj.test <- oj[!index]
+
+head(train)
+```
+
+b.) Fit a tree to the training data, which **Purchases** as the first response and the other variables as predictors. Use the **summary** function to produce summary statistics about the tree, and describe the results obtained.
+
+```{r}
+
+oj.tree <- tree(Purchase ~., data = oj.train)
+
+plot(oj.tree)
+text(oj.tree)
+
+summary(oj.tree)
+
+```
+
+What is the training error rate? _0.7469_
+
+How many terminal nodes? _8_
+
+c.) Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
+
+```{r}
+summary(oj.tree)
+```
+
+d.) Create a plot of the tree.
+
+```{r}
+plot(oj.tree)
+text(oj.tree)
+```
+
+e.) Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels.
+
+```{r}
+pred <- predict(oj.tree, newdata = oj.test, type = "class")
+
+confusionMatrix(oj.test$Purchase, pred)
+```
+
+f.) Apply the cv.tree function to the training data set in order to determine the optimal tree size.
+
+```{r}
+oj.cv <- cv.tree(oj.tree)
+```
+
+g.) Produce a plot with the tree size and cross-validated error rate.
+
+```{r}
+plot(oj.cv$size, oj.cv$dev, type ='b', col =  "cornflowerblue") # 5
+```
+
+h.) What tree size corresponds to the lowest cv error rate?
+
+**5**
+
+i.) Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation.
+
+```{r}
+oj.pruned <- prune.tree(oj.tree, k = 5)
+```
+
+j.) Compare the training error rates between the pruned and unpruned trees.
+
+```{r}
+
+summary(oj.tree)
+summary(oj.pruned)
+```
+
+Same.
+
+k.) Compare the test error rates.
+
+```{r}
+pruned.pred <- predict(oj.pruned, newdata = oj.test, type = "class")
+
+confusionMatrix(oj.test$Purchase, pred)
+
+confusionMatrix(oj.test$Purchase, pruned.pred)
+```
+
+### Hitters
+
+We now use boosting to predict **Salary** in the hitters data set.
+
+a.) Remove the observations for whom the salary information is unknown, and then log-transform the salaries.
+
+```{r}
+hitters <- as.data.table(ISLR::Hitters)
+hitters <- hitters[complete.cases(hitters)]
+hitters$Salary <- log(hitters$Salary)
+
+```
+
+b.) Create a training set consisting of the first 200 observations and a test set containing the rest.
+
+```{r}
+n <- nrow(hitters)
+
+index <- 1:200
+
+hitters.train <- hitters[index]
+hitters.test <- hitters[!index]
+```
+
+c.) Perform boosting on the training set with 1,000 trees for a range of values of the shrinkage parameter $\lambda$. Produce a plot with the different shrinkage values and the training MSE.
+
+```{r}
+shrinkage <- seq(0.001, 0.5, by = 0.0025)
+iters <- length(shrinkage)
+
+results <- vector(mode = "numeric", length = iters)
+
+for(i in 1:iters)
+{
+   gbm <- gbm(Salary ~., data = hitters.train, n.trees = 1000, shrinkage = shrinkage[i], distribution = "gaussian")
+   results[i] <- mean(gbm$train.error^2)
+}
+
+lowest.error <- which.min(results)
+
+df_results <- data.table(shrinkage, error = results)[, lowest := .I == lowest.error]
+
+ggplot(df_results, aes(shrinkage, error, fill = lowest)) +
+   geom_bar(stat = "identity")
+```
+
+d.) Produce a plot with different shrinkage methods and the corresponding test mse.
+
+```{r}
+shrinkage <- seq(0.001, 0.5, by = 0.0025)
+iters <- length(shrinkage)
+
+results <- vector(mode = "numeric", length = iters)
+
+for(i in 1:iters)
+{
+   gbm <- gbm(Salary ~., data = hitters.train, n.trees = 1000, shrinkage = shrinkage[i], distribution = "gaussian")
+   
+   pred <- predict(gbm, n.trees = 1000, newdata = hitters.test, type = "response")
+   
+   results[i] <- mean((hitters.test$Salary - pred)^2)
+}
+
+lowest.error <- which.min(results)
+
+df_results <- data.table(shrinkage, error = results)[, lowest := .I == lowest.error]
+
+ggplot(df_results, aes(shrinkage, error, fill = lowest)) +
+   geom_bar(stat = "identity")
+
+tree.mse <- results[lowest.error]
+```
+
+e.) Compare the test MSE of boosting to the test MSE that results from applying two of the regression approaches seen in chapters 3 & 6.
+
+```{r}
+
+train.mat <- model.matrix(Salary ~., data = hitters.train)
+test.mat <- model.matrix(Salary ~., data = hitters.test)
+
+cv.ridge <- cv.glmnet(train.mat, hitters.train$Salary, data = hitters.train, alpha = 0)
+
+ridge.fit <- glmnet(test.mat, hitters.test$Salary, alpha = 1, lambda = cv.ridge$lambda.min)
+ridge.pred <- predict(ridge.fit, newx = test.mat, type = "response")
+ridge.error <- mean((hitters.test$Salary - ridge.pred)^2)
+
+cv.lasso <- cv.glmnet(train.mat, hitters.train$Salary, data = hitters.train, alpha = 1)
+
+lasso.fit <- glmnet(test.mat, hitters.test$Salary, alpha = 0, lambda = cv.lasso$lambda.min)
+lasso.pred <- predict(lasso.fit, newx = test.mat, type = "response")
+lasso.error <- mean((hitters.test$Salary - lasso.pred)^2)
+
+results <- data.table(type = c("Tree", "Ridge", "Lasso"), error = c(tree.mse, ridge.error, lasso.error))
+
+ggplot(results, aes(type, error, fill = type)) +
+   geom_bar(stat = "identity")
+```
+
+f.) Which variables appear to be the most important predictors in the boosted model?
+
+```{r}
+
+best.tree <- gbm(Salary ~., data = hitters.train, n.trees = 1000, shrinkage = shrinkage[lowest.error], distribution = "gaussian")
+
+vip::vip(best.tree)
+```
+
+### Caravan
+
+This question uses the caravan data set.
+
+a.) Create a training set consisting of the first 1,000 observations, and a test set consisting of the remaining observations.
+
+```{r}
+caravan <- as.data.table(ISLR::Caravan)
+caravan$Purchase <- ifelse(caravan$Purchase == "Yes", 1, 0)
+index <- 1:1000
+
+caravan.train <- caravan[index]
+caravan.test <- caravan[-index]
+
+head(caravan.train)
+```
+
+b.) Fit a boosting model to the training set with **Purchases** as the response and the other variables as predictors. Use 1,000 trees and a shrinkage value of .01.
+
+```{r}
+boost.fit <- gbm(Purchase ~ ., data = caravan.train, n.trees = 1000, shrinkage = 0.1, distribution = "bernoulli")
+```
+
+What predictors appear to be most important?
+
+```{r}
+vip::vip(boost.fit)
+```
+
+c.) Use the boosting model to predict the response on the test data. Predict that a person will make a purchase if the estimated probablity of purchase is greater than 20%.
+
+```{r}
+probs <- exp(predict.gbm(boost.fit, newdata = caravan.test, type = "response", n.trees = 1000)) - 1
+
+pred <- ifelse(probs > .2, 1, 0)
+
+confusionMatrix(as.factor(caravan.test$Purchase), as.factor(pred))
 ```
 

@@ -1,0 +1,720 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+fig_width: 9
+fig_height: 3.5
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Statistical Learning}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapter 9}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Support Vector Machines}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+# Data Wrangling
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(ISLR, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(class, quietly = TRUE, warn.conflicts = FALSE)
+library(boot, quietly = TRUE, warn.conflicts = FALSE)
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+library(e1071, quietly = TRUE, warn.conflicts = FALSE)
+library(LiblineaR, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets/")
+
+select <- dplyr::select
+
+```
+
+## Chapter 9
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## R Quiz
+
+```{r}
+set.seed(1001)
+counts = 100
+errate = rep(0, counts)
+for(i in 1:counts){
+  x = matrix(rnorm(100 * 10), ncol = 10)
+  y = c(rep(0, 50), rep(1, 50))
+  x[y == 1, 1:5] = x[y == 1, 1:5] + 1
+  dat = data.frame(x = x, y = as.factor(y))
+  svm.fit = svm(y ~ ., data = dat, kernel = "linear", cost = 1)
+
+  
+  xtest = matrix(rnorm(100 * 10), ncol = 10)
+  ytest = sample(c(0, 1), 100, rep = TRUE)
+  xtest[ytest == 1,] = xtest[ytest == 1,] + 1
+  testdat = data.frame(x = xtest, y = as.factor(ytest))
+
+  ypred = predict(svm.fit, testdat)
+  result = table(predict = ypred, truth = testdat$y)
+  errate[i] = 1 - (result[1] + result[4]) / 100
+}
+mean(errate)
+```
+
+## Lab
+
+### Support Vector Classifier
+
+```{r}
+set.seed(1)
+
+x <- matrix(rnorm(20*2), ncol = 2)
+y <- c(rep(-1, 10), rep(1, 10))
+x[y == 1,] <- x[y==1,] + 1
+plot(x, col=(3-y))
+```
+
+```{r}
+dat <- data.table(x1 = x[,1], x2 = x[, 2], y = as.factor(y))
+svmfit <- svm(y ~ ., data = dat, kernel = "linear", cost = 10, scale = F)
+plot(svmfit, dat)
+```
+
+```{r}
+svmfit$index
+```
+
+```{r}
+summary(svmfit)
+```
+
+```{r}
+svmfit <- svm(y ~ ., data = dat, kernel = "linear", cost = 0.1, scale = F)
+plot(svmfit, dat)
+svmfit$index
+```
+
+```{r}
+set.seed(1)
+
+tune.out <- tune(svm, y ~ ., data = dat, kernel = "linear",
+                 ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
+summary(tune.out)
+```
+
+```{r}
+bestmod <- tune.out$best.model
+summary(bestmod)
+```
+
+```{r}
+xtest <- matrix(rnorm(20*2), ncol = 2)
+ytest <- sample(c(-1, 1), 20, rep = T)
+xtest[ytest==1,] = xtest[ytest==1,] + 1
+testdata <- data.table(x1 = xtest[, 1], x2 = xtest[, 2], y = as.factor(ytest))
+```
+
+```{r}
+ypred <- predict(bestmod, testdata)
+table(predict = ypred, truth = testdata$y)
+```
+
+```{r}
+svmfit <- svm( y ~ ., data = dat, kernel = "linear", cost = .01, scale = F)
+ypred <- predict(svmfit, testdata)
+table(predict = ypred, truth = testdata$y)
+```
+
+```{r}
+x[y ==1,] <- x[y == 1,] + 0.5
+plot(x, col = (y + 5)/2, pch = 19)
+```
+
+```{r}
+dat <- data.table(x = x, y = as.factor(y))
+names(dat)[1:2] <- c("x1", "x2")
+
+svmfit <- svm(y ~ ., data = dat, kernel = "linear", cost = 1e5)
+summary(svmfit)
+plot(svmfit, dat)
+```
+
+```{r}
+svmfit <- svm(y ~ ., data = dat, kernel = "linear", cost = 1)
+summary(svmfit)
+plot(svmfit, dat)
+```
+
+```{r}
+set.seed(1)
+
+x <- matrix(rnorm(200*2), ncol = 2)
+x[1:100,] = x[1:100,] + 2
+x[101:150,] = x[101:150, ] - 2
+y <- c(rep(1, 150), rep(2, 50))
+
+dat = data.frame(x = x, y = as.factor(y))
+
+par(mfrow = c(1, 1))
+plot(x, col = y)
+```
+
+### Support Vecctor Machines
+
+```{r}
+train <- sample(200, 100)
+svmfit <- svm(y ~ ., data = dat[train,], kernel = "radial", gamma = 1, cost = 1)
+
+plot(svmfit, dat[train,])
+```
+
+```{r}
+summary(svmfit)
+```
+
+```{r}
+svmfit <- svm(y ~ ., data = dat[train,], kernel = "radial", gamma = 1,
+              cost = 1e5)
+plot(svmfit, dat)
+```
+
+```{r}
+set.seed(1)
+
+tune.out <- tune(svm, y ~ ., data = dat[train,], kernel = "radial",
+                 ranges = list(cost = c(0.1, 1, 10, 100, 1000),
+                              gamma = c(0.5, 1, 2, 3, 4)))
+
+summary(tune.out)
+```
+
+```{r}
+table(true = dat[-train, "y"], pred = predict(tune.out$best.model, newdata = dat[-train,]))
+```
+
+### ROC Curves
+
+```{r}
+rocplot <- function(pred, truth, ...) {
+  predob = prediction(pred, truth)
+  perf = performance(predob, "tpr", "fpr")
+  plot(perf, ...)
+}
+```
+
+```{r}
+svmfit.opt <- svm(y ~ ., data = dat[train,], kernel = "radial",
+                  gamma = 2, cost = 1, decision.values = T)
+
+fitted <- attributes(predict(svmfit.opt, dat[train,], decision.values = T))$decision.values
+
+par(mfrow = c(1, 2))
+
+rocplot(fitted, dat[train, "y"], main = "Training Data")
+svmfit.flex <- svm(y ~ ., data = dat[train,], kernel = "radial", gamma = 50, cost = 1, decision.values = T)
+fitted <- attributes(predict(svmfit.flex, dat[train,], decision.values = T))$decision.values
+rocplot(fitted, dat[train, "y"], add = T, col = "red")
+```
+
+```{r}
+fitted <- attributes(predict(svmfit.opt, dat[-train, ], decision.values = T))$decision.values
+rocplot(fitted, dat[-train, "y"], main = "Test Data")
+fitted <- attributes(predict(svmfit.flex, dat[-train,], decision.values = T))$decision.values
+rocplot(fitted, dat[-train, "y"], add = T, col = "red")
+```
+
+### SVM w/ Multiple Classes
+
+```{r}
+set.seed(1)
+
+x <- rbind(x, matrix(rnorm(50*2), ncol = 2))
+y <- c(y, rep(0, 50))
+
+x[y == 0, 2] = x[y == 0, 2] + 2
+dat = data.frame(x = x, y = as.factor(y))
+
+par(mfrow = c(1, 1))
+plot(x, col = (y + 1))
+```
+
+```{r}
+svmfit <- svm(y ~ ., data = dat, kernel = "radial", cost = 10, gamma = 1)
+plot(svmfit, dat)
+```
+
+### Gene Expression Data
+
+```{r}
+khan <- ISLR::Khan
+```
+
+```{r}
+table(khan$ytrain)
+table(khan$ytest)
+```
+
+```{r}
+dat <- data.frame(x = khan$xtrain, y = as.factor(khan$ytrain))
+out <- svm(y ~ ., data = dat, kernel = "linear", cost = 10)
+
+summary(out)
+```
+
+```{r}
+table(out$fitted, dat$y)
+```
+
+```{r}
+dat.te <- data.frame(x = khan$xtest, y = as.factor(khan$ytest))
+pred.te <- predict(out, newdata = dat.te)
+
+table(pred.te, dat.te$y)
+```
+
+### Applied
+
+4.) Generate a simulated two-class data set with 100 observations and two features in which there is a visible but non-linear separation between the two classes. Show that in this setting, a support vector machine with a polynomial kernel (with degree greater than 1) or a radial kernel will outperform a support vector classifier on the training data. Which technique performs best on the test data? Make plots and report training and test error rates in order to back up your assertions.
+
+Generate data and plot:
+
+```{r}
+set.seed(1)
+
+transl <- 3
+X <- matrix(rnorm(100 * 2), ncol = 2)
+X[1:30, ] <- X[1:30, ] + transl
+X[31:60, ] <- X[31:60, ] - transl
+y <- c(rep(0, 60), rep(1, 40))
+dat <- data.frame(x = X, y = as.factor(y))
+
+par(mfrow = c(1,1))
+plot(X, col = y + 1)
+```
+
+Split to training and test set:
+
+```{r}
+train <- sample(100, 80)
+dat.train <- dat[train, ]
+dat.test <- dat[-train, ]
+```
+
+```{r}
+svm.lin <- svm(y ~ ., data = dat.train, kernel = 'linear', scale = FALSE)
+plot(svm.lin, data = dat.train)
+```
+
+```{r}
+summary(svm.lin)
+```
+
+Calculate the training error of the support vector classifier:
+
+```{r}
+table(predict = svm.lin$fitted, truth = dat.train$y)
+```
+
+Fit with polynomial kernel and calculate the training error rate:
+
+```{r}
+svm.poly <- svm(y ~ ., data = dat.train, kernel = 'polynomial', scale = FALSE)
+plot(svm.poly, data = dat.train)
+```
+
+```{r}
+table(predict = svm.poly$fitted, truth = dat.train$y)
+```
+
+Fit with radial kernel and calculate the traing error rate:
+
+```{r}
+svm.rad <- svm(y ~ ., data = dat.train, kernel = 'radial', scale = FALSE)
+plot(svm.rad, data = dat.train)
+```
+
+```{r}
+table(predict = svm.rad$fitted, truth = dat.train$y)
+```
+
+Compare the test errors of the 3 kernels:
+
+```{r}
+lin.pred <- predict(svm.lin, dat.test)
+table(predict = lin.pred, truth = dat.test$y)
+```
+
+```{r}
+poly.pred <- predict(svm.poly, dat.test)
+table(predict = poly.pred, truth = dat.test$y)
+```
+
+```{r}
+rad.pred <- predict(svm.rad, dat.test)
+table(predict = rad.pred, truth = dat.test$y)
+```
+
+5.) We have seen that we can fit an SVM with a non-linear kernel in order to perform classification using a non-linear decision boundary. We will now see that we can also obtain a non-linear decision boundary by performing logistic regression using non-linear transformations of the features.
+
+a.) Generate a data set with n = 500 and p = 2, such that the observations belong to two classes with a quadratic decision boundary between them:
+
+```{r}
+set.seed(1)
+
+x1 <- runif(500) - 0.5
+x2 <- runif(500) - 0.5
+y <- as.integer(x1 ^ 2 - x2 ^ 2 > 0)
+```
+
+b.) Plot the observations, colored according to their class labels. Your plot should display X 1 on the x-axis, and X 2 on the y-axis:
+
+```{r}
+plot(x1[y == 0], x2[y == 0], col = "red", xlab = "X1", ylab = "X2")
+points(x1[y == 1], x2[y == 1], col = "blue")
+```
+
+Fit a logistic regression model to the data, using X1 and X2 as predictors.
+
+```{r}
+dat <- data.frame(x1 = x1, x2 = x2, y = as.factor(y))
+lr.fit <- glm(y ~ ., data = dat, family = 'binomial')
+```
+
+d.) Apply this model to the training data in order to obtain a predicted class label for each training observation. Plot the observations, colored according to the predicted class labels. The decision boundary should be linear.
+
+```{r}
+lr.prob <- predict(lr.fit, newdata = dat, type = 'response')
+lr.pred <- ifelse(lr.prob > 0.5, 1, 0)
+plot(dat$x1, dat$x2, col = lr.pred + 2)
+```
+
+e.) Now ﬁt a logistic regression model to the data using non-linear functions of X1 and X2 as predictors (e.g. X21 , X1×X2, log(X2), and so forth).
+
+```{r}
+lr.nl <- glm(y ~ poly(x1, 2) + poly(x2, 2), data = dat, family = 'binomial')
+```
+
+f.) Apply this model to the training data in order to obtain a predicted class label for each training observation. Plot the observations, colored according to the predicted class labels. The decision boundary should be obviously non-linear. If it is not, then repeat (a)-(e) until you come up with an example in which the predicted class labels are obviously non-linear.
+
+```{r}
+lr.prob.nl <- predict(lr.nl, newdata = dat, type = 'response')
+lr.pred.nl <- ifelse(lr.prob.nl > 0.5, 1, 0)
+plot(dat$x1, dat$x2, col = lr.pred.nl + 2)
+```
+
+g.) Fit a support vector classiﬁer to the data with X1 and X2 as predictors. Obtain a class prediction for each training observation. Plot the observations, colored according to the predicted class labels.
+
+```{r}
+svm.lin <- svm(y ~ ., data = dat, kernel = 'linear', cost = 0.01)
+plot(svm.lin, dat)
+```
+
+h.) Fit a SVM using a non-linear kernel to the data. Obtain a class prediction for each training observation. Plot the observations, colored according to the predicted class labels.
+
+```{r}
+svm.nl <- svm(y ~ ., data = dat, kernel = 'radial', gamma = 1)
+plot(svm.nl, data = dat)
+```
+
+6.) At the end of Section 9.6.1, it is claimed that in the case of data that is just barely linearly separable, a support vector classiﬁer with a small value of cost that misclassiﬁes a couple of training observations may perform better on test data than one with a huge value of cost that does not misclassify any training observations. You will now investigate this claim.
+
+a.) Generate two-class data with p = 2 in such a way that the classes are just barely linearly separable.
+
+```{r}
+set.seed(1)
+obs = 1000
+x1 <- runif(obs, min = -4, max = 4)
+x2 <- runif(obs, min = -1, max = 16)
+y <- ifelse(x2 > x1 ^ 2, 0, 1)
+dat <- data.frame(x1 = x1, x2 = x2, y = as.factor(y))
+train <- sample(obs, obs/2)
+dat.train <- dat[train, ]
+dat.test <- dat[-train, ]
+par(mfrow = c(1,2))
+plot(dat.train$x1, dat.train$x2, col = as.integer(dat.train$y) + 1, main = 'training set')
+plot(dat.test$x1, dat.test$x2, col = as.integer(dat.test$y) + 1, main = 'test set')
+```
+
+b.) Compute the cross-validation error rates for support vector classiﬁers with a range of cost values. How many training errors are misclassiﬁed for each value of cost considered, and how does this relate to the cross-validation errors obtained?
+
+```{r}
+set.seed(1)
+cost.grid <- c(0.001, 0.01, 0.1, 1, 5, 10, 100, 10000)
+tune.out <- tune(svm, y ~., data = dat.train, kernel = 'linear', ranges = list(cost = cost.grid))
+```
+
+```{r}
+summary(tune.out)
+```
+
+c.) Generate an appropriate trest data set, and compute the test errors corresponding to each of the values of cost considered. Which value of cost leads to the fewest test errors, and how does this compare to the values of cost that generate the fewest train errors?
+
+```{r}
+err.rate.train <- rep(NA, length(cost.grid))
+for (cost in cost.grid) {
+  svm.fit <- svm(y ~ ., data = dat.train, kernel = 'linear', cost = cost)
+  plot(svm.fit, data = dat.train)
+  res <- table(prediction = predict(svm.fit, newdata = dat.train), truth = dat.train$y)
+  err.rate.train[match(cost, cost.grid)] <- (res[2,1] + res[1,2]) / sum(res)
+}
+```
+
+```{r}
+paste('The cost', cost.grid[which.min(err.rate.train)], 'has the minimum training error:', min(err.rate.train))
+```
+
+7.) In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the Auto data set.
+
+```{r}
+auto <- as.data.table(ISLR::Auto)
+```
+
+a.) Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage with below the median.
+
+```{r}
+auto$eco <- as.factor(ifelse(auto$mpg < median(auto$mpg), 0, 1))
+training <- auto[, !"mpg"]
+```
+
+b.) Fit a support vector classificer to the data with various values of cost, in order to predict whetehr a car gets high or low gas mileage. Report the cross-validation errors associated with different values of this parameter.
+
+```{r}
+cost.grid <- c(0.001, 0.1, 1, 100)
+set.seed(1)
+tune.res <- tune(svm, eco ~ ., data = training, kernel = 'linear', ranges = list(cost = cost.grid))
+summary(tune.res)
+
+plot(tune.res$best.model, training, cylinders ~ displacement)
+plot(tune.res$best.model, training, horsepower ~ weight)
+```
+
+c.) Now repeat this with SVMs with radial and polynomial basis kernels, which different values of gamma and degree.
+
+```{r}
+cost.grid <- c(0.001, 0.1, 1, 100)
+set.seed(1)
+tune.res <- tune(svm, eco ~ ., data = training, kernel = 'radial', ranges = list(cost = cost.grid))
+summary(tune.res)
+
+plot(tune.res$best.model, training, cylinders ~ displacement)
+plot(tune.res$best.model, training, horsepower ~ weight)
+plot(tune.res$best.model, training, acceleration ~ year)
+```
+
+```{r}
+cost.grid <- c(0.001, 0.1, 1, 100)
+set.seed(1)
+tune.res <- tune(svm, eco ~ ., data = training, kernel = 'polynomial', ranges = list(cost = cost.grid))
+summary(tune.res)
+
+plot(tune.res$best.model, training, cylinders ~ displacement)
+plot(tune.res$best.model, training, horsepower ~ weight)
+plot(tune.res$best.model, training, acceleration ~ year)
+```
+
+8.) This problem involves the OJ data set which is part of the ISLR package.
+
+```{r}
+oj <- as.data.table(ISLR::OJ)
+```
+
+a.) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+
+```{r}
+train <- sample(1:nrow(oj), 800)
+
+oj.train <- oj[train,]
+oj.test <- oj[-train,]
+```
+
+b.) Fit a support vector machine classifier to the training data using cost = 0.01, with purchase as the response and other variables as the predictors.
+
+```{r}
+svmfit <- svm(Purchase ~ ., data = oj.train, kernel = "linear", cost = 0.01)
+
+summary(svmfit)
+```
+
+c.) What are the train and test error rates?
+
+Test error rate:
+
+```{r}
+table(oj.train$Purchase, predict(svmfit))
+
+mean(oj.train$Purchase == predict(svmfit))
+```
+
+Test error rate:
+
+```{r}
+table(oj.test$Purchase, predict(svmfit, newdata = oj.test))
+
+mean(oj.test$Purchase == predict(svmfit, newdata = oj.test))
+```
+
+d.) Use the tune() function to select an optimal model.
+
+```{r}
+cost.grid <- c(0.001, 0.1, 1, 100, 250)
+out <- tune(svm, Purchase ~ ., data = oj.train, kernel = "linear", ranges = list(cost = cost.grid))
+
+summary(out)
+```
+
+e.) Compute the training and test error rates using this new value for cost:
+
+```{r}
+svmfit <- out$best.model
+
+table(oj.train$Purchase, predict(svmfit))
+
+mean(oj.train$Purchase == predict(svmfit))
+```
+
+```{r}
+table(oj.test$Purchase, predict(svmfit, newdata = oj.test))
+
+mean(oj.test$Purchase == predict(svmfit, newdata = oj.test))
+```
+
+f.) Repeat parts b-d using a radial kernel.
+
+```{r}
+cost.grid <- c(0.001, 0.1, 1, 100, 250)
+out <- tune(svm, Purchase ~ ., data = oj.train, kernel = "radial", ranges = list(cost = cost.grid))
+
+summary(out)
+
+svmfit <- out$best.model
+
+table(oj.train$Purchase, predict(svmfit))
+mean(oj.train$Purchase == predict(svmfit))
+
+table(oj.test$Purchase, predict(svmfit, newdata = oj.test))
+mean(oj.test$Purchase == predict(svmfit, newdata = oj.test))
+```
+
+h.) Overall, which approach seems to give the best results?
+
+The linear kernel has the best test error rate.
+
+```{r}
+rm(list = ls())
+```
+

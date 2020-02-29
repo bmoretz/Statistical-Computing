@@ -703,3 +703,8 @@ pred <- ifelse(probs > .2, 1, 0)
 confusionMatrix(as.factor(caravan.test$Purchase), as.factor(pred))
 ```
 
+```{r}
+
+rm(list = ls())
+```
+

@@ -1,0 +1,260 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Basics}
+   \rfoot{\color{headergrey}Chapter 1}
+   \lfoot{\color{headergrey}}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Mathematics and Statistics for Financial Risk Management}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/datasets")
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+#### Chapter 1
+
+### 1
+
+Solve for $y$, where:
+
+a.) $y = ln(e^5)$
+
+5
+
+b.) $y = ln(1/e)$
+
+$y = ln(1/e) = ln(1) - 1 = 0 - 1 = -1$
+
+c.) $y = ln(10e)$
+
+$y = ln(10e) = ln(10) + ln(e) = ln(10) + 1$
+
+```{r}
+log(10) + 1
+```
+
+### 2
+
+The nominal monthly rate for a loan is quoted at 5%. What is the equivalent annual rate? Semiannual rate? Continious rate?
+
+```{r}
+effective_rate <- function(rate, periods) {
+   ((1 + rate/periods)^periods - 1)
+}
+```
+
+Annual:
+
+```{r}
+effective_rate(.05, 12) * 100
+```
+
+Semiannual:
+
+```{r}
+effective_rate(.05, 2) * 100
+```
+
+Continous:
+
+```{r}
+log(1 + effective_rate(.05, 12)) * 100
+```
+
+### 3
+
+Over the course of a year, the log return on a stock market index is 11.2%. The starting value of the index is 100. What is the value at the end of the year?
+
+```{r}
+100 * exp(.112)
+```
+
+### 4
+
+You have a portfolio of 10 bonds. In how many different ways can exactly two bonds default? Assume the order in which the bonds default is unimportant.
+
+```{r}
+choose(10, 2)
+```
+
+### 5
+
+What is the present value of a perpetuity that pays $100 per year? Use an actual discount rate of 4%, and assume the first payment will be made in exactly one year.
+
+```{r}
+100 * (1/0.04)
+```
+
+### 6
+
+ABC stock will pay a $1 dividend in one year. Assume the dividend will continue to be paid annually forever and the dividend payments will increase in size at a rate of 5%. Value this stream of dividends using a 6% annual discount rate.
+
+```{r}
+1 / (0.06 - 0.05)
+```
+
+### 7
+
+What is the present value of a 10-year bond with a $100 face value, which pays a 6% coupon annually? Use an 8% discount rate.
+
+```{r}
+
+present_value <- function(face, int.rate, periods, discount.rate) {
+   delta <- 1/(1 + discount.rate)
+   
+   coupon <- face * int.rate
+   
+   discount <- (delta - delta^(periods+1)) / (1 - delta)
+   
+   coupon * discount + ( face / (1 + discount.rate)^periods )
+}
+
+present_value(100, .06, 10, .08)
+```
+
+### 8
+
+Solve for $x$, where $e^{e^x} = 10$
+
+```{r}
+log(log(10))
+```
+
+### 9
+
+Calculate the value of the following summation: $\sum^{9}_{i=0}(-0.5)^i$
+
+```{r}
+r <- -0.5; n <- 9
+
+(1 - r^n) / (1 - r)
+```
+
+### 10
+
+The risk department of your firm has 10 analysts. You need to select four analysts to serve on a special audit committee. How many possible groupings of four analysts can be put together?
+
+```{r}
+choose(10, 4)
+```
+
+long-hand:
+
+```{r}
+n <- 10; k <- 4
+
+factorial(10) / ( factorial(k) * factorial(n - k))
+```
+
+### 11
+
+What is the present value of a newly issued 10-year bond with a notial value of $100 and a 2% annual coupon? Assume a constant 5% annual discount rate and no risk of default.
+
+```{r}
+present_value(100, .02, 10, 0.05)
+```
+

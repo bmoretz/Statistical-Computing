@@ -169,7 +169,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 Attrition
 
-```{r, echo = T}
+```{r, attrition_data}
 attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
 attrition_h2o <- as.h2o(attrition)
 
@@ -183,7 +183,8 @@ rm(churn)
 
 Ames, Iowa housing data.
 
-```{r, echo = T}
+```{r, ames_data}
+
 ames <- AmesHousing::make_ames()
 ames_h2o <- as.h2o(ames)
 
@@ -203,7 +204,8 @@ response <- "Sale_Price"
 predictors <- setdiff(colnames(ames_train), response)
 ```
 
-```{r}
+```{r, data_recipe}
+
 # ensure consistent categorical levels
 blueprint <- recipe(Sale_Price ~., data = ames_train) %>%
   step_other(all_nominal(), threshold = 0.005)
@@ -221,48 +223,10 @@ Y <- "Sale_Price"
 X <- setdiff(names(ames_train), Y)
 ```
 
-### Stacking Overview
+### h2o ML setup
 
-Stacking is the process of combining multiple "base" learners (RF, GBM, GLM, etc.) into a "Super Learner" that uses the individual learners to make the final prediction.
+```{r, train_h2o_models}
 
-The Super Learner Algorithm
-
-1.) Setup the Ensemble
-
-  Specify a list of L base learners (with a specific set of model parameters)
-  
-  Specify a meta learning algorithm. This can be any one of the algorithms discussed in the previous chapters, but most often is some form of regularized regression.
-  
-2.) Train the ensemble
-
-  Train each of the L base learners on the training set.
-  
-  Perform k-fold CV on each of the base learners and collect the cross-validated predictions from each (the same k-fold must be used for each base learner). These predicted values represent $p_1, ..., p_l$.
-  
-  The N cross-validated predicted values from each of the L algorithms can be combined to form a new N X L feature matrix (Z)
-  
-  Train the meta learning algorithm on level-one data (y = f(Z)). The "ensemble model" consista of the L base learning models and the meta learning model, which can then be used to generate predictions on new data.
-  
-3.) Predict on new data.
-
-  To generate ensemble predictions, first generate predictions from the base learners.
-  
-  Feed those predictions into the meta learner to generate the ensemble prediction.
-
-### Stacking Existing Models
-
-Restrictions:
-
-1.) All models must be trained on the same training set
-
-2.) All models must be trained with the same number of CV folds.
-
-3.) All models must use the same fold assignment to ensure the same observations are used.
-
-4.) The cross-validated predictions from all of the models must be preserved by setting keep_cross_validation_predictions = T.
-
-
-```{r}
 # Train & cross-validate a GLM model
 best_glm <- h2o.glm(
   x = X, y = Y, training_frame = train_h2o, alpha = 0.1,
@@ -275,7 +239,7 @@ best_rf <- h2o.randomForest(
   x = X, y = Y, training_frame = train_h2o, ntrees = 1000, mtries = 20,
   max_depth = 30, min_rows = 1, sample_rate = 0.8, nfolds = 10,
   fold_assignment = "Modulo", keep_cross_validation_predictions = TRUE,
-  seed = 123, stopping_rounds = 50, stopping_metric = "RMSE",
+  seed = 123, stopping_rounds = 5, stopping_metric = "RMSE",
   stopping_tolerance = 0
 )
 
@@ -283,136 +247,287 @@ best_rf <- h2o.randomForest(
 best_gbm <- h2o.gbm(
   x = X, y = Y, training_frame = train_h2o, ntrees = 5000, learn_rate = 0.01,
   max_depth = 7, min_rows = 5, sample_rate = 0.8, nfolds = 10,
-  fold_assignment = "Modulo", keep_cross_validation_predictions = TRUE,es
-  
-  seed = 123, stopping_rounds = 50, stopping_metric = "RMSE",
+  fold_assignment = "Modulo", keep_cross_validation_predictions = TRUE,
+  seed = 123, stopping_rounds = 5, stopping_metric = "RMSE",
   stopping_tolerance = 0
 )
 
 # Train & cross-validate an XGBoost model
-best_xgb <- h2o.xgboost(
-  x = X, y = Y, training_frame = train_h2o, ntrees = 5000, learn_rate = 0.05,
-  max_depth = 3, min_rows = 3, sample_rate = 0.8, categorical_encoding = "Enum",
-  nfolds = 10, fold_assignment = "Modulo", 
-  keep_cross_validation_predictions = TRUE, seed = 123, stopping_rounds = 50,
-  stopping_metric = "RMSE", stopping_tolerance = 0
-)
-```
 
-Train the ensemble
+# not avaliable on windows, yet..(3/2/20)
 
-```{r}
+#best_xgb <- h2o.xgboost(
+#  x = X, y = Y, training_frame = train_h2o, ntrees = 5000, learn_rate = 0.05,
+#  max_depth = 3, min_rows = 3, sample_rate = 0.8, categorical_encoding = "Enum",
+#  nfolds = 10, fold_assignment = "Modulo", 
+#  keep_cross_validation_predictions = TRUE, seed = 123, stopping_rounds = 50,
+#  stopping_metric = "RMSE", stopping_tolerance = 0
+#)
+
 # Train a stacked tree ensemble
 ensemble_tree <- h2o.stackedEnsemble(
-  x = X, y = Y, training_frame = train_h2o, model_id = "my_tree_ensemble",
-  base_models = list(best_glm, best_rf, best_gbm, best_xgb),
+  x = X, y = Y, training_frame = train_h2o, model_id = "my_tree_ensemble_01",
+  base_models = list(best_glm, best_rf, best_gbm),
   metalearner_algorithm = "drf"
 )
 ```
 
-```{r}
-get_rmse <- function(model) {
-  results <- h2o.performance(model, newdata = test_h2o)
-  results@metrics$RMSE
+### Local Interpretation
+
+Predictions using ensemble tree:
+
+```{r, local_predictions}
+
+# Compute predictions
+predictions <- predict(ensemble_tree, train_h2o) %>% as.vector()
+
+# Print the highest and lowest predicted sales price
+paste("Observation", which.max(predictions), 
+      "has a predicted sale price of", scales::dollar(max(predictions))) 
+
+paste("Observation", which.min(predictions), 
+      "has a predicted sale price of", scales::dollar(min(predictions)))  
+
+# Grab feature values for observations with min/max predicted sales price
+high_ob <- as.data.frame(train_h2o)[which.max(predictions), ] %>% select(-Sale_Price)
+low_ob  <- as.data.frame(train_h2o)[which.min(predictions), ] %>% select(-Sale_Price)
+```
+
+### Model specific vs. model agnostic
+
+```{r, model_features}
+
+# 1) create a data frame with just the features
+features <- as.data.frame(train_h2o) %>% select(-Sale_Price)
+
+# 2) Create a vector with the actual responses
+response <- as.data.frame(train_h2o) %>% pull(Sale_Price)
+
+# 3) Create custom predict function that returns the predicted values as a vector
+pred <- function(object, newdata)  {
+  results <- as.vector(h2o.predict(object, as.h2o(newdata)))
+  return(results)
 }
 
-list(best_glm, best_rf, best_glm, best_xgb) %>%
-  purrr::map_dbl(get_rmse)
+# Example of prediction output
+pred(ensemble_tree, features) %>% head()
 ```
 
-Stacked Results
-
-```{r}
-h2o.performance(ensemble_tree, newdata = test_h2o)@metrics$RMSE
-```
-
-```{r}
-data.frame(
-  GLM_pred = as.vector(h2o.getFrame(best_glm@model$cross_validation_holdout_predictions_frame_id$name)),
-  RF_pred = as.vector(h2o.getFrame(best_rf@model$cross_validation_holdout_predictions_frame_id$name)),
-  GBM_pred = as.vector(h2o.getFrame(best_gbm@model$cross_validation_holdout_predictions_frame_id$name)),
-  XGB_pred = as.vector(h2o.getFrame(best_xgb@model$cross_validation_holdout_predictions_frame_id$name))
-) %>% cor()
-```
-
-### Stacking a Search Grid
-
-```{r}
-# Define GBM hyperparameter grid
-hyper_grid <- list(
-  max_depth = c(1, 3, 5),
-  min_rows = c(1, 5, 10),
-  learn_rate = c(0.01, 0.05, 0.1),
-  learn_rate_annealing = c(0.99, 1),
-  sample_rate = c(0.5, 0.75, 1),
-  col_sample_rate = c(0.8, 0.9, 1)
+```{r, iml_dalex_components}
+# iml model agnostic object
+components_iml <- Predictor$new(
+  model = ensemble_tree, 
+  data = features, 
+  y = response, 
+  predict.fun = pred
 )
 
-# Define random grid search criteria
-search_criteria <- list(
-  strategy = "RandomDiscrete",
-  max_models = 25
-)
-
-# Build random grid search 
-random_grid <- h2o.grid(
-  algorithm = "gbm", grid_id = "gbm_grid", x = X, y = Y,
-  training_frame = train_h2o, hyper_params = hyper_grid,
-  search_criteria = search_criteria, ntrees = 5000, stopping_metric = "RMSE",
-  stopping_rounds = 10, stopping_tolerance = 0, nfolds = 10, 
-  fold_assignment = "Modulo", keep_cross_validation_predictions = TRUE,
-  seed = 123
+# DALEX model agnostic object
+components_dalex <- DALEX::explain(
+  model = ensemble_tree,
+  data = features,
+  y = response,
+  predict_function = pred
 )
 ```
 
-```{r}
-# Sort results by RMSE
-h2o.getGrid(
-  grid_id = "gbm_grid", 
-  sort_by = "rmse"
+### Permutation based feature importance
+
+Implementation
+
+```{r, vip_plot}
+
+vip(
+  ensemble_tree,
+  train = as.data.frame(train_h2o),
+  method = "permute",
+  target = "Sale_Price",
+  metric = "RMSE",
+  nsim = 5,
+  sample_frac = 0.5,
+  pred_wrapper = pred
+)
+
+```
+
+
+Partial dependence
+
+```{r, pdp_partial}
+
+# Compute partial dependence values
+
+pd_values <- partial(
+  ensemble_tree,
+  train = as.data.frame(train_h2o), 
+  pred.var = "Gr_Liv_Area",
+  pred.fun = function(object, newdata) {
+      results <- mean(as.vector(h2o.predict(object, as.h2o(newdata))))
+      return(results)
+    },
+  grid.resolution = 20
+)
+
+head(pd_values)  # take a peak
+
+# Partial dependence plot
+autoplot(pd_values, rug = TRUE, train = as.data.frame(train_h2o))
+```
+
+### Individual conditional expectation
+
+```{r, ice_curves}
+
+# Construct ICE curves
+ice_non_centered <- partial(
+  ensemble_tree,
+  train = as.data.frame(train_h2o), 
+  pred.var = "Gr_Liv_Area",
+  pred.fun = pred,
+  grid.resolution = 20
+) %>%
+  autoplot(alpha = 0.05, center = FALSE) +
+  ggtitle("A) Non-centered ICE curves")
+
+# Construct c-ICE curves
+ice_centered <- partial(
+  ensemble_tree,
+  train = as.data.frame(train_h2o), 
+  pred.var = "Gr_Liv_Area",
+  pred.fun = pred,
+  grid.resolution = 20
+) %>%
+  autoplot(alpha = 0.05, center = TRUE) +
+  ggtitle("B) Centered ICE curves")
+
+# Display plots side by side
+gridExtra::grid.arrange(ice_non_centered, ice_centered, ncol = 2)
+```
+
+Implementation
+
+### Feature interactions
+
+```{r, pdp_ice_curves}
+# Construct c-ICE curves
+partial(
+  ensemble_tree,
+  train = as.data.frame(train_h2o), 
+  pred.var = "Gr_Liv_Area",
+  pred.fun = pred,
+  grid.resolution = 20,
+  plot = TRUE,
+  center = TRUE,
+  plot.engine = "ggplot2"
 )
 ```
 
-```{r}
-# Grab the model_id for the top model, chosen by validation error
-best_model_id <- random_grid@model_ids[[1]]
-best_model <- h2o.getModel(best_model_id)
-h2o.performance(best_model, newdata = test_h2o)
+```{r, interactions}
+
+interact <- Interaction$new(components_iml)
+
+interact$results %>%
+  arrange(desc(.interaction)) %>%
+  head()
+
+plot(interact)
 ```
 
-```{r}
-# Train a stacked ensemble using the GBM grid
-ensemble <- h2o.stackedEnsemble(
-  x = X, y = Y, training_frame = train_h2o, model_id = "ensemble_gbm_grid",
-  base_models = random_grid@model_ids, metalearner_algorithm = "gbm"
+### Local interpretable model-agnostic explanations
+
+```{r, lime_explainer}
+
+# Create explainer object
+components_lime <- lime(
+  x = features,
+  model = ensemble_tree, 
+  n_bins = 10
 )
 
-# Eval ensemble performance on a test set
-h2o.performance(ensemble, newdata = test_h2o)
+class(components_lime)
+
+# Use LIME to explain previously defined instances: high_ob and low_ob
+lime_explanation <- lime::explain(
+  x = rbind(high_ob, low_ob), 
+  explainer = components_lime, 
+  n_permutations = 10,
+  dist_fun = "gower",
+  kernel_width = 0.25,
+  n_features = 10, 
+  feature_select = "highest_weights"
+)
+
+plot_features(lime_explanation, ncol = 1)
 ```
 
-### Auto ML
 
-```{r}
-# Use AutoML to find a list of candidate models (i.e., leaderboard)
-auto_ml <- h2o.automl(
-  x = X, y = Y, training_frame = train_h2o, nfolds = 5, 
-  max_runtime_secs = 60 * 120, max_models = 50,
-  keep_cross_validation_predictions = TRUE, sort_metric = "RMSE", seed = 123,
-  stopping_rounds = 50, stopping_metric = "RMSE", stopping_tolerance = 0
+### Tuning
+
+```{r, tuning}
+# Tune the LIME algorithm a bit
+lime_explanation2 <- explain(
+  x = rbind(high_ob, low_ob), 
+  explainer = components_lime, 
+  n_permutations = 5000,
+  dist_fun = "euclidean",
+  kernel_width = 0.75,
+  n_features = 10, 
+  feature_select = "lasso_path"
+)
+
+# Plot the results
+plot_features(lime_explanation2, ncol = 1)
+
+# Two-way PDP using iml
+interaction_pdp <- Partial$new(
+  components_iml, 
+  c("First_Flr_SF", "Overall_Qual"), 
+  ice = FALSE, 
+  grid.size = 20
+)
+
+labels <- interaction_pdp$results %>% filter(First_Flr_SF == max(First_Flr_SF))
+plot(interaction_pdp) + 
+  ggrepel::geom_label_repel(
+    data = labels, 
+    aes(label = Overall_Qual),
+    label.size = .05, 
+    label.padding = .15
+)
+
+# Construct c-ICE curves
+partial(
+  ensemble_tree,
+  train = as.data.frame(train_h2o), 
+  pred.var = "Gr_Liv_Area",
+  pred.fun = pred,
+  grid.resolution = 20,
+  plot = TRUE,
+  center = TRUE,
+  plot.engine = "ggplot2"
 )
 ```
 
+### Shapley values
+
 ```{r}
-# Assess the leader board; the following truncates the results to show the top 
-# 25 models. You can get the top model with auto_ml@leader
-auto_ml@leaderboard %>% 
-  as.data.frame() %>%
-  dplyr::select(model_id, rmse) %>%
-  dplyr::slice(1:25)
+# Compute (approximate) Shapley values
+(shapley <- Shapley$new(components_iml, x.interest = high_ob, sample.size = 1000))
+
+# Plot results
+plot(shapley)
+
+# Reuse existing object
+shapley$explain(x.interest = low_ob)
+
+# Plot results
+shapley$results %>%
+  top_n(25, wt = abs(phi)) %>%
+  ggplot(aes(phi, reorder(feature.value, phi), color = phi > 0)) +
+  geom_point(show.legend = FALSE)
 ```
 
-#### Clean-up
+#### Clean up
 
 ```{r}
 h2o.shutdown(prompt = FALSE)

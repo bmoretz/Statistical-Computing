@@ -119,24 +119,181 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ### 1
 
+You are invested in two hedge funds. The probability that hedge fund Alpha generates positive returns in a given year is 60%. The probability that hedge fund Omega generates positive returns in a given year is 70%. Assume the returns are independent.
+
+What is the probability that both funds generate positive returns in a given year?
+
+```{r}
+prob_up <- .6 * .7
+```
+
+__`r prob_up*100`%__
+
+What is the probability that both funds lose money?
+
+```{r}
+prob_down <- (1 - .6) * (1 - .7)
+```
+
+__`r prob_down*100`%__
+
 ### 2
+
+Corporation ABC issues $100 million of bonds. The bonds are rated BBB. The probability that the rating on the bonds is upgraded within the year is 8%. The probability of a drowngrade is 4%.
+
+What is the probability that the raiting remains unchanged?
+
+```{r}
+prob <- (1 - 0.08 - 0.04)
+```
+
+__`r prob*100`%__
 
 ### 3
 
+Stock XYZ has a 20% chance of losing more than 10% in a given month. There is also a 30% probability that XYZ gains more than 10%. What is the probability that stock XYZ either loses more than 10% or gains more than 10%?
+
+```{r}
+prob <- (.3 + .2)
+```
+
+__`r prob*100`%__
+
 ### 4
+
+There is a 30% chance that oil prices will increase over the next six months. If oil prices increase, there is a 60% chancee that the stock market will be down.
+
+What is the probability that oil prices increase and the stock market is down over the next 6 months?
+
+```{r}
+prob <- .3 * .6
+```
+
+__`r prob*100`%__
 
 ### 5
 
+Given the following density function:
+
+$f(x) = c(100 - x^2)$ for $-10 \le x \le 10$
+
+Calculate the value of c.
+
+$\int^{\infty}_{-\infty} f(x)dx = \int^{10}_{-10} c(100 - x^2)dx = c[100x - \frac{1}{3}x^3]^{10}_{-10}$
+
+$c = \frac{3}{4,000}$
+
 ### 6
+
+Given the following cumulative distribution function, $F(x)$, for $0 \le x \le 10$:
+
+$F(x) = \frac{x}{100}(20 - x)$
+
+Check that this is a valid CDF; that is, show that $F(0)$ and $F(1)$ = 1. 
+
+$F(x) = \frac{1}{5}x - \frac{x^2}{100}$
+
+For 0:
+
+$F(0) = \frac{1}{5}0 - \frac{0}{100}$
+
+$F(0) = 0$
+
+For 10:
+
+$F(10) = \frac{1}{5}10 - \frac{10^2}{100}$
+
+$F(10) = 2 - 1$
+
+$F(10) = 1$
+
+Calculate the probability density function, $f(x)$.
+
+$F^{-1}(x) = \frac{1}{50}(10 - x)$
 
 ### 7
 
+Given the probability density function, $f(x) = \frac{c}{x}$,
+
+Where $1 \le x \le e$. Calculate the cumulative distribution function, $F(x)$, and solve for the constant c.
+
+$F(x) = \int^x_1 f(t)dt = \int^x_1 \frac{c}{t}dt = c[ln(t)]^x_1 = c\ln x$
+
+
+$F(x) = ln \ x$
+
 ### 8
+
+You own two bonds. Both bonds have a 30% probability of defaulting. Their default probabilities are statistically independent.
+
+What is the probability that both bonds default?
+
+```{r}
+prob <- .3 * .3
+```
+
+P[both] = __`r prob*100`%__
+
+What is the probability that only one bond defaults?
+
+```{r}
+prob <- (1 - .3) * 2*.3
+```
+
+P[one defaults] = __`r prob*100`%__
+
+What is the probability that neither bond defaults?
+
+```{r}
+prob <- (1 - .3)*(1 - .3)
+```
+
+P[neither] = __`r prob*100`%__
 
 ### 9
 
+The following table gives a one-year rating transition matrix. Given a bond's rating now, the matrix gives the probability associated with the bond having a given rating in a year's time.
+
+```{r}
+ratings <- data.table(Grade = c("A", "B", "C", "D"), A = c(.9, .1, 0, 0), B = c(.08, .8, .25, 0), C = c(0.02 , 0.08, .6, 0), D = c(0, .02, .15, 1))
+
+pretty_kable(ratings, "Bond Transition Probabilities")
+```
+
+Given a B-rated bond, what is the probability that the bond default (D rating) over 1 year?
+
+```{r}
+prob <- 0.02
+```
+
+P[default] = __`r prob*100`%__
+
+What is the probability that the bond defaults over two years?
+
+```{r}
+prob <- .8 * .02 + .08*.15 + .02
+```
+
+P[default] = __`r prob*100`%__
+
 ### 10
 
-### 11
+Your firm forecasts that there is a 50% probability that the markets will be up significantly next year, a 20% probability that the market will be down significantly next year, and a 30% probability that the market will be flat, neither up or down significantly.
 
+You are asked to evaluate the prospects of a new portfolio manager. The manager has a long bias and is likely to perform better in an up market.
 
+Based on past data, you believe that the probability that the manager will be up if the market is up significantly is 80%, and that the probability that the manager will be up if the market is down significantly is only 10%.
+
+If the market is flat, the manager is just as likely to be up as to be down.
+
+What is the unconditional probability that the manager is up next year?
+
+$P[X_{up}] = P[X_{up} | M_{up}] * P[M_{up}] + P[X_{up} | M_{dn}] * P[M_{dn}] * P[X_{up}|M_{flat}] * P[M_{flat}]$
+
+$P[X_{up}]$ = 80% * 50% + 10% * 20% + 50% * 30%
+
+```{r}
+prob <- .8*.5 + .1*.2 + .5*.3
+```
+
+$P[X_{up}]$ = __`r prob*100`%__

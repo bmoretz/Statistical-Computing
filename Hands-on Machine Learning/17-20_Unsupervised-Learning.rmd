@@ -1,0 +1,587 @@
+
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Principal Component Analysis}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapters 17-20}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+library(ggmap, quietly = T, warn.conflicts = FALSE)
+library(rpart.plot, quietly = T, warn.conflicts = F)
+library(svmpath, quietly = T, warn.conflicts = F)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(h2o, quietly = TRUE, warn.conflicts = FALSE)
+library(forecast, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(kernlab, quietly = TRUE, warn.conflicts = FALSE)
+library(mlbench, quietly = TRUE, warn.conflicts = FALSE)
+
+library(vip, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(iml, quietly = TRUE, warn.conflicts = FALSE)
+library(DALEX, quietly = TRUE, warn.conflicts = FALSE)
+library(lime, quietly = TRUE, warn.conflicts = FALSE)
+
+# h2o Setup
+
+h2o.no_progress()
+h2o.init(strict_version_check = F)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Unsupervised Learning
+
+### Data Sets
+
+Attrition
+
+```{r, attrition_data}
+attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
+attrition_h2o <- as.h2o(attrition)
+
+churn <- initial_split(attrition, prop = .7, strata = "Attrition")
+
+churn_train <- training(churn)
+churn_test <- testing(churn)
+
+rm(churn)
+```
+
+Ames, Iowa housing data.
+
+```{r, ames_data}
+ames <- AmesHousing::make_ames()
+ames_h2o <- as.h2o(ames)
+
+set.seed(123)
+
+ames_split <- initial_split(ames, prop =.7, strata = "Sale_Price")
+
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+rm(ames_split)
+
+h2o.init(max_mem_size = "10g", strict_version_check = F)
+
+train_h2o <- as.h2o(ames_train)
+response <- "Sale_Price"
+predictors <- setdiff(colnames(ames_train), response)
+```
+
+Market Basket:
+
+```{r}
+url <- "https://koalaverse.github.io/homlr/data/my_basket.csv"
+
+my_basket <- readr::read_csv(url)
+
+dim(my_basket)
+```
+
+MNIST:
+
+```{r}
+mnist <- dslabs::read_mnist()
+```
+
+### Principal Components Analysis
+
+h2o PCA
+
+```{r}
+my_basket_h2o <- as.h2o(my_basket)
+
+# PCA
+my_pca <- h2o.prcomp(
+  training_frame = my_basket_h2o,
+  pca_method = "GramSVD",
+  k = ncol(my_basket_h2o),
+  transform = "STANDARDIZE",
+  impute_missing = T,
+  max_runtime_secs = 1000
+)
+```
+
+Loadings
+
+```{r}
+my_pca@model$eigenvectors %>%
+  as.data.frame() %>%
+  mutate(feature = row.names(.)) %>%
+  ggplot(aes(pc1, reorder(feature, pc1))) +
+  geom_point()
+```
+
+```{r}
+my_pca@model$eigenvectors %>%
+  as.data.frame() %>%
+  mutate(feature = row.names(.)) %>%
+  ggplot(aes(pc1, pc2, label = feature)) +
+  geom_text()
+```
+
+Eigenvalue Criterion
+
+```{r}
+eigen <- my_pca@model$importance["Standard deviation", ] %>%
+  as.vector() %>%
+  .^2
+
+sum(eigen)
+
+which(eigen >= 1)
+```
+
+Proportion of Variance Explained
+
+```{r}
+data.frame(
+  PC = my_pca@model$importance %>% seq_along(),
+  PVE = my_pca@model$importance %>% .[2,] %>% unlist(),
+  CVE = my_pca@model$importance %>% .[3,] %>% unlist()
+) %>%
+  tidyr::gather(metric, variance_explained, -PC) %>%
+  ggplot(aes(PC, variance_explained)) +
+  geom_point() +
+  facet_wrap( ~ metric, ncol = 1, scales = "free")
+```
+
+```{r}
+data.frame(
+  PC = my_pca@model$importance %>% seq_along,
+  PVE = my_pca@model$importance %>% .[2,] %>% unlist()
+) %>%
+  ggplot(aes(PC, PVE, group = 1, label = PC)) +
+  geom_point() +
+  geom_line() +
+  geom_text(nudge_y = 0.002)
+```
+
+## Generalized Low Rank Models
+
+h2o implementation
+
+```{r}
+basic_glrm <- h2o.glrm(
+  training_frame = my_basket_h2o,
+  k = 20,
+  loss = "Quadratic",
+  regularization_x = "None",
+  regularization_y = "None",
+  transform = "STANDARDIZE",
+  max_iterations = 2000,
+  seed = 123
+)
+
+summary(basic_glrm)
+
+plot(basic_glrm)
+```
+
+```{r}
+data.frame(
+  PC = basic_glrm@model$importance %>% seq_along(),
+  PVE = basic_glrm@model$importance %>% .[2,] %>% unlist(),
+  CVE = basic_glrm@model$importance %>% .[3,] %>% unlist()
+) %>%
+  gather(metric, variance_explained, -PC) %>%
+  ggplot(aes(PC, variance_explained)) +
+  geom_point() +
+  facet_wrap( ~ metric, ncol = 1, scales = "free")
+```
+
+```{r}
+t(basic_glrm@model$archetypes)[1:5, 1:5]
+```
+
+```{r}
+p1 <- t(basic_glrm@model$archetypes) %>%
+  as.data.frame() %>%
+  mutate(feature = row.names(.)) %>%
+  ggplot(aes(Arch1, reorder(feature, Arch1))) +
+  geom_point()
+
+p2 <- t(basic_glrm@model$archetypes) %>%
+  as.data.frame() %>%
+  mutate(feature = row.names(.)) %>%
+  ggplot(aes(Arch1, Arch2, label = feature)) +
+  geom_text()
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+```{r}
+k8_glrm <- h2o.glrm(
+  training_frame = my_basket_h2o,
+  k = 8,
+  loss = "Quadratic",
+  regularization_x = "None",
+  regularization_y = "None",
+  transform = "STANDARDIZE",
+  max_iterations = 2000,
+  seed = 123
+)
+
+my_reconstruction <- h2o.reconstruct(k8_glrm, my_basket_h2o,
+                                     reverse_transform = T)
+
+my_reconstruction[1:5, 1:4] %>% round(0)
+```
+
+```{r}
+# Use non-negative regularization
+k8_glrm_regularized <- h2o.glrm(
+  training_frame = my_basket_h2o,
+  k = 8, 
+  loss = "Quadratic",
+  regularization_x = "NonNegative", 
+  regularization_y = "NonNegative",
+  gamma_x = 0.5,
+  gamma_y = 0.5,
+  transform = "STANDARDIZE", 
+  max_iterations = 2000,
+  seed = 123
+)
+
+# Show predicted values
+predict(k8_glrm_regularized, my_basket_h2o)[1:5, 1:5]
+
+# Compare regularized versus non-regularized loss
+par(mfrow = c(1, 2))
+plot(k8_glrm)
+plot(k8_glrm_regularized)
+```
+
+```{r}
+# Split data into train & validation
+split <- h2o.splitFrame(my_basket_h2o, ratios = 0.75, seed = 123)
+train <- split[[1]]
+valid <- split[[2]]
+
+# Create hyperparameter search grid
+params <- expand.grid(
+  regularization_x = c("None", "NonNegative", "L1"),
+  regularization_y = c("None", "NonNegative", "L1"),
+  gamma_x = seq(0, 1, by = .25),
+  gamma_y = seq(0, 1, by = .25),
+  error = 0,
+  stringsAsFactors = FALSE
+)
+
+# Perform grid search
+for(i in seq_len(nrow(params))) {
+  
+  # Create model
+  glrm_model <- h2o.glrm(
+    training_frame = train,
+    k = 8, 
+    loss = "Quadratic",
+    regularization_x = params$regularization_x[i], 
+    regularization_y = params$regularization_y[i],
+    gamma_x = params$gamma_x[i],
+    gamma_y = params$gamma_y[i],
+    transform = "STANDARDIZE", 
+    max_runtime_secs = 1000,
+    seed = 123
+  )
+  
+  # Predict on validation set and extract error
+  validate <- h2o.performance(glrm_model, valid)
+  params$error[i] <- validate@metrics$numerr
+}
+
+# Look at the top 10 models with the lowest error rate
+params %>%
+  arrange(error) %>%
+  head(10)
+```
+
+```{r}
+# Apply final model with optimal hyperparamters
+final_glrm_model <- h2o.glrm(
+  training_frame = my_basket_h2o,
+  k = 8, 
+  loss = "Quadratic",
+  regularization_x = "L1", 
+  regularization_y = "NonNegative",
+  gamma_x = 1,
+  gamma_y = 0.25,
+  transform = "STANDARDIZE", 
+  max_iterations = 2000,
+  seed = 123
+)
+
+# New observations to score
+new_observations <- as.h2o(sample_n(my_basket, 2))
+
+# Basic scoring
+predict(final_glrm_model, new_observations) %>% round(0)
+```
+
+### Autoencoders
+
+```{r}
+# Convert mnist features to an h2o input data set
+features <- as.h2o(mnist$train$images)
+
+# Train an autoencoder
+ae1 <- h2o.deeplearning(
+  x = seq_along(features),
+  training_frame = features,
+  autoencoder = TRUE,
+  hidden = 2,
+  activation = 'Tanh',
+  sparse = TRUE
+)
+
+
+# Extract the deep features
+ae1_codings <- h2o.deepfeatures(ae1, features, layer = 1)
+ae1_codings
+```
+
+### Stacked Autoencoders
+
+```{r}
+# Hyperparameter search grid
+hyper_grid <- list(hidden = list(
+  c(50),
+  c(100), 
+  c(300, 100, 300),
+  c(100, 50, 100),
+  c(250, 100, 50, 100, 250)
+))
+
+# Execute grid search
+ae_grid <- h2o.grid(
+  algorithm = 'deeplearning',
+  x = seq_along(features),
+  training_frame = features,
+  grid_id = 'autoencoder_grid',
+  autoencoder = TRUE,
+  activation = 'Tanh',
+  hyper_params = hyper_grid,
+  sparse = TRUE,
+  ignore_const_cols = FALSE,
+  seed = 123
+)
+
+# Print grid details
+h2o.getGrid('autoencoder_grid', sort_by = 'mse', decreasing = FALSE)
+```
+
+Visualizing Reconstruction
+
+```{r}
+# Get sampled test images
+index <- sample(1:nrow(mnist$test$images), 4)
+sampled_digits <- mnist$test$images[index, ]
+colnames(sampled_digits) <- paste0("V", seq_len(ncol(sampled_digits)))
+
+# Predict reconstructed pixel values
+best_model_id <- ae_grid@model_ids[[1]]
+best_model <- h2o.getModel(best_model_id)
+reconstructed_digits <- predict(best_model, as.h2o(sampled_digits))
+names(reconstructed_digits) <- paste0("V", seq_len(ncol(reconstructed_digits)))
+
+combine <- rbind(sampled_digits, as.matrix(reconstructed_digits))
+
+# Plot original versus reconstructed
+par(mfrow = c(1, 3), mar=c(1, 1, 1, 1))
+layout(matrix(seq_len(nrow(combine)), 4, 2, byrow = FALSE))
+for(i in seq_len(nrow(combine))) {
+  image(matrix(combine[i, ], 28, 28)[, 28:1], xaxt="n", yaxt="n")
+}
+```
+
+```{r}
+ae100_codings <- h2o.deepfeatures(best_model, features, layer = 1)
+ae100_codings %>% 
+    as.data.frame() %>% 
+    tidyr::gather() %>%
+    summarize(average_activation = mean(value))
+```
+
+```{r}
+# Hyperparameter search grid
+hyper_grid <- list(sparsity_beta = c(0.01, 0.05, 0.1, 0.2))
+
+# Execute grid search
+ae_sparsity_grid <- h2o.grid(
+  algorithm = 'deeplearning',
+  x = seq_along(features),
+  training_frame = features,
+  grid_id = 'sparsity_grid',
+  autoencoder = TRUE,
+  hidden = 100,
+  activation = 'Tanh',
+  hyper_params = hyper_grid,
+  sparse = TRUE,
+  average_activation = -0.1,
+  ignore_const_cols = FALSE,
+  seed = 123
+)
+
+# Print grid details
+h2o.getGrid('sparsity_grid', sort_by = 'mse', decreasing = FALSE)
+```
+
+```{r}
+# Extract reconstruction errors
+(reconstruction_errors <- h2o.anomaly(best_model, features))
+
+# Plot distribution
+reconstruction_errors <- as.data.frame(reconstruction_errors)
+
+ggplot(reconstruction_errors, aes(Reconstruction.MSE)) +
+  geom_histogram(aes(fill = ..count..), bins = 30)
+
+```
+
+#### Clean up
+
+```{r}
+h2o.shutdown(prompt = FALSE)
+```
+
+```{r}
+# clean up
+rm(list = ls())
+```
+

@@ -1,0 +1,558 @@
+
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Clustering}
+   \rfoot{\color{headergrey}\thepage}
+   \lfoot{\color{headergrey}Chapters 17-20}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Hands-On Machine Learning}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+fig_width: 9
+fig_height: 3.5
+---
+
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 3.5)
+
+options(knitr.table.format = "latex")
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+# Data Wrangling
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(reshape2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+
+# Plotting / Graphics
+
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(visdat, quietly = TRUE, warn.conflicts = FALSE)
+library(ggrepel, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(png, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+library(ROCR, quietly = TRUE, warn.conflicts = FALSE)
+library(ggmap, quietly = T, warn.conflicts = FALSE)
+library(rpart.plot, quietly = T, warn.conflicts = F)
+library(svmpath, quietly = T, warn.conflicts = F)
+
+# Formatting / Markdown
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+# Feature Engineering
+library(recipes, quietly = TRUE, warn.conflicts = FALSE)
+
+# Utility
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+# Resampling & Modeling
+library(MASS, quietly = TRUE, warn.conflicts = FALSE)
+library(rsample, quietly = TRUE, warn.conflicts = FALSE)
+library(caret, quietly = TRUE, warn.conflicts = FALSE)
+library(pdp, quietly = TRUE, warn.conflicts = FALSE)
+
+library(cluster, quietly = TRUE, warn.conflicts = FALSE)
+library(factoextra, quietly = TRUE, warn.conflicts = FALSE)
+library(yardstick, quietly = TRUE, warn.conflicts = FALSE)
+library(NbClust, quietly = TRUE, warn.conflicts = FALSE)
+library(mclust, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+data.dir <- paste0(here::here(), "/Hands-On/data/")
+
+select <- dplyr::select # fix clash with MASS
+
+# Set global R options
+options(scipen = 999)
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Clustering
+
+### Data Sets
+
+Attrition
+
+```{r, attrition_data}
+attrition <- attrition %>% mutate_if(is.ordered, factor, order = F)
+
+churn <- initial_split(attrition, prop = .7, strata = "Attrition")
+
+churn_train <- training(churn)
+churn_test <- testing(churn)
+
+rm(churn)
+```
+
+Ames, Iowa housing data.
+
+```{r, ames_data}
+ames <- AmesHousing::make_ames()
+
+set.seed(123)
+
+ames_split <- initial_split(ames, prop =.7, strata = "Sale_Price")
+
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+rm(ames_split)
+
+response <- "Sale_Price"
+predictors <- setdiff(colnames(ames_train), response)
+```
+
+Market Basket:
+
+```{r}
+url <- "https://koalaverse.github.io/homlr/data/my_basket.csv"
+
+my_basket <- readr::read_csv(url)
+
+dim(my_basket)
+```
+
+MNIST:
+
+```{r}
+mnist <- dslabs::read_mnist()
+```
+
+```{r}
+data(geyser, package = 'MASS')
+```
+
+### K-means Clustering
+
+```{r}
+features <- mnist$train$images
+
+# Use k-means model with 10 centers and 10 random starts
+mnist_clustering <- kmeans(features, centers = 10, nstart = 10)
+
+# Print contents of the model output
+str(mnist_clustering)
+```
+
+```{r}
+# Extract cluster centers
+mnist_centers <- mnist_clustering$centers
+
+# Plot typical cluster digits
+par(mfrow = c(2, 5), mar=c(0.5, 0.5, 0.5, 0.5))
+layout(matrix(seq_len(nrow(mnist_centers)), 2, 5, byrow = FALSE))
+for(i in seq_len(nrow(mnist_centers))) {
+  image(matrix(mnist_centers[i, ], 28, 28)[, 28:1], 
+        col = gray.colors(12, rev = TRUE), xaxt="n", yaxt="n")
+}
+```
+
+```{r}
+# Create mode function
+mode_fun <- function(x){  
+  which.max(tabulate(x))
+}
+
+mnist_comparison <- data.frame(
+  cluster = mnist_clustering$cluster,
+  actual = mnist$train$labels
+) %>%
+  group_by(cluster) %>%
+  mutate(mode = mode_fun(actual)) %>%
+  ungroup() %>%
+  mutate_all(factor, levels = 0:9)
+
+# Create confusion matrix and plot results
+yardstick::conf_mat(
+  mnist_comparison, 
+  truth = actual, 
+  estimate = mode
+) %>%
+  autoplot(type = 'heatmap')
+```
+
+```{r}
+fviz_nbclust(
+  my_basket, 
+  kmeans, 
+  k.max = 25,
+  method = "wss",
+  diss = get_dist(my_basket, method = "spearman")
+)
+```
+
+# Mixed Data
+
+```{r}
+# Full ames data set --> recode ordinal variables to numeric
+ames_full <- AmesHousing::make_ames() %>%
+  mutate_if(str_detect(names(.), 'Qual|Cond|QC|Qu'), as.numeric)
+
+# One-hot encode --> retain only the features and not sale price
+full_rank  <- caret::dummyVars(Sale_Price ~ ., data = ames_full, 
+                               fullRank = TRUE)
+ames_1hot <- predict(full_rank, ames_full)
+
+# Scale data
+ames_1hot_scaled <- scale(ames_1hot)
+
+# New dimensions
+dim(ames_1hot_scaled)
+```
+
+```{r}
+set.seed(123)
+
+fviz_nbclust(
+  ames_1hot_scaled, 
+  kmeans, 
+  method = "wss", 
+  k.max = 25, 
+  verbose = FALSE
+)
+```
+
+```{r}
+# Original data minus Sale_Price
+ames_full <- AmesHousing::make_ames() %>% select(-Sale_Price)
+
+# Compute Gower distance for original data
+gower_dst <- daisy(ames_full, metric = "gower")
+```
+
+```{r}
+# You can supply the Gower distance matrix to several clustering algos
+pam_gower <- pam(x = gower_dst, k = 8, diss = TRUE)
+diana_gower <- diana(x = gower_dst, diss = TRUE)
+agnes_gower <- agnes(x = gower_dst, diss = TRUE)
+```
+
+```{r}
+fviz_nbclust(
+  ames_1hot_scaled, 
+  pam, 
+  method = "wss", 
+  k.max = 25, 
+  verbose = FALSE
+)
+```
+
+```{r}
+# k-means computation time on MNIST data
+system.time(kmeans(features, centers = 10))
+
+# CLARA computation time on MNIST data
+system.time(clara(features, k = 10))
+```
+
+### Hierachial Clustering
+
+```{r}
+ames_scale <- AmesHousing::make_ames() %>%
+  select_if(is.numeric) %>%  # select numeric columns
+  select(-Sale_Price) %>%    # remove target column
+  mutate_all(as.double) %>%  # coerce to double type
+  scale()                    # center & scale the resulting columns
+```
+
+```{r}
+# For reproducibility
+set.seed(123)
+
+# Dissimilarity matrix
+d <- dist(ames_scale, method = "euclidean")
+
+# Hierarchical clustering using Complete Linkage
+hc1 <- hclust(d, method = "complete" )
+```
+
+```{r}
+# For reproducibility
+set.seed(123)
+
+# Compute maximum or complete linkage clustering with agnes
+hc2 <- agnes(ames_scale, method = "complete")
+
+# Agglomerative coefficient
+hc2$ac
+```
+
+```{r}
+# methods to assess
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+# function to compute coefficient
+ac <- function(x) {
+  agnes(ames_scale, method = x)$ac
+}
+
+# get agglomerative coefficient for each linkage method
+purrr::map_dbl(m, ac)
+```
+
+```{r}
+# compute divisive hierarchical clustering
+hc4 <- diana(ames_scale)
+
+# Divise coefficient; amount of clustering structure found
+hc4$dc
+```
+
+### Optimal Clusters
+
+```{r}
+# Plot cluster results
+p1 <- fviz_nbclust(ames_scale, FUN = hcut, method = "wss", 
+                   k.max = 10) +
+  ggtitle("(A) Elbow method")
+p2 <- fviz_nbclust(ames_scale, FUN = hcut, method = "silhouette", 
+                   k.max = 10) +
+  ggtitle("(B) Silhouette method")
+p3 <- fviz_nbclust(ames_scale, FUN = hcut, method = "gap_stat", 
+                   k.max = 10) +
+  ggtitle("(C) Gap statistic")
+
+# Display plots side by side
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
+```
+
+```{r}
+# Construct dendorgram for the Ames housing example
+hc5 <- hclust(d, method = "ward.D2" )
+dend_plot <- fviz_dend(hc5)
+dend_data <- attr(dend_plot, "dendrogram")
+dend_cuts <- cut(dend_data, h = 8)
+fviz_dend(dend_cuts$lower[[2]])
+```
+
+```{r}
+# Ward's method
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+sub_grp <- cutree(hc5, k = 8)
+
+# Number of members in each cluster
+table(sub_grp)
+```
+
+```{r}
+# Plot full dendogram
+fviz_dend(
+  hc5,
+  k = 8,
+  horiz = TRUE,
+  rect = TRUE,
+  rect_fill = TRUE,
+  rect_border = "jco",
+  k_colors = "jco",
+  cex = 0.1
+)
+```
+
+```{r}
+dend_plot <- fviz_dend(hc5)                # create full dendogram
+dend_data <- attr(dend_plot, "dendrogram") # extract plot info
+dend_cuts <- cut(dend_data, h = 70.5)      # cut the dendogram at 
+                                           # designated height
+# Create sub dendrogram plots
+p1 <- fviz_dend(dend_cuts$lower[[1]])
+p2 <- fviz_dend(dend_cuts$lower[[1]], type = 'circular')
+
+# Side by side plots
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
+
+### Model-Based Clustering
+
+```{r}
+data(geyser, package = 'MASS')
+
+# Apply GMM model with 3 components
+geyser_mc <- Mclust(geyser, G = 3)
+
+par(mfrow = c(1, 2))
+# Plot results
+plot(geyser_mc, what = "density")
+plot(geyser_mc, what = "uncertainty")
+```
+
+```{r}
+# Observations with high uncertainty
+sort(geyser_mc$uncertainty, decreasing = TRUE) %>% head()
+```
+
+```{r}
+summary(geyser_mc)
+```
+
+```{r}
+geyser_optimal_mc <- Mclust(geyser)
+
+summary(geyser_optimal_mc)
+```
+
+```{r}
+my_basket_mc <- Mclust(my_basket, 1:20)
+
+summary(my_basket_mc)
+## ---------------------------------------------------- 
+## Gaussian finite mixture model fitted by EM algorithm 
+## ---------------------------------------------------- 
+## 
+## Mclust EEV (ellipsoidal, equal volume and shape) model with 6 components: 
+## 
+##  log-likelihood    n   df      BIC       ICL
+##        8308.915 2000 5465 -24921.1 -25038.38
+## 
+## Clustering table:
+##   1   2   3   4   5   6 
+## 391 403  75 315 365 451
+
+plot(my_basket_mc, what = 'BIC', 
+     legendArgs = list(x = "bottomright", ncol = 5))
+```
+
+```{r}
+probabilities <- my_basket_mc$z 
+colnames(probabilities) <- paste0('C', 1:6)
+
+probabilities <- probabilities %>%
+  as.data.frame() %>%
+  mutate(id = row_number()) %>%
+  tidyr::gather(cluster, probability, -id)
+
+ggplot(probabilities, aes(probability)) +
+  geom_histogram() +
+  facet_wrap(~ cluster, nrow = 2)
+```
+
+```{r}
+uncertainty <- data.frame(
+  id = 1:nrow(my_basket),
+  cluster = my_basket_mc$classification,
+  uncertainty = my_basket_mc$uncertainty
+)
+
+uncertainty %>%
+  group_by(cluster) %>%
+  filter(uncertainty > 0.25) %>%
+  ggplot(aes(uncertainty, reorder(id, uncertainty))) +
+  geom_point() +
+  facet_wrap(~ cluster, scales = 'free_y', nrow = 1)
+```
+
+```{r}
+cluster2 <- my_basket %>%
+  scale() %>%
+  as.data.frame() %>%
+  
+  mutate(cluster = my_basket_mc$classification) %>%
+  filter(cluster == 2) %>%
+  select(-cluster)
+
+cluster2 %>%
+  tidyr::gather(product, std_count) %>%
+  group_by(product) %>%
+  summarize(avg = mean(std_count)) %>%
+  ggplot(aes(avg, reorder(product, avg))) +
+  geom_point() +
+  labs(x = "Average standardized consumption", y = NULL)
+```
+
+#### Clean up
+
+```{r}
+# clean up
+rm(list = ls())
+```
+

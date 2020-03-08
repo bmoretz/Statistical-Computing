@@ -571,8 +571,8 @@ reconstruction_errors <- as.data.frame(reconstruction_errors)
 
 ggplot(reconstruction_errors, aes(Reconstruction.MSE)) +
   geom_histogram(aes(fill = ..count..), bins = 30)
-
 ```
+
 
 #### Clean up
 

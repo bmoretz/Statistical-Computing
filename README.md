@@ -7,9 +7,11 @@ Working Materials:
 
 <a href="https://sites.google.com/site/chiharahesterberg/">Mathematical Statistics with Resampling and R</a>
 
-<a href="http://computationalfinance.lsi.upc.edu/">Computational Finance: An Introductory Course with R</a>
+<a href="http://rdatasciencecases.org/Data.html">Data Science in R: A Case Studies Approach to Computational Reasoning and Problem Solving</a>
 
-<a href="https://www.crcpress.com/Basics-of-Matrix-Algebra-for-Statistics-with-R/Fieller/p/book/9781498712361">Basics of Matrix Algebra for Statistics with R</a>
+<a href="https://jameshoward.us/books/computational-methods-numerical-analysis-r/">Computational Methods for Numerical Analysis with R</a>
+
+<a href="https://www.crcpress.com/Statistical-Computing-with-R-Second-Edition/Rizzo/p/book/9781466553323">Statistical Computing with R</a>
 
 <hr/>
 

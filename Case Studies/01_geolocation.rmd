@@ -80,6 +80,8 @@ library(codetools, quietly = TRUE, warn.conflicts = FALSE)
 library(lattice, quietly = TRUE, warn.conflicts = FALSE)
 library(fields, quietly = TRUE, warn.conflicts = FALSE)
 
+library(rbenchmark, quietly = TRUE, warn.conflicts = FALSE)
+
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
 
@@ -612,10 +614,6 @@ selectTrain <- function(angleNewObs, signals, m) {
    reshapeSS(signals, varSignal = "avgSignal")
 }
 
-train130 <- selectTrain(130, offlineSummary, m = 3)
-
-dim(train130)
-
 findNN <- function(newSignal, trainSubset) {
    diffs <- apply(trainSubset[ , 4:9], 1,
                   function(x) x - newSignal)
@@ -624,21 +622,20 @@ findNN <- function(newSignal, trainSubset) {
    return(trainSubset[closest, 1:3 ])
 }
 
-predXY <- function(newSignals, newAngles, trainData,
+predXY <- function(newSignals, newAngles, trainData, 
                    numAngles = 1, k = 3) {
    
    closeXY <- list(length = nrow(newSignals))
    
    for(i in 1:nrow(newSignals)) {
       trainSS <- selectTrain(newAngles[i], trainData, m = numAngles)
-      closeXY[[i]] = 
-         findNN(newSignal = as.numeric(newSignals[i, ]), trainSS)
+      closeXY[[i]] <- findNN(newSignal = as.numeric(newSignals[i, ]),
+                             trainSS)
    }
    
-   estXY = lapply(closeXY,
-                  function(x) sapply(x[, 2:3],
+   estXY <- lapply(closeXY, function(x)
+                              sapply(x[, 2:3],
                                      function(x) mean(x[1:k])))
-   
    estXY <- do.call("rbind", estXY)
    
    return(estXY)
@@ -678,7 +675,7 @@ onlineCVSummary <- reshapeSS(offline,
                               keepVars = c("posXY", "posX", "posY", "angle"),
                               sampleAngle = T)
 
-onlineFold <- subset(onlineCVSummary,
+offlineFold <- subset(offlineSummary,
                      posXY %in% permuteLocs[ , 1])
 
 estFold <- predXY(newSignals = onlineFold[, 6:11],
@@ -744,31 +741,652 @@ ggplot(error_table, aes(K, Error, fill = -Error)) +
    geom_bar(stat = "identity")
 ```
 
-```{r}
-predXY <- function(newSignals, newAngles, trainData, numAngles = 1, k = 3) {
-   chooseXY <- list(length = nrow(newSignals))
-   
-   for(i in 1:nrow(newSignals)) {
-      trainSS <- selectTrain(newangles[i], trainData, m = numAngles)
-      closeXY[[i]] <- findNN(newSignal = as.numeric(newSignals[i, ]),
-                             trainSS)
-   }
-   
-   estXY <- lapply(closeXY, function(x)
-                              sapply(x[, 2:3],
-                                     function(x) mean(x[1:k])))
-   estXY <- do.call("rbind", estXY)
-   
-   return(XY)
-}
+### Further Analysis
 
-```
-
-### Follow-up
+### 1.)
 
 Write the code to read the raw training data into the data structure in the first approach described in section 1.2. That is, the data structure is a data frame with a column for each MAC address that detected a signal. For the column name, use the last two characters of the MAC address, or some other unique identifier.
 
 ```{r}
 
+file <- file_offline
+
+lines <- read_lines(file)
+
+valid_lines <- lines[ validLines(lines) ]
+
+parseLine <- function(line) {
+   
+   pairs <- strsplit(line, ";")
+   tokens <- lapply(pairs, function(x)strsplit(x, "="))
+   
+   mat <- matrix(unlist(tokens), ncol = 2, byrow = T)
+   
+   colnames <- mat[, 1]
+   values <- mat[, 2]
+   
+   dt <- data.table(t(values))
+   colnames(dt) <- colnames
+   
+   dt
+}
+
+rows <- lapply(valid_lines, parseLine)
+
+offline_alt <- rbindlist(rows, fill = T)
+
+head(offline_alt)
 ```
+
+### 2.)
+
+Compare the size of two data structures: the data frame created in Section 1.2 and the data frame created in the previous problem. 
+
++ Which uses less memory?
+
+```{r}
+object.size(offline)
+
+object.size(offline_alt)
+```
+
++ What are the dimensions of each?
+
+```{r}
+dim(offline)
+
+dim(offline_alt)
+```
+
++ How might this change with different numbers of devices in the building?
+
+_Columns will expand out drastically with more devices._
+
++ Different number of signals from the less commonly detected devices?
+
+_The more devices we have the more the columns in the alternative approach will be filled with NAs, thus bloating the object size significantly._
+
+### 3.)
+
+Compare the total time it takes to read the raw data and create the data frame, for the two approaches described in Section 1.2.
+
+```{r}
+file <- file_offline
+
+fn_read_data <- function(file, processFun, sample = F, samp.size = 100 ) {
+   start_time <- Sys.time()
+   
+   lines <- read_lines(file)
+   valid_lines <- lines[ validLines(lines) ]
+   
+   n <- length(valid_lines)
+   
+   if(sample) {
+      samp <- sample(n, samp.size, replace = F)
+      
+      valid_lines <- valid_lines[samp]
+   }
+   
+   res <- processFun(valid_lines) # throw away
+   
+   return(Sys.time() - start_time)
+}
+
+fn_read_data(file_offline, processLine)
+
+fn_read_data(file_offline, parseLine)
+```
+
+Do this for different size subsets of the data (chosen at random) and draw a curve of the time against input size for each of the approaches.
+
+```{r}
+sample_sizes <- seq( from = 100, to = 15000, by = 2000)
+
+times_classic <- sapply(sample_sizes, function(samp) {
+   fn_read_data(file_offline, processLine, sample = T, samp.size = samp)
+})
+
+times_alt <- sapply(sample_sizes, function(samp) {
+   fn_read_data(file_offline, parseLine, sample = T, samp.size = samp)
+})
+
+results <- data.table(N = sample_sizes, Classic = times_classic, alt = times_alt)
+
+ggplot(results) +
+   geom_line(aes(N, Classic), col = "darkblue") +
+   geom_line(aes(N, alt), col = "darkred")
+```
+
+Also, comment on the memory and speed for the two approaches.
+
+_The alt approach is substantially worse in all aspects._
+
+### 4.)
+
+Examine the time variable in the offline data. Any chance over time in the characteristics of the signal caused by, e.g., reduced battery power in the measuring devices as time goes by, or measurments taken on different days may be made by different people with different levels of accuracy. Also, examination of time can give insights into how the experiment was carried out. 
+
+Were the positions close to each other measured at similar times?
+
+Do you see any change in the signal strength variable or mean over time?
+
+Try controlling for other variables that might affect this relationship.
+
+```{r}
+
+offline_copy <- offline
+offline_copy$ts <- strftime(offline_copy$time, format="%H:%M:%S")
+offline_copy$ts_m <- strftime(offline_copy$time, format="%H:%M")
+offline_copy$ts_h <- strftime(offline_copy$time, format="%H")
+
+```
+
+```{r}
+ggplot(offline_copy, aes(ts, signal, fill = signal)) +
+   geom_bar(stat = "identity") +
+   scale_y_reverse()
+
+```
+
+```{r}
+ggplot(offline_copy, aes(ts_m, signal, fill = signal)) +
+   geom_bar(stat = "identity") +
+   scale_y_reverse()
+```
+
+```{r}
+ggplot(offline_copy, aes(ts_h, signal, fill = signal)) +
+   geom_bar(stat = "identity") +
+   scale_y_reverse()
+```
+
+### 5.)
+
+Write the readData function described in Section 1.3.4. The arguments to this function are the file name and the MAC address to retain, subKMacs. Determine whether these parameters should have default values or not. The return value is data frame described in section 1.3. Use the findGlobals() function available in _codetools_ to check that the function is not relying on any global variables.
+
+```{r}
+readData <- function(file, submacs = macs) {
+   
+   lines <- read_lines(file)
+   
+   valid_lines <- lines[ validLines(lines) ]
+   
+   processed_lines <- lapply(valid_lines, processLine)
+   
+   data <- as.data.table(do.call("rbind", processed_lines),
+                         stringsAsFactors = F)
+
+   names(data) <- c("time", "scanMac", "posX", "posY", "posZ",
+                       "orientation", "mac", "signal", 
+                       "channel", "type")
+   
+   numVars <- c("time", "posX", "posY", "posZ",
+                "orientation", "signal")
+
+   data[, (numVars) := lapply(.SD, as.numeric), .SDcols = numVars]
+
+   data <- data[ data$type == 3, ]
+   data[, type := NULL]
+   
+   data[, rawTime := time]
+   data[, time := time/1000]
+   class(data$time) = c("POSIXt", "POSIXct")
+   
+   # drop scanMac & posZ
+   data[, `:=`(scanMac = NULL, posZ = NULL)]
+   
+   data$angle = roundOrientation(data$orientation)
+   
+   data$channel = NULL
+   
+   data$posXY <- paste(data$posX, data$posY, sep = "-")
+   
+   return(data[mac %in% submacs])
+}
+```
+
+### 6.)
+
+In section 1.4.1 we calculated measures of center and location for the signal strenghts at each location x angle x access point combination (see  fig 1.9 for example).
+
+Another possible summary statistic we can calculate is the Kolmogorov-Smirnov test-statistic for normality. If the signal strenghts are roughtly normal, then we expect the p-values to have a uniform distribution. This leads to about 5% of the p-values for the 8000 tests to fall below 0.05.
+
+```{r}
+signalSummary <-
+   lapply(byLocAngleAP,
+          function(oneLoc) {
+             ans = oneLoc[1, ]
+             ans$medSignal = median(oneLoc$signal)
+             ans$avgSignal = mean(oneLoc$signal)
+             ans$num = length(oneLoc$signal)
+             ans$sdSignal = sd(oneLoc$signal)
+             ans$iqrSignal = IQR(oneLoc$signal)
+             ans
+          })
+
+offlineSigSummary <- do.call("rbind", signalSummary)
+
+breaks <- seq(-90, -30, by = 5)
+
+bwplot(sdSignal ~ cut(avgSignal, breaks = breaks),
+       data = offlineSummary,
+       subset = mac != "00:0f:a3:39:dd:cd",
+       xlab = "Mean Signal", ylab = "SD Signal")
+
+by_pos_angle_mac <- offlineSigSummary[, .(AvgSignal = mean(signal)), by = list(mac, angle, posXY)]
+
+with(by_pos_angle_mac, ks.test(AvgSignal, "pnorm")) # Kolmogorov-Smirnov test-statistic
+
+by_pos_angle <- offlineSigSummary[, .(AvgSignal = mean(signal)), by = list(angle, posXY)]
+
+with(by_pos_angle, ks.test(AvgSignal, "pnorm")) # Kolmogorov-Smirnov test-statistic
+
+by_mac <- offline[, .(AvgSignal = mean(signal)), by = list(mac)]
+
+with(by_mac, ks.test(AvgSignal, "pnorm")) # Kolmogorov-Smirnov test-statistic
+
+```
+
+### 7.)
+
+Write the surfaceSS() function that creates plots such as those in Figure 1.10. This function takes 3 arguments: data for the offline summary data frame, mafc and angle. The parameters mac and angle are used to specify which MAC address and angle are to be selected from the data for smoothing and plotting.
+
+```{r}
+
+reshapeSS <- function(data, 
+                      varSignal = "signal",
+                      keepVars = c("posXY", "posX", "posY"),
+                      sampleAngle = F) {
+   
+   if(sampleAngle)
+      data <- data[angle == sample(data$angle, size = 1), ]
+   
+   byLocation <- with(data,
+                 by(data, list(posXY),
+                    function(x) {
+                       ans <- x[1, ..keepVars]
+                       avgSS <- tapply(x$signal, x$mac, mean)
+                       y = matrix(avgSS, nrow = 1, dimnames = list(ans$posXY, names(avgSS)))
+                       cbind(ans, y)
+                    }))
+   
+   newDataSS <- do.call("rbind", byLocation)
+   
+   col_names <- colnames(newDataSS)
+   to_change <- !(col_names %in% keepVars)
+   
+   n_cols <- length(col_names)
+   start <- length(keepVars)
+   
+   colnames(newDataSS)[to_change] <- sapply(col_names[to_change], function(col) {
+      n <- nchar(col)
+      substr(col, n - 2, n)
+   })
+   
+   newDataSS[, start:ncol(newDataSS)] <- round(newDataSS[, start:ncol(newDataSS)])
+   
+   return(newDataSS)
+}
+
+```
+
+### 8.)
+
+Consider the scatter plots in Figure 1.11. There appear to be curvature in the signal strength-distance relationship. Does a log transformation improve this relationship, i.e., make it linear? 
+
+```{r}
+
+offlineSummary$dist <- sqrt(diffs[, 1]^2 + diffs[, 2]^2)
+offlineSummary$log_dist <- log(offlineSummary$dist)
+
+xyplot(signal ~ dist | factor(mac) + factor(angle),
+       data = offlineSummary, pch = 19, cex = 0.3,
+       xlab = "distance")
+
+xyplot(signal ~ log_dist | factor(mac) + factor(angle),
+       data = offlineSummary, pch = 19, cex = 0.3,
+       xlab = "log distance")
+
+xyplot(signal ~ log_dist | factor(mac) + factor(angle),
+       data = offlineSummary[angle == 315], pch = 19, cex = 0.3,
+       xlab = "log distance")
+
+xyplot(signal ~ dist | factor(mac) + factor(angle),
+       data = offlineSummary[angle == 315], pch = 19, cex = 0.3,
+       xlab = "distance")
+```
+
+_The log transform removes a bit of the curvature, but not a great deal._
+
+
+### 9.)
+
+The floor plan for the building (see Figure 1.1) shows 65 access points. However, the data contain 7 access points with roughly the expected number of signals (166 locations x 8 orientations x 100 replications = 146,080 measurments).
+
+With the signal strength seen in the heat maps of Figure 1.10), we matched the access points to the corresponding MAC addresses. However, two of the MAC addresses seem to be for the same access point 00:0f:a3:39:e1:c0 and to eliminate the 00:0f:a3:39:dd:cd address.
+
+Conduct a more thorough data analysis into these two MAC addresses. Did we make the correct decision? Does swapping out the one we kept for the one we discarded improve the prediction?
+
+```{r}
+
+subMacs <- names(sort(table(offline$mac), decreasing = T)) # all sub macs
+
+angles <- seq(0, by = 45, length = 8) # all angles
+
+surfaceSS <- function(data, filter_mac, filter_angle) {
+   oneAPAngle <- data[mac == filter_mac & angle == filter_angle]
+
+   smothSS <- Tps(oneAPAngle[, c("posX", "posY")],
+                  oneAPAngle$avgSignal)
+   
+   vizSmooth <- predictSurface(smothSS)
+   
+   plot.surface(vizSmooth, type = "C")
+   points(oneAPAngle$posX, oneAPAngle$posY, pch=19, cex = 0.5)
+}
+
+```
+
+```{r}
+surfaceSS(offlineSummary, subMacs[1], angles[1])
+surfaceSS(offlineSummary, subMacs[1], angles[5])
+surfaceSS(offlineSummary, subMacs[1], angles[7])
+
+```
+
+```{r}
+surfaceSS(offlineSummary, subMacs[3], angles[2])
+surfaceSS(offlineSummary, subMacs[3], angles[5])
+surfaceSS(offlineSummary, subMacs[3], angles[7])
+
+```
+
+```{r}
+surfaceSS(offlineSummary, subMacs[4], angles[2])
+surfaceSS(offlineSummary, subMacs[4], angles[5])
+surfaceSS(offlineSummary, subMacs[4], angles[7])
+```
+
+```{r}
+surfaceSS(offlineSummary, subMacs[5], angles[2])
+surfaceSS(offlineSummary, subMacs[5], angles[5])
+surfaceSS(offlineSummary, subMacs[5], angles[7])
+
+```
+
+```{r}
+surfaceSS(offlineSummary, subMacs[6], angles[2])
+surfaceSS(offlineSummary, subMacs[6], angles[5])
+surfaceSS(offlineSummary, subMacs[6], angles[7])
+```
+
+### 10.)
+
+Write the selectTrain() function described in Section 1.5.2. This function has 3 parameters: angleNewObs, the angle of the new observation, signals, the training data, i.e., data in the format of offlineSummary; and m, the number of angles to include from signals.
+
+The function returns a data frame that matches trainSS, i.e., selectTrain() calls reshapeSS().
+
+```{r}
+reshapeSS <- function(data, 
+                      varSignal = "signal",
+                      keepVars = c("posXY", "posX", "posY"),
+                      sampleAngle = F) {
+   
+   if(sampleAngle)
+      data <- data[angle == sample(data$angle, size = 1), ]
+   
+   byLocation <- with(data,
+                 by(data, list(posXY),
+                    function(x) {
+                       ans <- x[1, ..keepVars]
+                       avgSS <- tapply(x$signal, x$mac, mean)
+                       y = matrix(avgSS, nrow = 1, dimnames = list(ans$posXY, names(avgSS)))
+                       cbind(ans, y)
+                    }))
+   
+   newDataSS <- do.call("rbind", byLocation)
+   
+   col_names <- colnames(newDataSS)
+   to_change <- !(col_names %in% keepVars)
+   
+   n_cols <- length(col_names)
+   start <- length(keepVars)
+   
+   colnames(newDataSS)[to_change] <- sapply(col_names[to_change], function(col) {
+      n <- nchar(col)
+      substr(col, n - 2, n)
+   })
+   
+   newDataSS[, start:ncol(newDataSS)] <- round(newDataSS[, start:ncol(newDataSS)])
+   
+   return(newDataSS)
+}
+```
+
+### 11.)
+
+We use Euclidean distance to find the distance between the signal strength vectors. However, Euclidean distance is not robust in taht it is sensitive to outliers. Consider other metrics such as the $L_1$ distance, i.e., the absolute value of the difference. Modify the findNN() functions in sections 1.5.3 to use this alternative distance.
+
+```{r}
+
+findNN_l1 <- function(newSignal, trainSubset) {
+   diffs <- apply(trainSubset[ , 4:9], 1,
+                  function(x) abs(x - newSignal))
+   dists <- apply(diffs, 2, function(x) sum(x))
+   closest <- order(dists)
+   return(trainSubset[closest, 1:3 ])
+}
+
+predXY_l1 <- function(newSignals, newAngles, trainData,
+                   numAngles = 1, k = 3) {
+   
+   closeXY <- list(length = nrow(newSignals))
+   
+   for(i in 1:nrow(newSignals)) {
+      trainSS <- selectTrain(newAngles[i], trainData, m = numAngles)
+      
+      closeXY[[i]] = 
+         findNN_l1(newSignal = as.numeric(newSignals[i, ]), trainSS)
+   }
+   
+   estXY = lapply(closeXY,
+                  function(x) sapply(x[, 2:3],
+                                     function(x) mean(x[1:k])))
+   
+   estXY <- do.call("rbind", estXY)
+   
+   return(estXY)
+}
+
+estXYk1_l1 <- predXY_l1(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 1)
+
+estXYk3_l1 <- predXY_l1(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 3)
+
+estXYk5_l1 <- predXY_l1(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 5)
+
+error_table <- data.table(K = c(1, 3, 5), 
+                          Error = c(calcError(estXYk1, actualXY), 
+                                    calcError(estXYk3, actualXY), 
+                                    calcError(estXYk5, actualXY)),
+                          Method = "Euclidean")
+
+error_table_l1 <- data.table(K = c(1, 3, 5),
+                          Error = c(calcError(estXYk1_l1, actualXY), 
+                                    calcError(estXYk3_l1, actualXY), 
+                                    calcError(estXYk5_l1, actualXY)),
+                          Method = "Manhattan")
+
+errors_combined <- rbind(error_table, error_table_l1)
+
+ggplot(errors_combined) +
+   geom_bar(aes(K, Error, fill = -Error), stat = "identity") +
+   facet_wrap(~Method) +
+   coord_flip()
+
+```
+
+Does it improve predictions?
+
+_Euclidean seems to perform better._
+
+
+### 12.) 
+
+To predict locaiton, we use the k nearest neighbors to a set of signal strenghts. We average the known (x, y) values for these neighbors. However, a better predictor might be a weighted average, wehre the weights are inversely proportional to the "distance" (in signal strength) from the test observation. This allows us to include the k points that are close, but to differentiate between them by how close they actually are.
+
+The weights might be:
+
+$\frac{1/d_i}{\sum^{k}_{i=1}1/d_i}$
+
+for the i-th closest neighboring observation where $d_i$ is the distance from our new test point to this reference point (in signal strength space).
+
+Implement this alternative prediciton method.
+
+```{r}
+
+predXY_weighted <- function(newSignals, newAngles, trainData,
+                   numAngles = 1, k = 3) {
+   
+   closeXY <- list(length = nrow(newSignals))
+   
+   for(i in 1:nrow(newSignals)) {
+      trainSS <- selectTrain(newAngles[i], trainData, m = numAngles)
+      
+      closeXY[[i]] = 
+         findNN(newSignal = as.numeric(newSignals[i, ]), trainSS)
+   }
+   
+   estXY = lapply(closeXY,
+               function(x) sapply(x[, 2:3],
+                                  function(x) {
+                                     points <- x[1:k]
+                                     
+                                     if(k > 1) {
+                                        weights <- points/sum(points)
+                                        
+                                        return(sum(points * weights))
+                                     } else {
+                                        return(points)
+                                     }
+                                  }))
+   
+   estXY <- do.call("rbind", estXY)
+   
+   return(estXY)
+}
+
+estXYk10 <- predXY(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 10)
+
+estXYk1_weighted <- predXY_weighted(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 1)
+
+estXYk3_weighted <- predXY_weighted(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 3)
+
+estXYk5_weighted <- predXY_weighted(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 5)
+
+estXYk10_weighted <- predXY_weighted(newSignals = onlineSummary[, 6:11],
+                  newAngles = onlineSummary[, 4],
+                  offlineSummary, numAngles = 3, k = 10)
+
+error_table <- data.table(K = c(1, 3, 5, 10),
+                          Error = c(calcError(estXYk1, actualXY), 
+                                    calcError(estXYk3, actualXY), 
+                                    calcError(estXYk5, actualXY),
+                                    calcError(estXYk10, actualXY)),
+                          Method = "Mean")
+
+error_table_weighted <- data.table(K = c(1, 3, 5, 10),
+                          Error = c(calcError(estXYk1_weighted, actualXY), 
+                                    calcError(estXYk3_weighted, actualXY), 
+                                    calcError(estXYk5_weighted, actualXY),
+                                    calcError(estXYk10_weighted, actualXY)),
+                          Method = "Weighted Avg.")
+
+errors_combined <- rbind(error_table, error_table_weighted)
+
+ggplot(errors_combined) +
+   geom_bar(aes(K, Error, fill = -Error), stat = "identity") +
+   facet_wrap(~Method) +
+   coord_flip()
+
+errors_combined
+```
+
+Does this improve the predictions?
+
+_The weighted avg approach is of course identical in the base case (k=1), however, it performs slightly worse than the simple average in the k=3 and k=5 cases. I even upped k to 10 (the best CV k), and we still see simple average beats the weighted approach._
+
+### 13.)
+
+In Section 1.5.4 we used cross-validation to choose k, the number of neighbors. Another parameter to choose is the number of angles at which the signal strength was measured.
+
+Use cross-validation to select this value.
+
+Also, consider N + K cross-validation pairs.
+
+```{r}
+
+v <- 11 # n-folds
+N <- 8 # num angles
+K <- 20 # also choose k
+
+nk_err <- matrix(rep(0, N * K), nrow = N, ncol = K)
+
+for(j in 1:v) {
+   onlineFold <- subset(onlineCVSummary,
+                        posXY %in% permuteLocs[, j])
+   offlineFold <- subset(offlineSummary,
+                         posXY %in% permuteLocs[ , -j])
+   
+   actualFold <- onlineFold[, c("posX", "posY")]
+   
+   for(k in 1:K) {
+      for(n in 1:N) {
+         estFold <- predXY(newSignals = onlineFold[, 6:11],
+                           newAngles = onlineFold[, 4],
+                           offlineFold, numAngles = n, k = k)
+         
+         nk_err[n, k] <- calcError(estFold, actualFold)
+      }
+   }
+}
+
+nk_err
+
+which(nk_err == min(nk_err), arr.ind = TRUE)
+
+head(order(nk_err))
+
+# 1, 6
+# 1, 5
+# 1, 7
+# 4, 8
+
+n_take <- 20
+cv_results <- data.table(nk_err)[, 1:n_take]
+colnames(cv_results) <- sapply(1:n_take, function(x) {paste0("k=", x)})
+cv_results[, Angles := .I]
+
+min_cv <- which(nk_err == min(nk_err), arr.ind = TRUE)
+
+cv_results_flat <- melt(cv_results, id.vars = "Angles")
+
+ggplot(cv_results_flat, aes(variable, value, group = Angles)) +
+   geom_line(aes(col = Angles)) +
+   labs("K, N Cross-Validation Results")
+```
+
+The cross-validation of both N and K yield the optimal N at _1_ and K at _6_. 4 of the top 5 CV results have _N=1_.
 

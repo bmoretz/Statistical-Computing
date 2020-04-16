@@ -443,7 +443,7 @@ bwplot(sdSignal ~ cut(avgSignal, breaks = breaks),
        xlab = "Mean Signal", ylab = "SD Signal")
 ```
 
-```{r}
+```{r, fig.height=8}
 with(offlineSummary,
      smoothScatter((avgSignal - medSignal) ~ num,
                    xlab = "Number of Observations",
@@ -615,10 +615,14 @@ selectTrain <- function(angleNewObs, signals, m) {
 }
 
 findNN <- function(newSignal, trainSubset) {
+
    diffs <- apply(trainSubset[ , 4:9], 1,
                   function(x) x - newSignal)
+   
    dists <- apply(diffs, 2, function(x) sqrt(sum(x^2)) )
+   
    closest <- order(dists)
+   
    return(trainSubset[closest, 1:3 ])
 }
 
@@ -629,13 +633,16 @@ predXY <- function(newSignals, newAngles, trainData,
    
    for(i in 1:nrow(newSignals)) {
       trainSS <- selectTrain(newAngles[i], trainData, m = numAngles)
-      closeXY[[i]] <- findNN(newSignal = as.numeric(newSignals[i, ]),
+      
+      sigValues <- suppressWarnings({ as.numeric(newSignals[i, ]) })
+      
+      closeXY[[i]] <- findNN(newSignal = sigValues,
                              trainSS)
    }
    
    estXY <- lapply(closeXY, function(x)
                               sapply(x[, 2:3],
-                                     function(x) mean(x[1:k])))
+                                     function(x) mean(x[1:k], na.rm = T)))
    estXY <- do.call("rbind", estXY)
    
    return(estXY)
@@ -1086,34 +1093,30 @@ surfaceSS <- function(data, filter_mac, filter_angle) {
 
 ```
 
-```{r}
+```{r, fig.height=4}
 surfaceSS(offlineSummary, subMacs[1], angles[1])
-surfaceSS(offlineSummary, subMacs[1], angles[5])
 surfaceSS(offlineSummary, subMacs[1], angles[7])
 
 ```
 
-```{r}
+```{r, fig.height=4}
 surfaceSS(offlineSummary, subMacs[3], angles[2])
-surfaceSS(offlineSummary, subMacs[3], angles[5])
 surfaceSS(offlineSummary, subMacs[3], angles[7])
 
 ```
 
-```{r}
+```{r, fig.height=4}
 surfaceSS(offlineSummary, subMacs[4], angles[2])
-surfaceSS(offlineSummary, subMacs[4], angles[5])
 surfaceSS(offlineSummary, subMacs[4], angles[7])
 ```
 
-```{r}
+```{r, fig.height=4}
 surfaceSS(offlineSummary, subMacs[5], angles[2])
-surfaceSS(offlineSummary, subMacs[5], angles[5])
 surfaceSS(offlineSummary, subMacs[5], angles[7])
 
 ```
 
-```{r}
+```{r, fig.height=6}
 surfaceSS(offlineSummary, subMacs[6], angles[2])
 surfaceSS(offlineSummary, subMacs[6], angles[5])
 surfaceSS(offlineSummary, subMacs[6], angles[7])
@@ -1339,8 +1342,8 @@ Also, consider N + K cross-validation pairs.
 ```{r}
 
 v <- 11 # n-folds
-N <- 8 # num angles
-K <- 20 # also choose k
+N <- 6 # num angles
+K <- 10 # also choose k
 
 nk_err <- matrix(rep(0, N * K), nrow = N, ncol = K)
 
@@ -1374,7 +1377,7 @@ head(order(nk_err))
 # 1, 7
 # 4, 8
 
-n_take <- 20
+n_take <- 10
 cv_results <- data.table(nk_err)[, 1:n_take]
 colnames(cv_results) <- sapply(1:n_take, function(x) {paste0("k=", x)})
 cv_results[, Angles := .I]
@@ -1386,6 +1389,7 @@ cv_results_flat <- melt(cv_results, id.vars = "Angles")
 ggplot(cv_results_flat, aes(variable, value, group = Angles)) +
    geom_line(aes(col = Angles)) +
    labs("K, N Cross-Validation Results")
+
 ```
 
 The cross-validation of both N and K yield the optimal N at _1_ and K at _6_. 4 of the top 5 CV results have _N=1_.

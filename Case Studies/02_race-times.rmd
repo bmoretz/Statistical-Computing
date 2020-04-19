@@ -61,6 +61,7 @@ options(knitr.table.format = "latex")
 ```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(scales, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -127,8 +128,333 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ### The Raw Data
 
+data is pre-processed from the web in \02_data.r
+
 ```{r}
 
+read_results <- function(class, year) {
+   
+   folder <- ifelse(class == "men", "men_txt", "women_txt")
+   file <- file.path(data.dir, folder, paste(year, ".txt", sep = ""))
+   return(readLines(file))
+}
+
+```
+
+### Race Results Preprocessing
+
+```{r}
+
+els <- read_results("men", 2006)
+
+eqIndex <- grep("^===", els)
+eqIndex
+
+spacerRow <- els[eqIndex]
+headerRow <- els[eqIndex - 1]
+body <- els[ -(1:eqIndex) ]
+
+headerRow <- tolower(headerRow)
+
+timeStart <- regexpr("net", headerRow)
+time <- substr(body, start = timeStart, stop = timeStart + 1)
+
+ageStart <- regexpr("ag", headerRow)
+
+age <- substr(body, start = ageStart, stop = ageStart + 1)
+head(age)
+
+summary(as.numeric(age))
+
+blankLocs <- gregexpr(" ", spacerRow)
+blankLocs
+
+searchLocs <- c(0, blankLocs[[1]])
+
+Values <- mapply(substr, list(body),
+                 start = searchLocs[ -length(searchLocs)] + 1,
+                 stop = searchLocs[ -1 ] - 1)
+
+findColLocs <- function(spacerRow) {
+   spaceLocs <- gregexpr(" ", spacerRow)[[1]]
+   rowLength <- nchar(spacerRow)
+   
+   if(substring(spacerRow, rowLength, rowLength + 1) != " ")
+      return(c(0, spaceLocs, rowLength + 1))
+   else
+      return(c(0, spaceLocs))
+}
+
+findColLocs(spacerRow)
+name <- "home"
+colnames <- c("name", "home", "ag", "gun", "net", "time")
+
+colIndex <- which(colnames == name)
+
+startPos <- regexpr(name, headerRow)[[1]]
+
+#
+# can we modify select cols to short circuit on matching w/o spaces?
+#######
+
+selectCols =
+   function(colNames, headerRow, searchLocs)
+   {
+      sapply(colNames,
+             function(name, headerRow, searchLocs)
+            {
+               startPos <- regexpr(name, headerRow)[[1]]
+               
+               if(startPos == -1)
+                  return( c(NA, NA) )
+               
+               index <- sum(startPos >= searchLocs)
+               
+               c(searchLocs[index] + 1, searchLocs[index + 1])
+            },
+      headerRow = headerRow, searchLocs = searchLocs)
+   }
+
+searchLocs <- findColLocs(spacerRow)
+loc <- selectCols("home", headerRow, searchLocs)
+vars <- mapply(substr, list(body), start = loc[1,], stop = loc[2, ])
+
+summary(as.numeric(ages))
+
+shortColNames <- c("name", "home", "ag", "gun", "net", "time")
+
+locCols <- selectCols(shortColNames, headerRow, searchLocs)
+Values <- mapply(substr, list(body), start = locCols[1, ],
+                 stop = locCols[2, ])
+
+class(Values)
+
+colnames(Values) = shortColNames
+
+head(Values)
+tail(Values)[, 1:3]
+```
+
+```{r}
+years <- 1999:2012
+
+res <- sapply(years, FUN = function(year){
+   
+   print(paste("loading year...", year))
+   
+   file <- read_results("men", year)
+   
+   parsed <- extractVariables(file)
+})
+
+file <- read_results("men", 2006)
+m2006 <- extractVariables(file)
+
+age <- m2006[, "home"]
+
+sum(is.na(age))
+
+n <- length(file)
+
+file[n]
+
+m2001$ag
+
+extractVariables =
+   function(file, varNames = c("name", "home", "ag", "gun", "net", "time"))
+   {
+      # Find the index of the row with =s
+      eqIndex <- grep("^===", file)
+      spacerRow <- file[eqIndex]
+      headerRow <- tolower(file[ eqIndex - 1 ])
+      body <- file[ -(1 : eqIndex) ]
+      
+      blank <- grep("^[[:blank:]]*$", body)
+      footnote <- grep("^[^\\s]*[\\*]*[#]", body)
+      ignore <- union(blank, footnote)
+      
+      if(length(ignore))
+         body <- body[-ignore]
+      
+      # Obtain the starting and ending positions of variables
+      searchLocs <- findColLocs(spacerRow)
+      locCols <- selectCols(varNames, headerRow, searchLocs)
+      
+      Values <- mapply(substr, list(body), start = locCols[1, ],
+                       stop = locCols[2, ])
+      colnames(Values) <- varNames
+      
+      invisible(Values)
+   }
+
+load_data <- function(class) {
+   folder <- ifelse(class == "men", "men_txt", "women_txt")
+   filenames <- file.path(data.dir, paste(folder, "/", 1999:2012, ".txt", sep = ""))
+   files <- lapply(filenames, readLines)
+   names(files) <- 1999:2012
+   
+   mat <- lapply(files, extractVariables)
+   
+   return(mat)
+}
+
+mfilenames <- file.path(data.dir, paste("men_txt/", 1999:2012, ".txt", sep = ""))
+menFiles <- lapply(mfilenames, readLines)
+names(menFiles) <- 1999:2012
+
+menResMat <- lapply(menFiles, extractVariables)
+
+length(menResMat)
+sapply(menResMat, nrow)
+```
+
+### Data Cleaning and Reformatting Variables
+
+```{r}
+menResMat <- load_data("men"); womenResMat <- load_data("women")
+
+length(menResMat)
+sapply(menResMat, nrow)
+
+length(womenResMat)
+sapply(womenResMat, nrow)
+```
+
+Age Validation
+
+```{r}
+age <- as.numeric(menResMat[['2012']][, 'ag'])
+
+tail(age)
+
+age <- sapply(menResMat,
+              function(x) as.numeric(x[, "ag"]))
+
+age_values <- plyr::ldply(age, data.frame)
+colnames(age_values) <- c("Year", "Age")
+
+ggplot(age_values, aes(Age)) +
+   geom_histogram(aes(fill = ..count..), bins = 30)
+
+ggplot(age_values, aes(Year, Age)) +
+   geom_boxplot(aes(fill = Year)) +
+   labs(title = "Age By Race Year")
+```
+
+```{r}
+sapply(age, function(x) sum(is.na(x)))
+
+file2001 <- read_results("men", 2001)
+age2001 <- as.numeric(extractVariables(file2001)[, "ag"])
+
+badAgeIndex <- which(is.na(age2001)) + 5
+
+file2001[badAgeIndex]
+
+badAgeIndex
+
+blanks <- grep("^[[:blank:]]*$", file2001)
+blanks
+
+which(age2001 < 5)
+
+file2001[which(age2001 < 5)]
+
+
+file <- read_results("men", 2001)
+data <- extractVariables(file)
+age <- as.numeric(data[, "ag"])
+
+sum(age < 5)
+
+which(age == 0)
+
+data[which(age == 0)]
+
+```
+
+### Time Validation
+
+```{r}
+file2002 <- read_results("men", 2012)
+
+charTime <- menResMat[["2012"]][, "time"]
+
+head(charTime)
+tail(charTime)
+
+timePieces <- strsplit(charTime, ":")
+
+timePieces[[1]]
+tail(timePieces, 1)
+
+timePieces <- sapply(timePieces, as.numeric)
+
+runTime <- sapply(timePieces,
+                  function(x) {
+                     if(length(x) == 2) x[1] + x[2]/60
+                     else 60 * x[1] + x[2] + x[3]/60
+                  })
+
+summary(runTime)
+
+convertTime <- function( charTime ) {
+
+   timePieces <- strsplit(charTime, ":")
+
+   timePieces <- sapply(timePieces, as.numeric)
+
+   runTime <- sapply(timePieces,
+                  function(x) {
+                     if(length(x) == 2) x[1] + x[2]/60
+                     else 60 * x[1] + x[2] + x[3]/60
+                  })
+   
+}
+
+```
+
+### Aggregate cleaning into 
+
+```{r}
+createDF =
+   function(Res, year, sex) {
+      useTime <- if(!is.na(Res[1, 'net']) )
+                     Res[, 'net']
+                  else if( !is.na(Res[1, 'gun']) )
+                     Res[ , 'gun']
+                  else
+                     Res[, 'time']
+      
+      useTime <- gsub("[#\\*[:blank:]]", "", useTime)
+      
+      Res <- Res[ useTime != "", ]
+      
+      runTime <- convertTime(useTime[ useTime != "" ])
+      
+      N <- nrow(Res)
+      
+      Results <- data.frame( year = rep(year, N),
+                             sex = rep(sex, N),
+                             name = Res[, 'name'],
+                             home = Res[, 'home'],
+                             age = as.numeric(Res[, 'ag']),
+                             runTime = runTime,
+                             stringsAsFactors = F)
+      
+      invisible(Results)
+   }
+
+menDF <- mapply(createDF, menResMat, year = years,
+                sex = rep("M", 14), SIMPLIFY = F)
+
+warnings()[ c(1:2, 49:50)]
+
+sapply(menDF, function(x) sum(is.na(x$runTime)))
+
+file2006 <- read_results("men", 2006)
+parsed2006 <- extractVariables(file2006)
+time2006 <- parsed2006[, "net"]
 
 ```
 
@@ -156,6 +482,33 @@ The pattern uses several meta characters. The ^ is an anchor for the start of th
 
 ```{r}
 
+extractVariables =
+   function(file, varNames = c("name", "home", "ag", "gun", "net", "time"))
+   {
+      # Find the index of the row with =s
+      eqIndex <- grep("^===", file)
+      spacerRow <- file[eqIndex]
+      headerRow <- tolower(file[ eqIndex - 1 ])
+      body <- file[ -(1 : eqIndex) ]
+      
+      blank <- grep("^[[:blank:]]*$", body)
+      footnote <- grep("^[^\\s]*[\\*]*[#]", body)
+      ignore <- union(blank, footnote)
+      
+      if(length(ignore))
+         body <- body[-ignore]
+      
+      # Obtain the starting and ending positions of variables
+      searchLocs <- findColLocs(spacerRow)
+      locCols <- selectCols(varNames, headerRow, searchLocs)
+      
+      Values <- mapply(substr, list(body), start = locCols[1, ],
+                       stop = locCols[2, ])
+      colnames(Values) <- varNames
+      
+      invisible(Values)
+   }
+
 ```
 
 ### 3.)
@@ -165,4 +518,32 @@ Find the record where the time is only 1.5. What happened? Determine how to hand
 ### 4.)
 
 Examine the head and tail of the 2006 men's file. Look at both the character matrix in the list called _menResMat_ and the character vector in the list called _menFiles_ (see Sec 2.2). (Recall that the desired character matrix in _menResMat_ and the character vector in _menFiels_ both correspond to the element named "2006"). What is wrong with the hometown? Examine the header closely to figure out how this error came about. Modify the _extractVariables()_ function to fix the problem.
+
+```{r}
+
+```
+
+### 5.)
+
+Write the _convertTime()_ function described in Section 2.3. This function takes a string where time is in either the format hh:mm:ss or mm:ss. The return value is the time as numeric value of the number of minutes. Design this function to take a character vector with multiple strings and return a numeric vector.
+
+```{r}
+
+```
+
+### 6.)
+
+Modify the _createDF()_ function in Section 2.3 to handle the formatting problem with the 2006 male file. You will need to carefully inspect the raw text file in order to determien the problem.
+
+```{r}
+
+```
+
+### 7.)
+
+Follow the approach developed in Section 2.2 to read the files for the female runners and then process them using the functions in Section 2.3 to create a data frame for analysis. You may need to generalize the _createDF()_ and _extractVariables()_ functions to handle additional oddities in the raw text files.
+
+```{r}
+
+```
 

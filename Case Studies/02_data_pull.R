@@ -169,6 +169,7 @@ race_info_men <- data.frame(url = paste(ubase, mens_result_urls, sep=""), year =
 race_info <- rbind(race_info_men, race_info_women)
 
 save_class_result(race_info_men)
+save_class_result(race_info_women)
 
 sapply(result_tables, length)
 

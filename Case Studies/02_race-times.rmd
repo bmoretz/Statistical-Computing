@@ -105,7 +105,7 @@ theme_update(axis.text.x = element_text(size = 10),
                                          colour = "lightgray"), 
              plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
 
-data.dir <- file.path(here::here(), "Case Studies", "01_data")
+data.dir <- file.path(here::here(), "Case Studies", "datasets")
 
 ```
 
@@ -121,9 +121,9 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-# Geolocation
+# Cherry Blossom Ten Mile Run & Walk
 
-## Predicting Location via Indoor Positioning Systems
+## Examining the Impact of Age on Physical Performance
 
 ### The Raw Data
 
@@ -131,3 +131,38 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 
 ```
+
+
+### Further Analysis
+
+### 1.)
+
+Write a function that uses _read.fwf()_ to read the 28 text tables in MenTxt/ and WomenTxt/ into R. These are called 1999.text, 2000txt, etc. and are described in greater detail in 2.2. Examine the tables in a plain text editor to determine the start and end position of each column of interest (name, hometown, age and gun and net time).
+
+Use statistics to explore the results and confirm that you have extracted the information from the correct positions in the text.
+
+```{r}
+
+```
+
+
+### 2.)
+
+Revise the extractVariables function (see section 2.2) to remove the rows in _menTables_ that are blank. In addition, eliminatee the rows that begin with a '*' or a '#'. You may find the following regular expression helpful for locating blank rows in a table.
+
+_grep("^[[:blank:]]*$", body)_
+
+The pattern uses several meta characters. The ^ is an anchor for the start of the string, the $ anchors to the end of the string, the [[:blank:]] denotes the equivalence class of any space or tab character, and * indicates that the blank character can appear 0 or more times. All together the pattern ^[[:blank:]]*\$ matches a string that contains any number of blanks from start to end.
+
+```{r}
+
+```
+
+### 3.)
+
+Find the record where the time is only 1.5. What happened? Determine how to handle the problem and which function needs to be modified: _extractResTable()_, _extractVariables()_, or _cleanUp()_. In your modification, include code to provide a warning message about the rows that are being dropped for having a time that is too small.
+
+### 4.)
+
+Examine the head and tail of the 2006 men's file. Look at both the character matrix in the list called _menResMat_ and the character vector in the list called _menFiles_ (see Sec 2.2). (Recall that the desired character matrix in _menResMat_ and the character vector in _menFiels_ both correspond to the element named "2006"). What is wrong with the hometown? Examine the header closely to figure out how this error came about. Modify the _extractVariables()_ function to fix the problem.
+

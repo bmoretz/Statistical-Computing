@@ -219,7 +219,7 @@ searchLocs <- findColLocs(spacerRow)
 loc <- selectCols("home", headerRow, searchLocs)
 vars <- mapply(substr, list(body), start = loc[1,], stop = loc[2, ])
 
-summary(as.numeric(ages))
+summary(as.numeric(vars))
 
 shortColNames <- c("name", "home", "ag", "gun", "net", "time")
 
@@ -236,29 +236,6 @@ tail(Values)[, 1:3]
 ```
 
 ```{r}
-years <- 1999:2012
-
-res <- sapply(years, FUN = function(year){
-   
-   print(paste("loading year...", year))
-   
-   file <- read_results("men", year)
-   
-   parsed <- extractVariables(file)
-})
-
-file <- read_results("men", 2006)
-m2006 <- extractVariables(file)
-
-age <- m2006[, "home"]
-
-sum(is.na(age))
-
-n <- length(file)
-
-file[n]
-
-m2001$ag
 
 extractVariables =
    function(file, varNames = c("name", "home", "ag", "gun", "net", "time"))
@@ -298,14 +275,6 @@ load_data <- function(class) {
    return(mat)
 }
 
-mfilenames <- file.path(data.dir, paste("men_txt/", 1999:2012, ".txt", sep = ""))
-menFiles <- lapply(mfilenames, readLines)
-names(menFiles) <- 1999:2012
-
-menResMat <- lapply(menFiles, extractVariables)
-
-length(menResMat)
-sapply(menResMat, nrow)
 ```
 
 ### Data Cleaning and Reformatting Variables
@@ -445,6 +414,7 @@ createDF =
       invisible(Results)
    }
 
+years <- 1999:2012
 menDF <- mapply(createDF, menResMat, year = years,
                 sex = rep("M", 14), SIMPLIFY = F)
 

@@ -80,6 +80,7 @@ library(here, quietly = TRUE, warn.conflicts = FALSE)
 library(codetools, quietly = TRUE, warn.conflicts = FALSE)
 library(lattice, quietly = TRUE, warn.conflicts = FALSE)
 library(fields, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
 
 library(rbenchmark, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -132,10 +133,11 @@ data is pre-processed from the web in \02_data.r
 
 ```{r}
 
-read_results <- function(class, year) {
+load_results <- function(class, year) {
    
    folder <- ifelse(class == "men", "men_txt", "women_txt")
    file <- file.path(data.dir, folder, paste(year, ".txt", sep = ""))
+   
    return(readLines(file))
 }
 
@@ -145,13 +147,14 @@ read_results <- function(class, year) {
 
 ```{r}
 
-els <- read_results("men", 2006)
+els <- load_results("men", 2006)
 
 eqIndex <- grep("^===", els)
 eqIndex
 
 spacerRow <- els[eqIndex]
 headerRow <- els[eqIndex - 1]
+
 body <- els[ -(1:eqIndex) ]
 
 headerRow <- tolower(headerRow)
@@ -196,6 +199,7 @@ startPos <- regexpr(name, headerRow)[[1]]
 #
 # can we modify select cols to short circuit on matching w/o spaces?
 #######
+
 
 selectCols =
    function(colNames, headerRow, searchLocs)
@@ -280,10 +284,12 @@ load_data <- function(class) {
 ### Data Cleaning and Reformatting Variables
 
 ```{r}
-menResMat <- load_data("men"); womenResMat <- load_data("women")
+menResMat <- load_data("men")
 
 length(menResMat)
 sapply(menResMat, nrow)
+
+womenResMat <- load_data("women")
 
 length(womenResMat)
 sapply(womenResMat, nrow)
@@ -386,6 +392,7 @@ convertTime <- function( charTime ) {
 ### Aggregate cleaning into 
 
 ```{r}
+
 createDF =
    function(Res, year, sex) {
       useTime <- if(!is.na(Res[1, 'net']) )
@@ -426,8 +433,219 @@ file2006 <- read_results("men", 2006)
 parsed2006 <- extractVariables(file2006)
 time2006 <- parsed2006[, "net"]
 
+womenDF <- mapply(createDF, womenResMat, year = years,
+                  sex = rep("F", 14), SIMPLIFY = F)
+
+sapply(womenDF, function(x) sum(is.na(x$runTime)))
 ```
 
+### Consolidate Results
+
+```{r}
+cbMen <- do.call(rbind, menDF)
+save(cbMen, file = file.path(data.dir, "cbMen.rda"))
+
+cbWomen <- do.call(rbind, womenDF)
+
+save(cbWomen, file = file.path(data.dir, "cbWomen.rda"))
+```
+
+### Exploratory Data Analysis
+
+```{r}
+
+ggplot(cbMen, aes(age, runTime)) +
+   geom_point(aes(col = age)) +
+   labs(main = "Run Times by Age", xlab = "Age (years)", xlab = "Run Time (minutes")
+
+```
+
+```{r}
+display.brewer.all()
+```
+
+```{r}
+Purple8 <- brewer.pal(9, "Purples")[8]
+
+Purple8A <- paste(Purple8, "14", sep = "")
+
+ggplot(cbMen, aes(age, runTime)) +
+   geom_jitter(col = Purple8A) +
+   geom_smooth() +
+   xlim(10, 75) +
+   ylim(45, 150)
+
+```
+
+```{r}
+smoothScatter(y = cbMen$runTime, x = cbMen$age,
+              ylim = c(40, 165), xlim = c(15, 85),
+              xlab = "Age (years)", ylab = "Run Time (minutes)")
+```
+
+```{r}
+cbMenSub <- cbMen[cbMen$runTime > 30 &
+                     !is.na(cbMen$age) & cbMen$age > 15,]
+
+ageCat <- cut(cbMenSub$age, breaks = c(seq(15, 75, 10), 90))
+
+ggplot(data.table(age = ageCat, time = cbMenSub$runTime), aes(ageCat, time)) +
+   geom_boxplot(aes(fill = age)) +
+   labs("Run Times by Age Category")
+```
+
+```{r}
+lm_age <- lm(runTime ~ age, data = cbMenSub)
+
+summary(lm_age)
+```
+
+```{r}
+smoothScatter(x = cbMenSub$age, y = lm_age$residuals,
+              xlab = "Age (years)", ylab = "Residuals") 
+abline(h = 0, col = "purple", lwd = 3)
+
+resid.lo <- loess(resids ~ age,
+                  data = data.frame(resids = residuals(lm_age),
+                                    age = cbMenSub$age))
+
+age20to80 <- 20:80
+
+resid.lo.pr <- predict(resid.lo, newdata = data.frame(age = age20to80))
+
+lines(x = age20to80, y = resid.lo.pr,
+      col = "green", lwd = 3, lty = 2)
+```
+
+```{r}
+menRes.lo <- loess(runTime ~ age, cbMenSub)
+
+summary(menRes.lo)
+
+menRes.lo.pr <- predict(menRes.lo, data.frame(age = age20to80))
+
+```
+
+```{r}
+over50 <- pmax(0, cbMenSub$age - 50)
+
+lmOver50 <- lm(runTime ~ age + over50, data = cbMenSub)
+
+summary(lmOver50)
+
+decades <- seq(30, 60, by = 10)
+overAge <- lapply(decades,
+                  function(x) pmax(0, (cbMenSub$age - x)))
+names(overAge) <- paste("over", decades, sep = "")
+overAge <- as.data.frame(overAge)
+
+tail(overAge)
+
+lmPiecewise <- lm(runTime ~., 
+                  data = cbind(cbMenSub[, c("runTime", "age")],
+                               overAge))
+
+summary(lmPiecewise)
+
+overAge20 <- lapply(decades, function(x) pmax(0, (age20to80 - x)))
+names(overAge20) <- paste("over", decades, sep = "")
+overAgeDF <- cbind(age = data.frame(age = age20to80), overAge20)
+
+tail(overAgeDF)
+```
+
+```{r}
+predPiecewise <- predict(lmPiecewise, overAgeDF)
+
+plot(predPiecewise ~ age20to80,
+     type = "l", col = "purple", lwd = 3,
+     xlab = "Age (years)", ylab = "Run Time Prediction")
+
+lines(x = age20to80, y = menRes.lo.pr,
+      col = "green", lty = 2, lwd = 3)
+
+legend("topleft", col = c("purple", "green"),
+       lty = c(1, 2), lwd = 3,
+       legend = c("Piecewise Linear", "Loess Curve"), bty = "n")
+```
+
+### Cross-Sectional Data and Covariates
+
+```{r}
+age1999 <- cbMenSub[ cbMenSub$year == 1999, "age"]
+age2012 <- cbMenSub[ cbMenSub$year == 2012, "age"]
+```
+
+```{r}
+summary(age1999)
+
+summary(age2012)
+```
+
+```{r}
+plot(density(age1999, na.rm = T),
+     ylim = c(0, 0.05), col = "purple",
+     lwd = 3, xlab = "Age (years)", main = "")
+lines(density(age2012, na.rm = T),
+      lwd = 3, lty = 2, col = "green")
+legend("topleft", col = c("purple", "green"), lty = 1:2, lwd = 3,
+       legend = c("1999", "2012", bty = "n"))
+```
+
+```{r}
+by_year <- data.table(cbMenSub)[, .(age, mean = mean(age)), by = list(year)]
+
+ggplot(by_year[year %in% c("1999", "2012")], aes(age, group = year)) +
+   geom_density(aes(fill = year), alpha = .6) +
+   geom_vline(aes(xintercept = mean, col = year, group = year)) +
+   labs(title = "Runners by Year")
+```
+
+```{r}
+ggplot(by_year, aes(year, age)) +
+   geom_point(aes(col = age)) +
+   geom_quantile() +
+   labs(title = "Runners Age Over Time")
+```
+
+```{r}
+mR.lo99 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 1999,])
+mR.lo.pr99 <- predict(mR.lo99, data.frame(age = age20to80))
+
+summary(mR.lo12)
+
+mR.lo12 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 2012, ])
+mR.lo.pr12 <- predict(mR.lo12, data.frame(age = age20to80))
+
+plot(mR.lo.pr99 ~ age20to80,
+     type = "l", col = "purple", lwd = 3,
+     xlab = "Age (years)", ylab = "Fitted Run Time (minutes)")
+
+lines(x = age20to80, y = mR.lo.pr12,
+      col = "green", lty = 2, lwd = 3)
+
+legend("topleft", col = c("purple", "green"), lty = 1:2, lwd = 3,
+       legend =  c("1999", "2012"), bty = "n")
+```
+
+```{r}
+mR.models <- cbMenSub %>% 
+   group_by(year) %>%
+   group_map(~ loess(runTime ~ age, .x))
+
+mR.pred <- lapply(mR.models, 
+                  function(m, year, age) cbind(rep(year, length(age)), age = age, predict(m, data.frame(age = age))),
+                  year = 1999:2012,
+                  age = age20to80)
+
+yoy_changes <- matrix(unlist(mR.pred), ncol = 3)
+yoy_changes <- as.data.frame(yoy_changes)
+colnames(yoy_changes) <- c("year", "pred", "age")
+yoy_changes$year <- as.numeric(yoy_changes$year)
+
+ggplot(yoy_changes[year == 1999], aes(age, pred)) +
+   geom_point()
+```
 
 ### Further Analysis
 
@@ -483,6 +701,10 @@ extractVariables =
 
 ### 3.)
 
+```{r}
+
+```
+
 Find the record where the time is only 1.5. What happened? Determine how to handle the problem and which function needs to be modified: _extractResTable()_, _extractVariables()_, or _cleanUp()_. In your modification, include code to provide a warning message about the rows that are being dropped for having a time that is too small.
 
 ### 4.)
@@ -506,6 +728,34 @@ Write the _convertTime()_ function described in Section 2.3. This function takes
 Modify the _createDF()_ function in Section 2.3 to handle the formatting problem with the 2006 male file. You will need to carefully inspect the raw text file in order to determien the problem.
 
 ```{r}
+
+createDF =
+   function(Res, year, sex) {
+      useTime <- if(!is.na(Res[1, 'net']) )
+                     Res[, 'net']
+                  else if( !is.na(Res[1, 'gun']) )
+                     Res[ , 'gun']
+                  else
+                     Res[, 'time']
+      
+      useTime <- gsub("[#\\*[:blank:]]", "", useTime)
+      
+      Res <- Res[ useTime != "", ]
+      
+      runTime <- convertTime(useTime[ useTime != "" ])
+      
+      N <- nrow(Res)
+      
+      Results <- data.frame( year = rep(year, N),
+                             sex = rep(sex, N),
+                             name = Res[, 'name'],
+                             home = Res[, 'home'],
+                             age = as.numeric(Res[, 'ag']),
+                             runTime = runTime,
+                             stringsAsFactors = F)
+      
+      invisible(Results)
+   }
 
 ```
 

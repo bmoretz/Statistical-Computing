@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
    eval = TRUE, 
    dev = 'png', 
    fig.width = 9, 
-   fig.height = 3.5)
+   fig.height = 4.5)
 
 options(knitr.table.format = "latex")
 
@@ -319,7 +319,7 @@ ggplot(age_values, aes(Year, Age)) +
 ```{r}
 sapply(age, function(x) sum(is.na(x)))
 
-file2001 <- read_results("men", 2001)
+file2001 <- load_results("men", 2001)
 age2001 <- as.numeric(extractVariables(file2001)[, "ag"])
 
 badAgeIndex <- which(is.na(age2001)) + 5
@@ -336,7 +336,7 @@ which(age2001 < 5)
 file2001[which(age2001 < 5)]
 
 
-file <- read_results("men", 2001)
+file <- load_results("men", 2001)
 data <- extractVariables(file)
 age <- as.numeric(data[, "ag"])
 
@@ -351,7 +351,7 @@ data[which(age == 0)]
 ### Time Validation
 
 ```{r}
-file2002 <- read_results("men", 2012)
+file2002 <- load_results("men", 2012)
 
 charTime <- menResMat[["2012"]][, "time"]
 
@@ -429,7 +429,7 @@ warnings()[ c(1:2, 49:50)]
 
 sapply(menDF, function(x) sum(is.na(x$runTime)))
 
-file2006 <- read_results("men", 2006)
+file2006 <- load_results("men", 2006)
 parsed2006 <- extractVariables(file2006)
 time2006 <- parsed2006[, "net"]
 
@@ -612,10 +612,12 @@ ggplot(by_year, aes(year, age)) +
 mR.lo99 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 1999,])
 mR.lo.pr99 <- predict(mR.lo99, data.frame(age = age20to80))
 
-summary(mR.lo12)
+summary(mR.lo.pr99)
 
 mR.lo12 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 2012, ])
 mR.lo.pr12 <- predict(mR.lo12, data.frame(age = age20to80))
+
+summary(mR.lo12)
 
 plot(mR.lo.pr99 ~ age20to80,
      type = "l", col = "purple", lwd = 3,
@@ -629,22 +631,175 @@ legend("topleft", col = c("purple", "green"), lty = 1:2, lwd = 3,
 ```
 
 ```{r}
-mR.models <- cbMenSub %>% 
-   group_by(year) %>%
-   group_map(~ loess(runTime ~ age, .x))
 
-mR.pred <- lapply(mR.models, 
-                  function(m, year, age) cbind(rep(year, length(age)), age = age, predict(m, data.frame(age = age))),
-                  year = 1999:2012,
-                  age = age20to80)
+years <- 1999:2012
+results <- list(length(years))
 
-yoy_changes <- matrix(unlist(mR.pred), ncol = 3)
-yoy_changes <- as.data.frame(yoy_changes)
-colnames(yoy_changes) <- c("year", "pred", "age")
-yoy_changes$year <- as.numeric(yoy_changes$year)
+y <- 1999
 
-ggplot(yoy_changes[year == 1999], aes(age, pred)) +
-   geom_point()
+for( i in 1:length(years) )
+{
+   y = years[i]
+   data <- cbMenSub[ which(cbMenSub$year == y), ]
+   
+   model <- loess(runTime ~ age, data)
+   
+   pred <- predict(model, newdata = age20to80)
+   
+   results[[i]] <- data.table(Year = rep(y, length(pred)), Age = age20to80, Pred = pred)
+}
+
+race_years_data <- do.call("rbind", results)
+
+ggplot(race_years_data, aes(Age, Pred, group = Year)) +
+   geom_line(aes(col = Year)) +
+   labs(title = "Predicted Performance by Year", ylab = "Predicted Run Time", xlab = "Runner Age")
+
+```
+
+### Constructing a Record for an Individual Runner across Years
+
+```{r}
+trimBlanks <- function(charVector) {
+   nameClean <- gsub("^[[:blank:]]+", "", charVector)
+   nameClean <- gsub("[[:blank:]]+$", "", nameClean)
+   nameClean <- gsub("[[:blank:]]+", " ", nameClean)
+}
+
+nameClean <- trimBlanks(cbMenSub$name)
+
+length(nameClean)
+
+length(unique(nameClean))
+
+table(table(nameClean))
+
+```
+
+
+```{r}
+head(sort(table(nameClean), decreasing = T), 1)
+
+mSmith <- cbMenSub[nameClean == "Michael Smith", ]
+
+head(unique(mSmith$home))
+
+nameClean <- tolower(nameClean)
+
+head(sort(table(nameClean), decreasing = T), 1)
+
+nameClean <- gsub("[,.]", "", nameClean)
+```
+
+```{r}
+tabNameYr <- table(cbMenSub$year, nameClean)
+
+max(tabNameYr)
+
+class(tabNameYr)
+
+mode(tabNameYr)
+
+names(attributes(tabNameYr))
+
+dim(tabNameYr)
+
+head(colnames(tabNameYr), 3)
+
+which(tabNameYr == max(tabNameYr), arr.ind = T)
+
+indMax <- which(tabNameYr == max(tabNameYr), arr.ind = T)
+colnames(tabNameYr)[indMax[2]]
+
+cbMenSub$nameClean <- nameClean
+```
+
+```{r}
+cbMenSub$yob <- cbMenSub$year - cbMenSub$age
+
+homeClean <- trimBlanks(cbMenSub$home)
+homeClean <- tolower(homeClean)
+
+cbMenSub$homeClean <- homeClean
+```
+
+```{r}
+vars <- c("year", "homeClean", "nameClean", "yob", "runTime")
+mb <- which(nameClean == "michael brown")
+birthOrder <- order(cbMenSub$yob[mb])
+cbMenSub[mb[birthOrder], vars]
+```
+
+```{r}
+cbMenSub$ID = paste(nameClean, cbMenSub$yob, sep = "_")
+
+races <- tapply(cbMenSub$year, cbMenSub$ID, length)
+
+races8 <- names(races)[which(races >= 8)]
+
+men8 <- cbMenSub[ cbMenSub$ID %in% races8, ]
+
+orderByRunner <- order(men8$ID, men8$year)
+
+men8 <- men8[orderByRunner, ]
+```
+
+```{r}
+men8L <- split(men8, men8$ID)
+names(men8L)
+```
+
+```{r}
+length(unique(men8$ID))
+length(men8L)
+```
+
+```{r}
+gapTime <- tapply(men8$runTime, men8$ID,
+                  function(t) any(abs(diff(t)) > 20))
+
+gapTime <- sapply(men8L, function(df)
+   any(abs(diff(df$runTime)) > 20))
+
+sum(gapTime)
+```
+
+```{r}
+lapply(men8L[ gapTime ][1:2], function(df) df[, vars])
+```
+
+```{r}
+homeLen <- nchar(cbMenSub$homeClean)
+
+cbMenSub$state <- substr(cbMenSub$homeClean,
+                         start = homeLen - 1, stop = homeLen)
+
+cbMenSub$state[cbMenSub$year == 2006] = NA
+
+
+cbMenSub$ID = paste(cbMenSub$nameClean, cbMenSub$yob,
+                    cbMenSub$state, sep = "_")
+```
+
+```{r}
+numRaces <- tapply(cbMenSub$year, cbMenSub$ID, length)
+races8 <- names(numRaces)[which(numRaces >= 8)]
+men8 <- cbMenSub[ cbMenSub$ID %in% races8, ]
+
+orderByRunner <- order(men8$ID, men8$year)
+men8 <- men8[orderByRunner, ]
+
+men8L <- split(men8, men8$ID)
+names(men8L) <- races8
+
+length(men8L)
+```
+
+### Modeling the Change in Running Time for Individuals
+
+
+```{r}
+
 ```
 
 ### Further Analysis

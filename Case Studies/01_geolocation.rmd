@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
    eval = TRUE, 
    dev = 'png', 
    fig.width = 9, 
-   fig.height = 3.5)
+   fig.height = 4.5)
 
 options(knitr.table.format = "latex")
 

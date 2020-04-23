@@ -40,7 +40,7 @@ save_data <- function(url) {
   } else {
     file_path <- file.path(file_path, "race_women", paste0(year, "f", ".csv"))
   }
-
+  
   webpage <- getURL(url)
   webpage <- readLines(tc <- textConnection(webpage)); close(tc)
   
@@ -82,7 +82,7 @@ extractResTable <- function(url, year ) {
   } else {
     txt <- xpathSApply(doc, '//pre', xmlValue)
   }
- 
+  
   result <- character(length = 0L)
   
   if(grepl("\n", txt, fixed = TRUE) == T) {

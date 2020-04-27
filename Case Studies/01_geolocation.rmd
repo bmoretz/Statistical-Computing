@@ -135,6 +135,18 @@ file_online <- file.path(data.dir, "online.final.trace.txt")
 raw_offline <- read_lines(file_offline)
 raw_online <- read_lines(file_online)
 
+
+nums <- 1:20
+
+rand <- sample(nums, length(nums), replace = F)
+
+res <- "["
+
+for( i in 1:length(rand)) {
+   res <- paste0(res, rand[i], ",")
+}
+res
+
 ```
 
 #### Sanity Check

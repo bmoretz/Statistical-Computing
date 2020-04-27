@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  16 APR 2020 18:36
+This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  23 APR 2020 20:26
 entering extended mode
 **./01_geolocation.tex
 (01_geolocation.tex
@@ -1181,61 +1181,64 @@ pe bmp)
 File: 01_geolocation_files/figure-latex/unnamed-chunk-12-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-12-1.png>
+[7]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-13-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-13-1.png>
-[7]
+[8]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-13-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-13-2.png>
 File: 01_geolocation_files/figure-latex/unnamed-chunk-14-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-14-1.png>
-[8]
+[9]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-14-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-14-2.png>
-[9]
+[10]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-15-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-15-1.png>
-[10] [11]
+[11] [12]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-17-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-17-1.png>
+[13]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-19-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-19-1.png>
-[12]
+[14]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-20-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-20-1.png>
-[13]
-Underfull \vbox (badness 10000) detected at line 787
+
+Underfull \vbox (badness 1748) detected at line 787
  []
 
-[14]
+[15]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-21-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-21-1.png>
+[16]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-22-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-22-1.png>
-[15] [16]
+[17]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-23-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-23-1.png>
 File: 01_geolocation_files/figure-latex/unnamed-chunk-24-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-24-1.png>
-[17] [18]
+[18] [19]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-26-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-26-1.png>
 File: 01_geolocation_files/figure-latex/unnamed-chunk-27-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-27-1.png>
-[19] [20] [21]
+[20] [21] [22]
 Underfull \vbox (badness 10000) detected at line 1084
  []
 
@@ -1243,7 +1246,7 @@ Underfull \vbox (badness 10000) detected at line 1084
 Underfull \vbox (badness 10000) detected at line 1084
  []
 
-[22]
+[23]
 Underfull \vbox (badness 10000) detected at line 1084
  []
 
@@ -1251,97 +1254,89 @@ Underfull \vbox (badness 10000) detected at line 1084
 Underfull \vbox (badness 10000) detected at line 1084
  []
 
-[23] [24]
+[24] [25]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-36-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-36-1.png>
-
-Underfull \vbox (badness 1769) detected at line 1204
- []
-
-[25]
+[26]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-39-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-39-1.png>
-[26] [27] [28] [29] [30]
-Overfull \vbox (1.78174pt too high) detected at line 1524
- []
-
-[31]
+[27] [28] [29] [30] [31] [32]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-44-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-44-1.png>
-[32]
+[33]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-46-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-46-1.png>
+[34]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-47-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-47-1.png>
-[33]
+[35]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-48-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-48-1.png>
-[34] [35]
+[36] [37]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-50-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-50-1.png>
-[36] [37]
+[38] [39]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-52-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-52-1.png>
-[38]
+[40]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-52-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-52-2.png>
+[41]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-52-3.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-52-3.png>
-[39]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-52-4.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-52-4.png>
-[40]
+[42] [43]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-54-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-54-1.png>
 File: 01_geolocation_files/figure-latex/unnamed-chunk-54-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-54-2.png>
-[41]
+[44]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-55-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-55-1.png>
 File: 01_geolocation_files/figure-latex/unnamed-chunk-55-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-55-2.png>
-[42]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-56-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-56-1.png>
+[45]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-56-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-56-2.png>
-[43]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-57-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-57-1.png>
+[46]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-57-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-57-2.png>
-[44]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-58-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-58-1.png>
-[45]
+[47]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-58-2.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-58-2.png>
-[46]
+[48]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-58-3.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-58-3.png>
-[47] [48]
+[49] [50]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 10.10637pt on input line 2059.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
@@ -1376,37 +1371,40 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 205
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (C:\Users\bmore\AppData\Roaming\MiKTeX\2.9\tex/latex/microtype\mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-) [49]
+) [51]
 Underfull \vbox (badness 10000) detected at line 2125
  []
 
 
 Underfull \vbox (badness 10000) detected at line 2125
- []
-
-[50]
-File: 01_geolocation_files/figure-latex/unnamed-chunk-60-1.png Graphic file (ty
-pe bmp)
-<01_geolocation_files/figure-latex/unnamed-chunk-60-1.png>
-[51]
-Underfull \vbox (badness 10000) detected at line 2228
- []
-
-
-Underfull \vbox (badness 10000) detected at line 2228
  []
 
 [52]
+File: 01_geolocation_files/figure-latex/unnamed-chunk-60-1.png Graphic file (ty
+pe bmp)
+<01_geolocation_files/figure-latex/unnamed-chunk-60-1.png>
+
+Overfull \vbox (2.23917pt too high) detected at line 2228
+ []
+
+[53]
+Underfull \vbox (badness 10000) detected at line 2228
+ []
+
+[54]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-61-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-61-1.png>
-[53] [54]
+[55] [56]
+Underfull \vbox (badness 1215) detected at line 2357
+ []
+
+[57]
 File: 01_geolocation_files/figure-latex/unnamed-chunk-62-1.png Graphic file (ty
 pe bmp)
 <01_geolocation_files/figure-latex/unnamed-chunk-62-1.png>
-[55]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2364.
-[56]
+[58]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 2364.
 (01_geolocation.aux)
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 2364.
@@ -1418,10 +1416,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 Here is how much of TeX's memory you used:
  22477 strings out of 414221
  390427 string characters out of 2902595
- 848487 words of memory out of 3000000
+ 848488 words of memory out of 3000000
  39642 multiletter control sequences out of 15000+200000
  536533 words of font info for 72 fonts, out of 3000000 for 9000
  1348 hyphenation exceptions out of 8191
  54i,12n,121p,815b,469s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on 01_geolocation.pdf (56 pages).
+Output written on 01_geolocation.pdf (58 pages).

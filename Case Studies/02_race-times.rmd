@@ -799,7 +799,77 @@ length(men8L)
 
 
 ```{r}
+groups <- 1 + (1:length(men8L) %% 9)
 
+plot(x = 40, y = 60, type = "n",
+     xlim = c(20, 80), ylim = c(40, 160),
+     xlab = "Age (years)", ylab = "Run Time (minutes)")
+
+
+addRunners <- function(listRunners, colors, numLty) {
+   numRunners <- length(listRunners)
+   
+   colIndx <- 1 + (1:numRunners) %% length(colors)
+   ltys <- rep(1:numLty, each = length(colors), length = numRunners)
+   
+   mapply(function(df, i) {
+      lines(df$runTime ~ df$age,
+            col = colors[colIndex[i]], lwd = 2, lty = ltys[i])
+   }, listRunners, i = 1:numRunners)
+}
+
+colors <- c("#e41alc", "#377eb8", "#4daf4a", "#984ea3",
+            "#ff7f00", "#a65628")
+
+par(mfrow = c(3, 3), mar = c(2, 2, 1, 1))
+invisible(
+   sapply(1:9, function(grpId) {
+      plot(x = 0, y = 0, type = "n",
+           xlim = c(20, 80), ylim = c(50, 130),
+           xlab = "Age (years)", ylab = "Run Time (minutes)")
+      
+      addRunners(men8L[ groups == grpId ], colors, numLty = 6)
+   })
+)
+```
+
+```{r}
+fitOne <- function(oneRunner, addLine = F, col = "grey") {
+   lmOne <- lm(runTime ~ age, data = oneRunner)
+   
+   if ( addLine )
+      lines(x = oneRunner$age, y = predict(lmOne),
+            col = col, lwd = 2, lty = 2)
+   
+   ind <- floor( (nrow(oneRunner) + 1) / 2)
+   res <- c(coefficients(lmOne)[2], oneRunner$age[ind],
+            predict(lmOne)[ ind ])
+   
+   names(res) <- c("ageCoeff", "medAge", "predRunTime")
+   
+   return(res)
+}
+```
+
+```{r}
+par(mfrow = c(1, 1))
+plot( x = 0, y = 0, type = "n",
+      xlim = c(20, 80), ylim = c(50, 130),
+      xlab = "Age (years)", ylab = "Run Time (minutes)")
+
+addRunners( men8L[ groups == 9 ], colors, numLty = 6)
+lapply(men8L[groups == 9], fitOne, addLine = T, col = "black")
+```
+
+```{r}
+men8LongFit <- lapply(men8L, fitOne)
+
+coeffs <- sapply(men8LongFit, "[", "ageCoeff" )
+ages <- sapply(men8LongFit, "[", "medAge")
+
+longCoeffs <- lm(coeffs ~ ages)
+
+summary(longCoeffs)
 ```
 
 ### Further Analysis
@@ -811,7 +881,22 @@ Write a function that uses _read.fwf()_ to read the 28 text tables in MenTxt/ an
 Use statistics to explore the results and confirm that you have extracted the information from the correct positions in the text.
 
 ```{r}
+data_paths <- sapply(c("men_txt", "women_txt"), function(p) {
+   path <- file.path(data.dir, p)
 
+   sapply(path, function( f ) { 
+      file.path(path, list.files(path) )
+   })
+})
+
+consolidated_files <- c(data_paths[, 1], data_paths[, 2])
+
+
+tp <- consolidated_files[1]
+
+files <- lapply(consolidated_files, function(f) read.fwf(f, widths = 120))
+
+length(files)
 ```
 
 
@@ -856,17 +941,44 @@ extractVariables =
 
 ### 3.)
 
+Find the record where the time is only 1.5. What happened? Determine how to handle the problem and which function needs to be modified: _extractResTable()_, _extractVariables()_, or _cleanUp()_. In your modification, include code to provide a warning message about the rows that are being dropped for having a time that is too small.
+
 ```{r}
 
 ```
-
-Find the record where the time is only 1.5. What happened? Determine how to handle the problem and which function needs to be modified: _extractResTable()_, _extractVariables()_, or _cleanUp()_. In your modification, include code to provide a warning message about the rows that are being dropped for having a time that is too small.
 
 ### 4.)
 
 Examine the head and tail of the 2006 men's file. Look at both the character matrix in the list called _menResMat_ and the character vector in the list called _menFiles_ (see Sec 2.2). (Recall that the desired character matrix in _menResMat_ and the character vector in _menFiels_ both correspond to the element named "2006"). What is wrong with the hometown? Examine the header closely to figure out how this error came about. Modify the _extractVariables()_ function to fix the problem.
 
 ```{r}
+
+extractVariables =
+   function(file, varNames = c("name", "home", "ag", "gun", "net", "time"))
+   {
+      # Find the index of the row with =s
+      eqIndex <- grep("^===", file)
+      spacerRow <- file[eqIndex]
+      headerRow <- tolower(file[ eqIndex - 1 ])
+      body <- file[ -(1 : eqIndex) ]
+      
+      blank <- grep("^[[:blank:]]*$", body)
+      footnote <- grep("^[^\\s]*[\\*]*[#]", body)
+      ignore <- union(blank, footnote)
+      
+      if(length(ignore))
+         body <- body[-ignore]
+      
+      # Obtain the starting and ending positions of variables
+      searchLocs <- findColLocs(spacerRow)
+      locCols <- selectCols(varNames, headerRow, searchLocs)
+      
+      Values <- mapply(substr, list(body), start = locCols[1, ],
+                       stop = locCols[2, ])
+      colnames(Values) <- varNames
+      
+      invisible(Values)
+   }
 
 ```
 
@@ -875,6 +987,20 @@ Examine the head and tail of the 2006 men's file. Look at both the character mat
 Write the _convertTime()_ function described in Section 2.3. This function takes a string where time is in either the format hh:mm:ss or mm:ss. The return value is the time as numeric value of the number of minutes. Design this function to take a character vector with multiple strings and return a numeric vector.
 
 ```{r}
+
+convertTime <- function( charTime ) {
+
+   timePieces <- strsplit(charTime, ":")
+
+   timePieces <- sapply(timePieces, as.numeric)
+
+   runTime <- sapply(timePieces,
+                  function(x) {
+                     if(length(x) == 2) x[1] + x[2]/60
+                     else 60 * x[1] + x[2] + x[3]/60
+                  })
+   
+}
 
 ```
 
@@ -920,5 +1046,149 @@ Follow the approach developed in Section 2.2 to read the files for the female ru
 
 ```{r}
 
+womenDF <- mapply(createDF, womenResMat, year = years,
+                  sex = rep("F", 14), SIMPLIFY = F)
+
+sapply(womenDF, function(x) sum(is.na(x$runTime)))
+
 ```
 
+### 8.)
+
+Modify the call to the _plot()_ function that created figure 2.6 to create Figure 2.7. To do this, read the documentation for plot() to determine which parameters could be helpful.
+
+```{r}
+ggplot(cbMen, aes(age, runTime)) +
+   geom_jitter(col = Purple8A) +
+   geom_smooth() +
+   xlim(10, 75) +
+   ylim(45, 150)
+```
+
+### 9.)
+
+Modify the piecewise linear fit from Section 2.4.2 to include a hing a 70. Examine the coefficients from the fit and compare the fitted curve to the loess curve. Does the additional hing improve the fit?
+
+```{r}
+age20to70 <- seq( from = 20, to = 70, by = 1)
+
+mR.lo992 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 1999,])
+mR.lo.pr992 <- predict(mR.lo99, data.frame(age = age20to70))
+
+summary(mR.lo.pr992)
+
+mR.lo122 <- loess(runTime ~ age, cbMenSub[ cbMenSub$year == 2012, ])
+mR.lo.pr122 <- predict(mR.lo122, data.frame(age = age20to70))
+
+summary(mR.lo122)
+
+plot(mR.lo.pr992 ~ age20to70,
+     type = "l", col = "purple", lwd = 3,
+     xlab = "Age (years)", ylab = "Fitted Run Time (minutes)")
+
+lines(x = age20to70, y = mR.lo.pr122,
+      col = "green", lty = 2, lwd = 3)
+
+legend("topleft", col = c("purple", "green"), lty = 1:2, lwd = 3,
+       legend =  c("1999", "2012"), bty = "n")
+```
+
+### 10.)
+
+We have seen that the 1999 runners were typically older than the 2012 runners. Compare the age distribution of the runners agross all 14 years of the races. Use quantile-quantile plots, boxplots and density curves to make your comparisions.
+
+```{r}
+ggplot(cbMen, aes(age, group = year)) +
+   geom_histogram(aes(fill = ..count..), bins = 30) +
+   facet_wrap(~year)
+
+ggplot(cbMen, aes(age, group = year)) +
+   geom_boxplot(aes(fill = as.factor(year))) +
+   coord_flip() +
+   labs(title = "Age by Race Year", xlab = "Race Year", ylab = "Age")
+
+ggplot(cbMen, aes(year, age)) +
+   geom_quantile()
+```
+
+### 11.)
+
+Normalize each male runner's time by the fastest time for the runner of the same age. To do this, find the fastest runnerk for each year of age from 20 to 80, tapply() function maybe helpful here. Smooth these times using loess() and find the smoothed fime using predict. Use these smoothed times to normalize each run time.
+
+```{r}
+
+cbMenSub <- as.data.table(cbMenSub)
+
+fastest_times <- cbMenSub[, .(max = max(runTime)), by = list(year, age)]
+
+normalized_times <- cbMenSub[, .(runTime), by = list(year, age)]
+normalized_times <- merge(normalized_times, fastest_times, by = c("year", "age"))
+normalized_times[, normTime := runTime/max]
+
+mR.norm <- loess(normTime ~ age, data = normalized_times)
+
+summary(mR.norm)
+
+age_range <- seq( from = 20, to = 80, by = 1 )
+
+smoothed_times <- predict(mR.norm, newdata = age_range)
+
+smooth_results <- data.table(age = age_range, time = smoothed_times)
+
+ggplot(smooth_results, aes(age, time)) +
+   geom_point(aes(col = age)) +
+   geom_smooth(alpha = .2)
+```
+
+### 12.)
+
+Clean the strings in home and menRes to remove all leading and trailing blanks and multiple contiguous blanks. Also, make all letters lower case and remove any punctuation such as '.' or ','.
+
+```{r}
+
+homeClean2 <- str_remove_all(homeClean, " ")
+homeClean2 <- str_remove_all(homeClean2, ",")
+
+head(homeClean2)
+```
+
+### 13.)
+
+In section 2.5 we created an id for a runner by pasting together name, year of birth, and state. Consider using the home town instead of the state. How many runners have competed in at least 8 races using this new id?
+
+```{r}
+cbMenSub2 <- cbMenSub
+
+cbMenSub2$ID = paste(nameClean, homeClean2, cbMenSub$yob, sep = "_")
+
+races <- tapply(cbMenSub2$year, cbMenSub2$ID, length)
+
+races8 <- names(races)[which(races >= 8)]
+
+men8 <- cbMenSub2[ cbMenSub2$ID %in% races8, ]
+
+orderByRunner <- order(men8$ID, men8$year)
+
+men8 <- men8[orderByRunner, ]
+```
+
+### 14.)
+
+Further refine the set of athletes in the longitudinal analysis by dropping those IDs who have a large jump in time in consecutive races and who did not compete for two or more years in a row. How many unique IDs do you have when you include these additional restrictions?
+
+```{r}
+numRaces <- tapply(cbMenSub$year, cbMenSub$ID, length)
+races8 <- names(numRaces)[which(numRaces >= 8)]
+men8 <- cbMenSub[ cbMenSub$ID %in% races8, ]
+
+by_year <- as.data.table(men8)[, .(year, runTime), by = ID]
+
+sans_outliers <- by_year %>%
+   group_by(ID) %>%
+   mutate(year_gap = year - lag(year, 1), run_diff = runTime - lag(runTime, 1)) %>%
+   filter(year_gap <= 2) %>%
+   filter(abs(run_diff) < 5) %>%
+   distinct(ID)
+
+nrow(sans_outliers)
+```

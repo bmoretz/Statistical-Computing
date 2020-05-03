@@ -131,6 +131,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 ### Spam Data
 
 ```{r}
+
 head(list.files(path = file.path(data.dir, "easy_ham")))
 head(list.files(path = file.path(data.dir, "spam_2")))
 
@@ -231,8 +232,8 @@ sub(".*boundary= *(.*);?.*", "\\1", boundary)
 ```
 
 ```{r}
+
 getBoundary <- function(header) {
-   
    boundaryIdx <- grep("boundary=", header)
    boundary = gsub('"', "", header[boundaryIdx])
    gsub(".*boundary= *([^;]*);?.*", "\\1", boundary)
@@ -241,7 +242,6 @@ getBoundary <- function(header) {
 ```
 
 ```{r}
-sampleSplit[[6]]
 
 boundary <- getBoundary(headerList[[15]])
 body <- sampleSplit[[15]]$body
@@ -259,15 +259,13 @@ tail(msg)
 
 msg <- c(msg, body[ (eStringLoc + 1) : length(body) ])
 tail(msg)
+
 ```
 
 ### Handle Attachments
 
 ```{r}
 
-dropAttach <- function(email) {
-      
-}
 
 ```
 
@@ -284,7 +282,7 @@ head(msg)
 ### Stemming
 
 ```{r}
-stopWords <- stopwords(kind = "en")
+exclude_word_list <- stopwords(kind = "en")
 ```
 
 ### Convert To Wordlist
@@ -301,7 +299,7 @@ words <- unlist(strsplit(cleanMsg, "[[:blank:]]+"))
 
 words <- words[ nchar(words) > 1 ]
 
-words <- words[ ! (words %in% stopWords) ]
+words <- words[ ! (words %in% exclude_word_list) ]
 
 head(words)
 
@@ -309,23 +307,47 @@ head(words)
 
 ```{r}
 
-findMsgWords <- function(msg, stopwords = stopWords) {
+findMsgWords <- function(msg, exclude) {
    
    cleanMsg <- tolower(gsub("[[:punct:]0-9[:blank:]]+", " ", msg))
 
    words <- unlist(strsplit(cleanMsg, "[[:blank:]]+"))
    
-   words <- words[ ! (words %in% stopwords) ]
-
-   return(words)   
+   keep <- sapply(words, function(word) return(!(word %in% exclude)))
+   
+   
+   return(words[ keep ])   
 }
 
-findMsgWords(msg)
 ```
 
 ### Prep Wrap-Up
 
 ```{r}
+
+dropAttach <- function(body, boundary) {
+   
+   if(is.null(body)) {
+      return("")
+   }
+   
+   bString <- paste("--", boundary, sep = "")
+   bStringLocs <- which(bString == body)
+   
+   eString <- paste("--", boundary, "--", sep = "")
+   eStringLoc <- which(eString == body)
+   
+   if(length(bStringLocs) == 2) {
+      msg <- body[ (bStringLocs[1] + 1) : (bStringLocs[2] - 1)]
+   }
+   
+   if(length(eStringLoc) > 0) {
+      msg <- c(msg, body[ (eStringLoc + 1) : length(body) ])
+   }
+   
+   return(msg)
+}
+
 processAllWords <- function(dirName, stopWords) {
    # read all files in the directory
    fileNames <- list.files(dirName, full.names = T)
@@ -361,6 +383,9 @@ processAllWords <- function(dirName, stopWords) {
    
    hasAttach <- which(hasAttach > 0)
    
+   # find boundary string for messages with attachments
+   boundaries <- sapply(headerList[hasAttach], getBoundary)
+   
    # drop attachments from message body
    bodyList[hasAttach] <- mapply(dropAttach, bodyList[hasAttach],
                                  boundaries, SIMPLIFY = F)
@@ -376,7 +401,175 @@ processAllWords <- function(dirName, stopWords) {
 
 ```{r}
 
-msgWordList <- lapply(directories, processAllWords)
+msgWordList <- lapply(directories, processAllWords, stopWords = exclude_word_list)
+
+numMsgs <- sapply(msgWordList, length)
+numMsgs
+
+isSpam <- rep(c(FALSE, FALSE, FALSE, TRUE, TRUE), numMsgs)
+
+msgWordsList <- unlist(msgWordList, recursive = F)
+
+```
+
+## Naive Bayes Classifier Implementation
+
+### Train / Test Split
+
+```{r}
+numEmail <- length(isSpam)
+
+numSpam <- sum(isSpam)
+numHam <- numEmail - numSpam
+
+set.seed(418910)
+
+testSpamIdx <- sample(numSpam, size = floor(numSpam/3))
+testHamIdx <- sample(numHam, size = floor(numHam/3))
+
+testMsgWords <- c((msgWordsList[isSpam])[testSpamIdx],
+                  (msgWordsList[!isSpam])[testHamIdx])
+
+trainMsgWords <- c((msgWordsList[isSpam])[ - testSpamIdx ],
+                   (msgWordsList[!isSpam])[ - testHamIdx])
+
+testIsSpam <- rep(c(T, F), 
+                  c(length(testSpamIdx), length(testHamIdx)))
+
+trainIsSpam <- rep(c(T, F),
+                   c(numSpam - length(testSpamIdx),
+                     numHam - length(testHamIdx)))
+
+```
+
+### Probability Estimates from Training Sample
+
+```{r}
+bow <- unique(unlist(trainMsgWords))
+
+length(bow)
+```
+
+```{r}
+spamWordCounts <- rep(0, length(bow))
+
+names(spamWordCounts) = bow
+
+tmp <- lapply(trainMsgWords[trainIsSpam], unique)
+tt <- table( unlist(tmp) )
+spamWordCounts[ names(tt) ] = tt
+
+spamWordsProbs <- (spamWordCounts + 0.5) / (sum(trainIsSpam) + 0.5)
+
+spamWordsProbs[1:20]
+
+hamWordCounts <- rep(0, length(bow))
+
+names(hamWordCounts) = bow
+
+tmp <- lapply(trainMsgWords[ - trainIsSpam], unique)
+tt <- table( unlist(tmp) )
+hamWordCounts[ names(tt) ] = tt
+
+hamWordsProbs <- (hamWordCounts + 0.5) / (sum(!trainIsSpam) + 0.5)
+
+log(spamWordsProbs) - log(hamWordsProbs)
+
+```
+
+```{r}
+wordsList <- trainMsgWords
+spam <- trainIsSpam
+
+make_words_valid_columns <- function( words, all_words ) {
+   
+   word_counts <- rep(0, length(all_words))
+   names(word_counts) <- all_words
+   
+   tmp <- lapply(words, unique)
+   tt <- table( unlist(tmp) )
+   word_counts[ names(tt) ] = tt
+
+   return(word_counts)
+}
+
+computeFreqs <- function(wordsList, spam, bow = unique(unlist(wordsList))) {
+   
+   all_words <- unique(bow)
+   
+   # create a matrix for spam, ham, and log odds
+   wordTable <- matrix(0.5, nrow = 2, ncol = length(bow))
+   colnames(wordTable) <- all_words
+   rownames(wordTable) <- c( "presentLogOdds",
+                          "absentLogOdds")
+   
+   # for each spam message, add 1 to the counts for words in messsage
+   
+   spam_all <- wordsList[spam]
+   spam_words <- make_words_valid_columns( spam_all, all_words )
+
+   wordTable <- rbind(wordTable, spam_words + 0.5)
+   rownames(wordTable)[3] <- "spam"
+   
+   # Similarly for ham messages
+   
+   ham_all <- wordsList[ !spam ]
+   
+   ham_words <- make_words_valid_columns( ham_all, all_words )
+   
+   wordTable <- rbind(wordTable, ham_words + 0.5)
+   rownames(wordTable)[4] <- "ham"
+   
+   head(wordTable[, 1:20])
+   
+   # find the total number of spam and ham
+   numSpam <- sum(spam)
+   numHam <- length(spam) - numSpam
+   
+   # prob (word|spam) and prob(words|ham)
+   wordTable["spam", ] <- wordTable["spam", ] / (numSpam + 0.5)
+   wordTable["ham", ] <- wordTable["ham", ] / (numHam + 0.5)
+   
+   head(wordTable[, 1:20])
+   
+   # log odds
+   wordTable["presentLogOdds", ] = 
+      log(wordTable["spam", ]) - log(wordTable["ham", ])
+   
+   wordTable["absentLogOdds", ] =
+      log((1 - wordTable["spam", ])) - log((1 - wordTable["ham", ]))
+   
+   invisible(wordTable)
+}
+
+```
+
+```{r}
+trainTable <- computeFreqs(trainMsgWords, trainIsSpam)
+
+# peek the prob table
+head(trainTable[, 1:10])
+```
+
+### Classifying New Messages
+
+```{r}
+newMsg <- testMsgWords[[1]]
+
+# only look at words we have classified
+newMsg <- newMsg[ !is.na(match(newMsg, colnames(trainTable)))]
+
+present <- colnames(trainTable) %in% newMsg
+
+sum( trainTable["presentLogOdds", present]) +
+   sum( trainTable["absentLogOdds", !present])
+
+newMsg <- testMsgWords[[ which(!testIsSpam)[ 1 ] ]]
+newMsg <- newMsg[ !is.na(match(newMsg, colnames(trainTable)))]
+present <- (colnames(trainTable) %in% newMsg)
+
+sum(trainTable["presentLogOdds", present]) +
+   sum(trainTable["absentLogOdds", !present])
 
 ```
 

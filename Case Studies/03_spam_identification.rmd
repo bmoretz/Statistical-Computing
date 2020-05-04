@@ -573,3 +573,304 @@ sum(trainTable["presentLogOdds", present]) +
 
 ```
 
+```{r}
+
+computeMsgLLR <- function(words, freqTable) {
+   
+   # discard words not in training data
+   words <- words[!is.na(match(words, colnames(freqTable)))]
+   
+   # Find which words are present
+   present <- colnames(freqTable) %in% words
+   
+   sum(freqTable["presentLogOdds", present]) +
+      sum(freqTable["absentLogOdds", !present])
+}
+
+```
+
+```{r}
+testLLR <- sapply(testMsgWords, computeMsgLLR, trainTable)
+```
+
+```{r}
+tapply(testLLR, testIsSpam, summary)
+```
+
+```{r}
+results_df <- data.table( score = testLLR, class = testIsSpam )
+
+ggplot(results_df, aes(score, class, fill = class)) +
+   geom_boxplot() +
+   coord_flip()   
+```
+
+```{r}
+typeIErrorRate <- function(tau, llrVals, spam) {
+   classify <- llrVals > tau
+   sum(classify & !spam) / sum(!spam)
+}
+
+typeIErrorRate(0, testLLR, testIsSpam)
+typeIErrorRate(-20, testLLR, testIsSpam)
+
+error_rates <- sapply(seq(-30, 30, 1), function(cutoff) c(cutoff = cutoff, rate = typeIErrorRate(cutoff, testLLR, testIsSpam)))
+
+er_df <- data.table(t(error_rates))
+
+ggplot(er_df, aes(cutoff, rate)) +
+   geom_line(col = "darkblue") +
+   labs(title = "False Positive Error Rates")
+```
+
+```{r}
+typeIErrorRates <- function(llrVals, isSpam) {
+   o <- order(llrVals)
+   llrVals <- llrVals[o]
+   isSpam <- isSpam[o]
+   
+   idx <- which(!isSpam)
+   N <- length(idx)
+   list(error = (N:1)/N, values = llrVals[idx])
+}
+
+
+```
+
+### Computational Considerations
+
+```{r}
+smallNums <- rep((1/2)^40, 2000000)
+largeNum <- 10000
+
+print(sum(smallNums), digits = 20)
+
+print(largeNum + sum(smallNums), digits = 20)
+
+for(i in 1:length(smallNums)) {
+   largeNum <- largeNum + smallNums[i]
+}
+
+print(largeNum, digits = 20)
+```
+
+## Recursive Partitioning and Classification Trees
+
+### Revised E-mail Data Structure
+
+```{r}
+header <- sampleSplit[[1]]$header
+
+header[1:12]
+
+header[1] = sub("^From", "Top-From:", header[1])
+
+headerPieces <- read.dcf(textConnection(header), all = T)
+
+headerPieces[, "Delivered-To"]
+
+headerVec <- unlist(headerPieces)
+dupKeys <- sapply(headerPieces, function(x) length(unlist(x)))
+names(headerVec) <- rep(colnames(headerPieces), dupKeys)
+
+headerVec[ which(names(headerVec) == "Delivered-To") ]
+
+length(headerVec)
+
+length(unique(names(headerVec)))
+```
+
+```{r}
+processHeader <- function(header) {
+   # modify the first line to create a key:value pair
+   header[1] <- sub("^From", "Top-From:", header[1])
+   
+   headerMat <- read.dcf(textConnection(header), all = T)
+   headerVec <- unlist(headerMat)
+   
+   dupKeys <- sapply(headerMat, function(x) length(unlist(x)))
+   names(headerVec) <- rep(colnames(headerMat), dupKeys)
+   
+   return(headerVec)
+}
+
+headerList <- lapply(sampleSplit,
+                     function(msg) {
+                        processHeader(msg$header)
+                     })
+
+contentTypes <- sapply(headerList, function(header)
+   header["Content-Type"])
+
+names(contentTypes) <- NULL
+
+contentTypes
+```
+
+#### Attachments Revisited
+
+```{r}
+hasAttach <- grep("^ *multi", tolower(contentTypes))
+hasAttach
+
+boundaries <- getBoundary(contentTypes[ hasAttach ])
+boundaries
+
+boundary <- boundaries[9]
+body <- sampleSplit[[15]]$body
+
+bString <- paste("--", boundary, sep = "")
+bStringLocs <- which(bString == body)
+bStringLocs
+
+eString <- paste("--", boundary, "--", sep = "")
+eStringLoc <- which(eString == body)
+eStringLoc
+
+range <- diff(c(bStringLocs[-1], eStringLoc))
+
+body[1:range]
+
+```
+
+```{r}
+
+processAttach <- function(body, contentType ) {
+
+   boundary <- getBoundary(contentType)
+
+   bString <- paste("--", boundary, sep = "")
+   bStringLocs <- which(bString == body)
+
+   eString <- paste("--", boundary, "--", sep = "")
+   eStringLoc <- which(eString == body)
+   
+   n <- length(body)
+   
+   if(length(bStringLocs) == 2) {
+      
+      bodyContent <- body[(bStringLocs[1] + 2):(bStringLocs[2] - 1)]
+
+      emptyLines <- which(bodyContent == "")
+      bodyContent <- bodyContent[ - emptyLines]
+    
+      attachContent <- body[(bStringLocs[2] + 1):n]
+      
+      aLen <- diff(c(bStringLocs[-1], eStringLoc))
+      aType <- body[bStringLocs[-1] + 1]
+      
+      if(length(aLen) == length(aType)) {      
+         attachments <- data.frame(aLen = aLen, aType = aType)
+      } else {
+         attachments <- data.frame(aLen = c(), aType = c())
+      }
+      
+   } else {
+      if( length(bStringLocs) == 0 ) {
+         bodyContent <- body
+      } else {
+         bodyContent = body
+      }
+      attachments <- data.frame(aLen = c(), aType = c())
+   }
+   
+   return(list(body = bodyContent, attachDF = attachments ))
+}
+
+```
+
+#### More E-Mails
+
+```{r}
+
+bodyList <- lapply(sampleSplit, function(msg) msg$body)
+attList <- mapply(processAttach, bodyList[hasAttach],
+                  contentTypes[hasAttach], SIMPLIFY = F)
+
+lens <- sapply(attList, function(processedA)
+                           processedA$attachDF$aLen)
+```
+
+```{r}
+readEmail <- function(dirName) {
+   # retrieve the names of files in the directory
+   fileNames <- list.files(dirName, full.names = T)
+   
+   # drop files that are not email
+   notEmail <- grep("cmds$", fileNames)
+   
+   if( length(notEmail) > 0 ) fileNames = fileNames[ - notEmail ]
+   
+   # read all files in the directory
+   lapply(fileNames, readLines, encoding = "latin1")
+}
+
+processAllEmail <- function(dirName, isSpam = F) {
+   
+   # read all files in the directory
+   messages <- readEmail(dirName)
+   
+   fileNames <- names(messages)
+   n <- length(messages)
+   
+   # split header from body
+   eSplit <- lapply(messages, splitMessage)
+   rm(messages)
+   
+   # process header as named character vector
+   headerList <- lapply(eSplit, function(msg)
+                           processHeader(msg$header))
+                        
+   # extractd content-type key                        
+   contentTypes <- sapply(headerList, function(header)
+                                       header["Content-Type"])
+   
+   # extract the body
+   bodyList <- lapply(eSplit, function(msg) msg$body)
+   rm(eSplit)
+   
+   # which email have attachements
+   hasAttach <- grep("^ *multi", tolower(contentTypes))
+   
+   # get summary stats for attachments and the shorter body
+   attList <- mapply(processAttach, bodyList[hasAttach],
+                     contentTypes[hasAttach], SIMPLIFY = F)
+   
+   bodyList[hasAttach] <- lapply(attList, function(attEl)
+                                             attEl$body)
+   
+   attachInfo <- vector("list", length = n)
+   attachInfo[ hasAttach ] <- lapply(attList,
+                                     function(attEl) attEl$attachDf)
+   
+   # prepare return structure
+   emailList <- mapply(function(header, body, attach, isSpam) {
+      list(isSpam = isSpam, header = header,
+           body = body, attach = attach)
+   },
+   headerList, bodyList, attachInfo,
+   rep(isSpam, n), SIMPLIFY = F)
+
+   names(emailList) <- fileNames
+   
+   invisible(emailList)
+}
+
+```
+
+```{r}
+emailStruct <- mapply(processAllEmail, directories,
+                      isSpam = rep( c(F, T), 3:2))
+emailStruct <- unlist(emailStruct, recursive = F)
+```
+
+```{r}
+sampleStruct <- emailStruct[ 1 ]
+```
+
+### Deriving Variables from the email Messages
+
+```{r}
+
+```
+

@@ -473,8 +473,9 @@ hamWordCounts[ names(tt) ] = tt
 
 hamWordsProbs <- (hamWordCounts + 0.5) / (sum(!trainIsSpam) + 0.5)
 
-log(spamWordsProbs) - log(hamWordsProbs)
+probs <- log(spamWordsProbs) - log(hamWordsProbs)
 
+head(probs)
 ```
 
 ```{r}

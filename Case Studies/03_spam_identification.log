@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  4 MAY 2020 22:35
+This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  5 MAY 2020 23:01
 entering extended mode
 **./03_spam_identification.tex
 (03_spam_identification.tex
@@ -1100,544 +1100,574 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
 [1
 
 
-]
-Overfull \vbox (1.47772pt too high) detected at line 295
- []
-
-[2]
-Overfull \hbox (128.54247pt too wide) in paragraph at lines 375--375
+] [2]
+Overfull \hbox (128.54247pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00001.7c53336b37003a9286aba55d2945844c[][] 
  []
 
 
-Overfull \hbox (128.54247pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.54247pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00002.9c4069e25e1ef370c078db7ee85ff9ac[][] 
  []
 
 
-Overfull \hbox (128.57845pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.57845pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00003.860e3c3cee1b42ead714c5c874fe25f7[][] 
  []
 
 
-Overfull \hbox (128.50645pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.50645pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00004.864220c5b6930b209cc287c361c99af1[][] 
  []
 
 
-Overfull \hbox (128.54247pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.54247pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00005.bf27cdeaf0b8c4647ecd61b1d09da613[][] 
  []
 
 
-Overfull \hbox (128.57845pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.57845pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00014.cb20e10b2bfcb8210a1c310798532a57[][] 
  []
 
 
-Overfull \hbox (128.54247pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.54247pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00025.d685245bdc4444f44fa091e6620b20b3[][] 
  []
 
 
-Overfull \hbox (128.53044pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.53044pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00062.009f5a1a8fa88f0b38299ad01562bb37[][] 
  []
 
-
-Overfull \hbox (128.56645pt too wide) in paragraph at lines 375--375
+[3]
+Overfull \hbox (128.56645pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00063.0acbc484a73f0e0b727e06c100d8df7b[][] 
  []
 
-[3]
-Overfull \hbox (122.39845pt too wide) in paragraph at lines 375--375
+
+Overfull \hbox (122.39845pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/0030.77828e31de08ebb58b583688b87524cc[][] 
  []
 
 
-Overfull \hbox (128.56645pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.56645pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00368.f86324a03e7ae7070cc40f302385f5d3[][] 
  []
 
 
-Overfull \hbox (128.49446pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.49446pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00389.8606961eaeef7b921ce1c53773248d69[][] 
  []
 
 
-Overfull \hbox (122.37447pt too wide) in paragraph at lines 375--375
+Overfull \hbox (122.37447pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/0047.5c3e049737a2813d4ac6f13f02362fb1[][] 
  []
 
 
-Overfull \hbox (128.51845pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.51845pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00775.0e012f373467846510d9db297e99a008[][] 
  []
 
 
-Overfull \hbox (128.55446pt too wide) in paragraph at lines 375--375
+Overfull \hbox (128.55446pt too wide) in paragraph at lines 377--377
 []\TU/lmtt/m/n/12 $[]D:/Projects/Statistical-Computing/Case Studies/datasets/sp
 am/easy_ham/00883.c44a035e7589e83076b7f1fed8fa97d5[][] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00001.7c53336b37003a9286aba55d2945844c[] 
  []
 
 
-Overfull \hbox (110.03772pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.03772pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 46[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00002.9c4069e25e1ef370c078db7ee85ff9ac[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 45[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00003.860e3c3cee1b42ead714c5c874fe25f7[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 42[] 
  []
 
 
-Overfull \hbox (109.96648pt too wide) in paragraph at lines 418--418
+Overfull \hbox (109.96648pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00004.864220c5b6930b209cc287c361c99af1[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 30[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00005.bf27cdeaf0b8c4647ecd61b1d09da613[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 44[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00014.cb20e10b2bfcb8210a1c310798532a57[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 54[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00025.d685245bdc4444f44fa091e6620b20b3[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 NA[] 
  []
 
 
-Overfull \hbox (109.99046pt too wide) in paragraph at lines 418--418
+Overfull \hbox (109.99046pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00062.009f5a1a8fa88f0b38299ad01562bb37[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 21[] 
  []
 
 
-Overfull \hbox (110.02647pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.02647pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00063.0acbc484a73f0e0b727e06c100d8df7b[] 
  []
 
-
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+[4]
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 17[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 420--420
 [] \TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam
 /easy_ham/0030.77828e31de08ebb58b583688b87524cc[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 52[] 
  []
 
-[4]
-Overfull \hbox (110.02647pt too wide) in paragraph at lines 418--418
+
+Overfull \hbox (110.02647pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00368.f86324a03e7ae7070cc40f302385f5d3[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 31[] 
  []
 
 
-Overfull \hbox (109.95448pt too wide) in paragraph at lines 418--418
+Overfull \hbox (109.95448pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00389.8606961eaeef7b921ce1c53773248d69[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 52[] 
  []
 
 
-Overfull \hbox (110.01448pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.01448pt too wide) in paragraph at lines 420--420
 [] \TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam
 /easy_ham/0047.5c3e049737a2813d4ac6f13f02362fb1[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 52[] 
  []
 
 
-Overfull \hbox (109.97847pt too wide) in paragraph at lines 418--418
+Overfull \hbox (109.97847pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00775.0e012f373467846510d9db297e99a008[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 27[] 
  []
 
 
-Overfull \hbox (110.01448pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.01448pt too wide) in paragraph at lines 420--420
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00883.c44a035e7589e83076b7f1fed8fa97d5[] 
  []
 
 
-Overfull \hbox (110.04971pt too wide) in paragraph at lines 418--418
+Overfull \hbox (110.04971pt too wide) in paragraph at lines 420--420
 []                                                                             
                              \TU/lmtt/m/n/12 31[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00001.7c53336b37003a9286aba55d2945844c[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00002.9c4069e25e1ef370c078db7ee85ff9ac[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00003.860e3c3cee1b42ead714c5c874fe25f7[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (109.96648pt too wide) in paragraph at lines 464--464
+Overfull \hbox (109.96648pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00004.864220c5b6930b209cc287c361c99af1[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00005.bf27cdeaf0b8c4647ecd61b1d09da613[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00014.cb20e10b2bfcb8210a1c310798532a57[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.00249pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.00249pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00025.d685245bdc4444f44fa091e6620b20b3[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                           \TU/lmtt/m/n/12 FALSE[] 
  []
 
 
-Overfull \hbox (109.99046pt too wide) in paragraph at lines 464--464
+Overfull \hbox (109.99046pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00062.009f5a1a8fa88f0b38299ad01562bb37[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.02647pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.02647pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00063.0acbc484a73f0e0b727e06c100d8df7b[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.03847pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.03847pt too wide) in paragraph at lines 466--466
 [] \TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam
 /easy_ham/0030.77828e31de08ebb58b583688b87524cc[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.02647pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.02647pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00368.f86324a03e7ae7070cc40f302385f5d3[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (109.95448pt too wide) in paragraph at lines 464--464
+Overfull \hbox (109.95448pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00389.8606961eaeef7b921ce1c53773248d69[] 
  []
 
-
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+[5]
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.01448pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.01448pt too wide) in paragraph at lines 466--466
 [] \TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam
 /easy_ham/0047.5c3e049737a2813d4ac6f13f02362fb1[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
-[5]
-Overfull \hbox (109.97847pt too wide) in paragraph at lines 464--464
+
+Overfull \hbox (109.97847pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00775.0e012f373467846510d9db297e99a008[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 
-Overfull \hbox (110.01448pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.01448pt too wide) in paragraph at lines 466--466
 []\TU/lmtt/m/n/12 D:/Projects/Statistical-Computing/Case Studies/datasets/spam/
 easy_ham/00883.c44a035e7589e83076b7f1fed8fa97d5[] 
  []
 
 
-Overfull \hbox (110.04973pt too wide) in paragraph at lines 464--464
+Overfull \hbox (110.04973pt too wide) in paragraph at lines 466--466
 []                                                                             
                            \TU/lmtt/m/n/12 TRUE[] 
  []
 
 [6] [7] [8] [9]
-Underfull \vbox (badness 10000) detected at line 824
+Underfull \vbox (badness 10000) detected at line 826
  []
 
 
-Underfull \vbox (badness 10000) detected at line 824
+Underfull \vbox (badness 10000) detected at line 826
  []
 
-[10] [11] [12]
-Underfull \vbox (badness 1917) detected at line 1050
+[10] [11] [12] [13]
+Underfull \vbox (badness 10000) detected at line 1056
  []
 
-[13]
-Underfull \vbox (badness 10000) detected at line 1050
+
+Underfull \vbox (badness 10000) detected at line 1056
  []
 
-[14] [15]
+[14]
+Underfull \vbox (badness 1466) detected at line 1109
+ []
+
+[15] [16]
 File: 03_spam_identification_files/figure-latex/unnamed-chunk-23-1.png Graphic 
 file (type bmp)
 <03_spam_identification_files/figure-latex/unnamed-chunk-23-1.png>
-[16]
 File: 03_spam_identification_files/figure-latex/unnamed-chunk-24-1.png Graphic 
 file (type bmp)
 <03_spam_identification_files/figure-latex/unnamed-chunk-24-1.png>
 [17] [18]
-Overfull \hbox (91.48647pt too wide) in paragraph at lines 1297--1297
+Overfull \hbox (91.48647pt too wide) in paragraph at lines 1303--1303
 []\TU/lmtt/m/n/12 [10] "Received: from listman.spamassassin.taint.org (listman.
 spamassassin.taint.org [66.187.233.211]) by"[] 
  []
 
 [19]
-Overfull \hbox (171.82648pt too wide) in paragraph at lines 1397--1397
+Overfull \hbox (171.82648pt too wide) in paragraph at lines 1403--1403
 [] \TU/lmtt/m/n/12 [6] "multipart/signed;\nboundary=\"==_Exmh_-1317289252P\";\n
 micalg=pgp-sha1;\nprotocol=\"application/pgp-signature\""[] 
  []
 
 
-Overfull \hbox (165.65848pt too wide) in paragraph at lines 1397--1397
+Overfull \hbox (165.65848pt too wide) in paragraph at lines 1403--1403
 []\TU/lmtt/m/n/12 [10] "multipart/signed;\nboundary=\"==_Exmh_-518574644P\";\nm
 icalg=pgp-sha1;\nprotocol=\"application/pgp-signature\""[] 
  []
 
 
-Overfull \hbox (165.67047pt too wide) in paragraph at lines 1397--1397
+Overfull \hbox (165.67047pt too wide) in paragraph at lines 1403--1403
 []\TU/lmtt/m/n/12 [12] "multipart/signed;\nboundary=\"==_Exmh_-451422450P\";\nm
 icalg=pgp-sha1;\nprotocol=\"application/pgp-signature\""[] 
  []
 
 [20]
-Overfull \hbox (159.47847pt too wide) in paragraph at lines 1397--1397
+Overfull \hbox (159.47847pt too wide) in paragraph at lines 1403--1403
 []\TU/lmtt/m/n/12 [13] "multipart/signed;\nboundary=\"==_Exmh_267413022P\";\nmi
 calg=pgp-sha1;\nprotocol=\"application/pgp-signature\""[] 
  []
 
 [21]
-Underfull \vbox (badness 10000) detected at line 1556
+Underfull \vbox (badness 10000) detected at line 1562
  []
 
 [22] [23]
-Underfull \vbox (badness 10000) detected at line 1638
+Underfull \vbox (badness 10000) detected at line 1644
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1638
+Underfull \vbox (badness 10000) detected at line 1644
  []
 
-[24]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1693.
-[25] [26]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1693.
+[24] [25] [26]
+Underfull \vbox (badness 10000) detected at line 1856
+ []
+
+[27] [28] [29] [30] [31] [32]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-47-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-47-1.png>
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-48-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-48-1.png>
+[33]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-49-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-49-1.png>
+[34]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-50-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-50-1.png>
+[35]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-52-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-52-1.png>
+[36]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-52-2.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-52-2.png>
+[37]
+File: 03_spam_identification_files/figure-latex/unnamed-chunk-55-1.png Graphic 
+file (type bmp)
+<03_spam_identification_files/figure-latex/unnamed-chunk-55-1.png>
+[38] [39] [40]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2384.
+[41]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2384.
 (03_spam_identification.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1693.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1693.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 2384.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 2384.
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 22125 strings out of 414221
- 375638 string characters out of 2902595
- 844384 words of memory out of 3000000
- 39365 multiletter control sequences out of 15000+200000
+ 22170 strings out of 414221
+ 378184 string characters out of 2902595
+ 844492 words of memory out of 3000000
+ 39403 multiletter control sequences out of 15000+200000
  533708 words of font info for 55 fonts, out of 3000000 for 9000
  1348 hyphenation exceptions out of 8191
  53i,11n,121p,823b,467s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on 03_spam_identification.pdf (26 pages).
+Output written on 03_spam_identification.pdf (41 pages).

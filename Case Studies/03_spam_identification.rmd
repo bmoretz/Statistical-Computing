@@ -85,6 +85,9 @@ library(tm, quietly = TRUE, warn.conflicts = FALSE)
 
 library(rbenchmark, quietly = TRUE, warn.conflicts = FALSE)
 
+library(rpart, quietly = TRUE, warn.conflicts = FALSE)
+library(rpart.plot, quietly = TRUE, warn.conflicts = FALSE)
+
 options(tinytex.verbose = TRUE)
 suppressMessages(library("tidyverse"))
 
@@ -193,7 +196,6 @@ header[46]
 headerList <- lapply(sampleSplit, function(msg) msg$header)
 
 CTloc <- sapply(headerList, grep, pattern = "Content-Type")
-CTloc
 
 sapply(headerList, function(header) {
    CTloc <- grep("Content-Type", header)
@@ -395,6 +397,7 @@ processAllWords <- function(dirName, stopWords) {
    
    invisible(msgWordsList)
 }
+
 ```
 
 ### Build Email Database
@@ -406,7 +409,11 @@ msgWordList <- lapply(directories, processAllWords, stopWords = exclude_word_lis
 numMsgs <- sapply(msgWordList, length)
 numMsgs
 
-isSpam <- rep(c(FALSE, FALSE, FALSE, TRUE, TRUE), numMsgs)
+isSpam <- c(rep(FALSE, numMsgs[1]), 
+            rep(FALSE, numMsgs[2]), 
+            rep(FALSE, numMsgs[3]), 
+            rep(TRUE, numMsgs[4]),
+            rep(TRUE, numMsgs[5]))
 
 msgWordsList <- unlist(msgWordList, recursive = F)
 
@@ -417,6 +424,7 @@ msgWordsList <- unlist(msgWordList, recursive = F)
 ### Train / Test Split
 
 ```{r}
+
 numEmail <- length(isSpam)
 
 numSpam <- sum(isSpam)
@@ -866,12 +874,324 @@ emailStruct <- unlist(emailStruct, recursive = F)
 ```
 
 ```{r}
-sampleStruct <- emailStruct[ 1 ]
+sampleStruct <- emailStruct[ 1:15 ]
 ```
 
 ### Deriving Variables from the email Messages
 
 ```{r}
+header <- sampleStruct[[1]]$header
+subject <- header["Subject"]
+els <- strsplit(subject, "")
+all(els %in% LETTERS)
+
+testSubject <- c("DEAR MADAM", "WINNER!", "")
+
+els <- strsplit(testSubject, "")
+sapply(els, function(subject) all(subject %in% LETTERS))
+
+gsub("[[:punct:] ]", "", testSubject)
+gsub("[^[:alpha:]]", "", testSubject)
 
 ```
 
+```{r}
+isYelling <- function(msg) {
+   if( "Subject" %in% names(msg$header) ) {
+      el <- gsub("[^[:alpha:]]", "", msg$header["Subject"])
+      
+      if ( nchar(el) > 0 )
+         nchar(gsub("[A-Z]", "", el) < 1 )
+      else
+         FALSE
+   } else {
+      NA
+   }
+}
+
+perCaps <- function(msg) {
+   
+   body <- paste(msg$body, collapse = "")
+   
+   # Return NA if the body of the message is "empty"
+   if(length(body) == 0 || nchar(body) == 0) return (NA)
+   
+   # Eliminate non-alpha characters
+   body <- gsub("[^[:alpha:]]", "", body)
+   capText <- gsub("[^A-Z]", "", body)
+   100 * nchar(capText)/nchar(body)
+}
+
+```
+
+```{r}
+sapply(sampleStruct, perCaps)
+```
+
+```{r}
+
+funcList <- list(
+   
+   isRe = function(msg) {
+      "Subject" %in% names(msg$header) &&
+         length(grep("^[ ]*Re:", msg$header[["Subject"]])) > 0
+   },
+   numLines = function(msg) {
+      length(msg$body)
+   },
+   isYelling = function(msg) {
+      if( "Subject" %in% names(msg$header) ) {
+         el <- gsub("[^[:alpha:]]", "", msg$header["Subject"])
+         
+         if ( nchar(el) > 0 )
+            nchar(gsub("[A-Z]", "", el) < 1 )
+         else
+            FALSE
+      } else {
+         NA
+      }
+   },
+   perCaps = function(msg) {
+      
+      body <- paste(msg$body, collapse = "")
+      
+      # Return NA if the body of the message is "empty"
+      if(length(body) == 0 || nchar(body) == 0) return (NA)
+      
+      # Eliminate non-alpha characters
+      body <- gsub("[^[:alpha:]]", "", body)
+      capText <- gsub("[^A-Z]", "", body)
+      100 * nchar(capText)/nchar(body)
+   }
+)
+
+```
+
+```{r}
+lapply(funcList, function(func)
+   sapply(sampleStruct, function(msg) func(msg)))
+```
+
+```{r}
+createDerivedF <- function(email = emailStruct, operations = funcList,
+                           verbose = F)
+{
+   els <- lapply(names(operations),
+                 function(id) {
+                     if(verbose) print(id)
+                     e <- operations[[id]]
+                     v <- if(is.function(e))
+                           sapply(email, e)
+                        else
+                           sapply(email, function(msg) eval(e))
+                     v
+                  })
+   
+   df <- as.data.frame(els)
+   names(df) <- names(operations)
+   
+   invisible(df)  
+}
+```
+
+```{r}
+sampleDF <- createDerivedF(sampleStruct)
+
+```
+
+```{r}
+spam_data <- file.path(data.dir, "spamAssassinDerivedDF.rda")
+
+load(spam_data)
+```
+
+```{r}
+perCaps2 <- function(msg) {
+   
+   body <- paste(msg$body, collapse = "")
+ 
+   # return NA if the body of the message is "empty"
+   if(length(body) == 0 || nchar(body) == 0) return(NA)
+   
+   # eliminate non-alpha characters and empty lines
+   body <- gsub("[^[:alpha:]]", "", body)
+   els <- unlist(strsplit(body, ""))
+   ctCap <- sum(els %in% LETTERS)
+   100 * ctCap / length(els)
+}
+
+```
+
+```{r}
+pC <- sapply(emailStruct, perCaps)
+pC2 <- sapply(emailStruct, perCaps2)
+
+identical(pC, pC2)
+```
+
+```{r}
+indNA <- which(is.na(emailDF$subExcCt))
+
+indNoSubject <- which(sapply(emailStruct,
+                             function(msg)
+                                !("Subject" %in% names(msg$header))))
+
+all(indNA == indNoSubject)
+```
+
+```{r}
+all(emailDF$bodyCharCt > emailDF$numLines)
+```
+
+```{r}
+
+long_lines <- head(sort(emailDF$numLines, decreasing = T), 10)
+
+rem <- which(emailDF$numLines %in% long_lines)
+
+ggplot(emailDF[-rem, ], aes(bodyCharCt, numLines)) +
+   geom_point(aes(col = bodyCharCt)) +
+   geom_smooth(method = "lm") +
+   scale_x_continuous(lim = c(0, 35000))
+
+```
+
+#### Exploring the email Feature Set
+
+```{r}
+percent <- emailDF$perCaps
+isSpamLabs <- factor(emailDF$isSpam, labels = c("ham", "spam"))
+boxplot(log(1 + percent) ~ isSpamLabs,
+        ylab = "Percent Capitals (log)")
+
+```
+
+```{r}
+
+ggplot(emailDF, aes(perCaps, bodyCharCt, col = isSpam)) +
+   geom_point() +
+   scale_y_log10() +
+   scale_x_log10()
+
+```
+
+```{r}
+
+colI <- c("#4DAF4A80", "#984EA380")
+logBodyCharCt <- log(1 + emailDF$bodyCharCt)
+logPerCaps <- log(1 + emailDF$perCaps)
+plot(logPerCaps ~ logBodyCharCt, xlab = "Total Characters (log)",
+     ylab = "Percent Capitals (log)",
+     col = colI[1 + emailDF$isSpam],
+     xlim = c(2, 12), pch = 19, cex = 0.5)
+```
+
+```{r}
+table(emailDF$numAtt, isSpamLabs)
+```
+
+```{r}
+colM <- c("#E41A1C80", "#377EB880")
+isRe <- factor(emailDF$isRe, labels = c("no Re:", "Re:"))
+mosaicplot(table(isSpamLabs, isRe), main = "",
+           xlab = "", ylab = "", color = colM)
+
+fromNE <- factor(emailDF$numEnd, labels = c("No #", "#"))
+mosaicplot(table(isSpamLabs, fromNE), color = colM,
+           main = "", xlab = "", ylab = "")
+```
+
+### Fitting Recursive Partition
+
+```{r}
+setupRpart <- function(data) {
+   logicalVars <- which(sapply(data, is.logical))
+   facVars <- lapply(data[, logicalVars],
+                     function(x) {
+                        x = as.factor(x)
+                        levels(x) = c("F", "T")
+                        x
+                     })
+   cbind(facVars, data[, - logicalVars])
+}
+
+emailDFrp <- setupRpart(emailDF)
+```
+
+```{r}
+set.seed(418910)
+
+numSpam <- sum(isSpam)
+numHam <- numEmail - numSpam
+
+testSpamIdx <- sample(numSpam, size = floor(numSpam/3))
+testHamIdx <- sample(numHam, size = floor(numHam/3))
+
+testDF <- rbind( emailDFrp[ emailDFrp$isSpam == "T", ][testSpamIdx, ],
+                 emailDFrp[ emailDFrp$isSpam == "F", ][testHamIdx, ])
+
+trainDF <- rbind( emailDFrp[ emailDFrp$isSpam == "T", ][-testSpamIdx, ],
+                 emailDFrp[ emailDFrp$isSpam == "F", ][-testHamIdx, ])
+
+```
+
+```{r}
+rpartFit <- rpart(isSpam ~ ., data = trainDF, method = "class")
+
+prp(rpartFit, extra = 1)
+```
+
+```{r}
+predictions <- predict(rpartFit,
+                       newdata = testDF[, names(testDF) != "isSpam"],
+                       type = "class")
+
+predsForHam <- predictions[ testDF$isSpam == "F" ]
+summary(predsForHam)
+
+sum(predsForHam == "T", na.rm = T) / length(predsForHam)
+
+predsForSpam <- predictions[ testDF$isSpam == "T" ]
+sum(predsForSpam == "F", na.rm = T) / length(predsForSpam)
+```
+
+```{r}
+args(rpart.control)
+```
+
+```{r}
+complexityVals <- c(seq(0.00001, 0.0001, length = 19),
+                    seq(0.0001, 0.001, length = 19),
+                    seq(0.001, 0.005, length = 9),
+                    seq(0.005, 0.01, length = 9))
+
+fits <- lapply(complexityVals, function(x) {
+   rpartObj <- rpart(isSpam ~ ., data = trainDF,
+                     method = "class",
+                     control = rpart.control(cp=x))
+   
+   predict(rpartObj,
+           newdata = testDF[, names(testDF) != "isSpam"],
+           type = "class")
+})
+
+```
+ 
+```{r}
+spam <- testDF$isSpam == "T"
+numSpam <- sum(spam, na.rm = T)
+numHam <- sum(!spam, na.rm = T)
+
+errs <- sapply(fits, function(preds) {
+   typeI = sum( preds[ !spam ] == "T", na.rm = T) / numHam
+   typeII = sum( preds[ spam ] == "F", na.rm = T) / numSpam
+   c(typeI = typeI, typeII = typeII )
+})
+
+errs
+
+err_df <- data.table(t(errs))
+
+```
+ 
+ 

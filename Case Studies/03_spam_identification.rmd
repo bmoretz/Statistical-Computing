@@ -1194,4 +1194,183 @@ err_df <- data.table(t(errs))
 
 ```
  
- 
+### Further Analysis
+
+### 1.)
+
+We hand-selected email to belong to the sample set in the _sampleEmail_. Instead of this approach, use the sample function to choose messages at random for the sample. Be sure to take files from all 5 directories of the email.
+
+```{r}
+dir <- directories[1]
+
+dir_lens <- sapply(directories, function(dir) length(list.files(dir)))
+
+new_sample <- sapply(directories[ dir_lens > 1 ], function(dir) {
+  file_list <- list.files(dir)
+  
+  n <- length(file_list)
+
+  idx <- sample(1:n, 30)
+  
+  return(file_list[idx])
+})
+
+new_sample
+
+```
+
+### 2.) In the text mining approach to detecting spam we ignored all attachments in creating the set of words belonging to a message (see Section 3.5.2). Write a function to extract words from any plain text or HTML attachment and include these words in the set of a message's words. Try to reuse _findMsg()_ function and modify the _dropAttach()_ function to accept an additional parameter that indicates whether or not the words in the attachments are to be extracted.
+
+```{r}
+
+index <- hasAttach[2]
+
+boundary <- getBoundary(headerList[[index]])
+body <- sampleSplit[[index]]$body
+body
+
+includeAttach <- function(body, boundary) {
+   
+   if(is.null(body)) {
+      return("")
+   }
+   
+   bString <- paste("--", boundary, sep = "")
+   bStringLocs <- which(bString == body)
+   
+   eString <- paste("--", boundary, "--", sep = "")
+   eStringLoc <- which(eString == body)
+   
+   return(msg)
+}
+
+```
+
+### 3.)
+
+The string manipulation functions in R can be used instead of regular expression functions for finding, changing and extracting substrings from strings. These functions include: _strsplit()_ to divide a string up into pieces, _substr()_ to extract a portion of a string, _paste()_ to glue together multiple strings, and _nchar()_, which returns the number of characters in a string. Write your own version of the get boundary strings from the Content-Type.
+
+```{r}
+
+header <- sampleSplit[[6]]$header
+boundaryIdx <- grep("boundary=", header)
+header[boundaryIdx]
+
+boundary <- header[ str_which(header, "boundary=") ]
+pieces <- unlist(strsplit(boundary, '='))
+pieces <- pieces[ str_which(pieces, ";") ]
+
+
+sub(".*boundary=\"(.*)\";.*", "\\1", header[boundaryIdx])
+
+header2 <- headerList[[9]]
+boundaryIdx2 <- grep("boundary=", header2)
+header2[boundaryIdx2]
+
+sub('.*boundary="(.*)";.*', "\\1", header2[boundaryIdx2])
+
+boundary2 <- gsub('"', "", header2[boundaryIdx2])
+
+sub(".*boundary= *(.*);?.*", "\\1", boundary2)
+
+boundary <- gsub('"', "", header[boundaryIdx])
+sub(".*boundary= *(.*);?.*", "\\1", boundary)
+
+getBoundary2 <- function(header) {
+   boundary <- header[ str_which(header, "boundary=") ]
+   pieces <- unlist(strsplit(boundary, '='))
+   pieces <- pieces[ str_which(pieces, ";") ]
+   paste("==", pieces, sep = "")
+}
+
+getBoundary(header)
+getBoundary2(header)
+```
+
+### 4.)
+
+Write the __dropAttach()_ function for Section 3.5.2. This funciton has two inputs, the body of a mkessage and the boundary string that marks the location of the attachments. It returns the body without its attachments. Include in the return value the lines of the body that follow the first boundary string up to the string marking the first attachment and the lines following the ending boundary string. Be sure to consider the idiosyncratic cases of no attachments and a missing ending boundary string.
+
+```{r}
+processAttach <- function(body, contentType ) {
+
+   boundary <- getBoundary(contentType)
+
+   bString <- paste("--", boundary, sep = "")
+   bStringLocs <- which(bString == body)
+
+   eString <- paste("--", boundary, "--", sep = "")
+   eStringLoc <- which(eString == body)
+   
+   n <- length(body)
+   
+   if(length(bStringLocs) == 2) {
+      
+      bodyContent <- body[(bStringLocs[1] + 2):(bStringLocs[2] - 1)]
+
+      emptyLines <- which(bodyContent == "")
+      bodyContent <- bodyContent[ - emptyLines]
+    
+      attachContent <- body[(bStringLocs[2] + 1):n]
+      
+      aLen <- diff(c(bStringLocs[-1], eStringLoc))
+      aType <- body[bStringLocs[-1] + 1]
+      
+      if(length(aLen) == length(aType)) {      
+         attachments <- data.frame(aLen = aLen, aType = aType)
+      } else {
+         attachments <- data.frame(aLen = c(), aType = c())
+      }
+      
+   } else {
+      if( length(bStringLocs) == 0 ) {
+         bodyContent <- body
+      } else {
+         bodyContent = body
+      }
+      attachments <- data.frame(aLen = c(), aType = c())
+   }
+   
+   return(list(body = bodyContent, attachDF = attachments ))
+}
+
+```
+
+### 5.)
+
+Write the function __findMsgWords()__ of Section 3.5.3. This function takes as input the message body (with no attachments) and the return value is a vector of the unique words in the message. That is, we only track which words are in the message, not the number of times these words appear in the message. Consider wheather it is simpler to split the string by blanks first and then process the puncuation, digits, etc. The function should convert capital letters to lower case and drop all stop words and words that are only one letter long. A vector of stop words is avaliable in the tm package.
+
+```{r}
+msg <- sampleSplit[[3]]$body
+msg
+
+findMsgWords <- function(msg) {
+
+}
+
+words <- unlist(sapply(msg, function(line) strsplit(line, " ")))
+names(words) <- ""
+
+n <- length(words)
+
+msg_words <- vector(mode = "character")
+
+for(i in 1:n)
+{
+   word <- tolower(words[i])
+   
+   if( word %in% exclude_word_list) {
+      next
+   }
+   
+   
+}
+
+tw <- "http://us.click.yahoo.com/pt6YBB/NXiEAA/mG3HAA/7gSolB/TM"
+
+gsub(tw, pattern = "(//)", "")
+
+exclude_word_list
+```
+
+### 6.)

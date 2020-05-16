@@ -1,0 +1,65 @@
+---
+title : Why Julia
+author : Brandon Moretz
+date: 15th May 2020
+options:
+  out_path : 01_WhyJulia.md
+  doctype :  github
+---
+
+# Introduction
+
+```julia
+using JuMP; using Clp;
+
+using GLPKMathProgInterface
+```
+
+Example Solver
+
+$$
+min \sum_{(i,j)} c_{ij}x{ij}
+$$
+
+subject to
+
+$$
+\sum_{i,j \in A} x_{ij} - \sum_{(j,i)\in A} x_{ij} = b_i \thickspace \forall_i \in N
+$$
+
+$$
+0 \le x_{ij} \le 1 \space \forall(i, j) \in A
+$$
+
+
+```julia
+model = Model(Clp.Optimizer)
+
+@variable(model, 0 <= x[links] <= 1)
+
+@objective(model, Min, sum(c[(i, j)] * x[(i, j)] for (i,j) in links) )
+
+for i = 1:no_node
+   @constraint(model, sum(x[ii, j]) for (ii, j) in links if ii = i)
+              - sum(x[(j, ii)] for (j, ii) in links if ii=i) == b[i])
+end
+
+solve(model)
+```
+
+```julia
+model = Model(Clp.Optimizer)
+
+@variable(model, 0 <= x <= 40)
+@variable(model, y <= 0)
+@variable(model, z <= 0)
+
+@objective(model, Max, x + y + z)
+
+@constraint(model, const1, -x + y + z <= 20)
+@constraint(model, const2, x + 3y + z <= 30)
+
+optimize!(model)
+
+[JuMP.value(x), JuMP.value(y), JuMP.value(z) ]
+```

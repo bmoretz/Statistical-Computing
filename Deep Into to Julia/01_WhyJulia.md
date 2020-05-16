@@ -352,7 +352,7 @@ Body::Int64
 
 ````
 Variables
-  #self#::Core.Compiler.Const(Main.WeaveSandBox8.expo, false)
+  #self#::Core.Compiler.Const(Main.WeaveSandBox0.expo, false)
   x@_2::Int64
   y::Int64
   x@_4::UNION{FLOAT64, INT64}
@@ -363,7 +363,7 @@ Body::UNION{FLOAT64, INT64}
 └──      goto #3 if not %2
 2 ─ %4 = (x@_4::Int64 ^ y)::Int64
 └──      return %4
-3 ─      (x@_4 = Main.WeaveSandBox8.convert(Main.WeaveSandBox8.Float64, x@_
+3 ─      (x@_4 = Main.WeaveSandBox0.convert(Main.WeaveSandBox0.Float64, x@_
 4::Int64))
 │   %7 = (x@_4::Float64 ^ y)::Float64
 └──      return %7
@@ -472,7 +472,7 @@ end
 ````
 ;  @ none:2 within `badidea'
 ; Function Attrs: uwtable
-define nonnull %jl_value_t addrspace(10)* @julia_badidea_23526() #0 {
+define nonnull %jl_value_t addrspace(10)* @julia_badidea_21186() #0 {
 top:
   %0 = alloca %jl_value_t addrspace(10)*, i32 2
   %gcframe = alloca %jl_value_t addrspace(10)*, i32 3, align 16
@@ -493,15 +493,15 @@ top:
   %9 = bitcast %jl_value_t*** %5 to %jl_value_t addrspace(10)***
   store %jl_value_t addrspace(10)** %gcframe, %jl_value_t addrspace(10)*** 
 %9
-  %10 = load %jl_value_t*, %jl_value_t** @delayedvar23527, align 8
+  %10 = load %jl_value_t*, %jl_value_t** @delayedvar21187, align 8
   %11 = icmp eq %jl_value_t* %10, null
   br i1 %11, label %notfound, label %found
 
 notfound:                                         ; preds = %top
   %12 = call %jl_value_t* @jl_get_binding_or_error(%jl_value_t* inttoptr (i
-64 1281015824 to %jl_value_t*), %jl_value_t* inttoptr (i64 1642956904 to %j
-l_value_t*))
-  store %jl_value_t* %12, %jl_value_t** @delayedvar23527, align 8
+64 962829648 to %jl_value_t*), %jl_value_t* inttoptr (i64 866461304 to %jl_
+value_t*))
+  store %jl_value_t* %12, %jl_value_t** @delayedvar21187, align 8
   br label %found
 
 found:                                            ; preds = %top, %notfound
@@ -516,8 +516,8 @@ lign 8
 
 err:                                              ; preds = %found
   call void @jl_undefined_var_error(%jl_value_t addrspace(12)* addrspacecas
-t (%jl_value_t* inttoptr (i64 1642956904 to %jl_value_t*) to %jl_value_t ad
-drspace(12)*))
+t (%jl_value_t* inttoptr (i64 866461304 to %jl_value_t*) to %jl_value_t add
+rspace(12)*))
   unreachable
 
 ok:                                               ; preds = %found
@@ -530,10 +530,10 @@ ok:                                               ; preds = %found
   %20 = getelementptr %jl_value_t addrspace(10)*, %jl_value_t addrspace(10)
 ** %0, i32 1
   store %jl_value_t addrspace(10)* addrspacecast (%jl_value_t* inttoptr (i6
-4 140411040 to %jl_value_t*) to %jl_value_t addrspace(10)*), %jl_value_t ad
+4 399671456 to %jl_value_t*) to %jl_value_t addrspace(10)*), %jl_value_t ad
 drspace(10)** %20
   %21 = call nonnull %jl_value_t addrspace(10)* @jl_apply_generic(%jl_value
-_t addrspace(10)* addrspacecast (%jl_value_t* inttoptr (i64 205027664 to %j
+_t addrspace(10)* addrspacecast (%jl_value_t* inttoptr (i64 203651408 to %j
 l_value_t*) to %jl_value_t addrspace(10)*), %jl_value_t addrspace(10)** %0,
  i32 2)
   %22 = getelementptr %jl_value_t addrspace(10)*, %jl_value_t addrspace(10)
@@ -558,7 +558,7 @@ end
 
 
 ````
-0.000005 seconds (4 allocations: 64 bytes)
+0.000055 seconds (59 allocations: 2.656 KiB)
 ````
 
 

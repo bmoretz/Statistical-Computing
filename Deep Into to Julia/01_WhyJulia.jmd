@@ -1,0 +1,21 @@
+---
+title : Weave example
+author : Brandon Moretz
+date: 15th May 2020
+options:
+  out_path : 01_WhyJulia.md
+  doctype :  github
+---
+
+# Introduction
+
+```julia
+using Plots;
+gr(fmt = :png)
+```
+
+Basic Plotting
+
+```julia
+plot(rand(4, 4))
+```

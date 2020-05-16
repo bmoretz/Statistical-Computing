@@ -27,4 +27,5 @@ $f(x) = x^3\beta_0$
 What is the minimum of the function
 
 ```julia
+
 ```

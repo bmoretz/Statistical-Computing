@@ -1,5 +1,5 @@
 ---
-title : Weave example
+title : Why Julia
 author : Brandon Moretz
 date: 15th May 2020
 options:
@@ -18,4 +18,207 @@ Basic Plotting
 
 ```julia
 plot(rand(4, 4))
+```
+
+# Arithmetic
+
+```julia
+a = 2+2
+b = a/3
+c = a ÷ 3
+d = 4*5
+
+[a;b;c;d]
+```
+
+```julia
+α = 0.5
+∇f(u) = α*u; ∇f(2)
+sin(2π)
+```
+
+# Type-stability and Code Introspection
+
+```julia
+using InteractiveUtils;
+
+@code_llvm 2*5
+```
+
+```julia
+@code_native 2*5
+```
+
+```julia
+2^5
+2^-5
+```
+
+```julia
+@code_native ^(2, 5)
+```
+
+```julia
+function expo(x, y)
+
+  if y > 0
+    return x^y
+  else
+    x = convert(Float64, x)
+    return x^y
+  end
+end
+
+expo
+```
+
+```julia
+expo(2, 5)
+expo(2, -5)
+```
+
+```julia
+@code_native expo(2, 5)
+```
+
+Automatic bounds checking:
+
+```julia
+function test1()
+  a = zeros(3)
+  for i = 1:4
+    a[i] = 1
+  end
+end
+
+test1()
+```
+
+```julia
+function test2()
+  a = zeros(3)
+  @inbounds for i = 1:4
+    a[i] = i
+  end
+end
+test2()
+```
+
+# Type Checking
+
+```julia
+a = Vector{Any}(undef, 3)
+a[1] = 1.0
+a[2] = "hi!"
+a[3] = :Symbolic
+a
+```
+
+```julia
+a = Vector{Union{Float64, Int}}(undef, 3)
+a[1] = 1.0
+a[2] = 3
+a[3] = 1/4
+a
+```
+
+```julia
+a = Vector{Float64}(undef, 3)
+a[1] = 1.0
+a[2] = 3
+a[3] = 1/4
+a
+```
+
+# Drawbacks
+
+```julia
+@code_warntype 2^5
+```
+
+```julia
+@code_warntype expo(2, 5)
+```
+
+```julia
+using Traceur
+
+@trace expo(2, 5)
+```
+
+# Dealing with Necessary Type-Instabilities
+
+```julia
+function foo(array)
+  for i in eachindex(array)
+    val = array[i]
+    # do algorithm X on val
+  end
+end
+
+function inner_foo(val)
+  # do algorithm on val
+end
+
+foo(2)
+```
+
+```julia
+function foo2(array::Array)
+  for i in eachindex(array)
+    inner_foo(array[i])
+  end
+end
+```
+
+# Globals
+
+In general, globals in julia have bad performance.
+
+```julia
+function test(x)
+  y = x + 2
+  function test2()
+    y + 3
+  end
+  test2()
+end
+```
+
+```julia
+a = 3
+function badidea()
+  a + 2
+end
+
+a = 3.0
+```
+
+```julia
+const a_cons = 3
+function badidea()
+  a_const + 2
+end
+
+@code_llvm badidea()
+```
+
+```julia
+a = 3.0
+@time for i = 1:4
+  global a
+  a += 1
+end
+```
+
+```julia
+function timetest()
+  a = 3.0
+  @time for i = 1:4
+    a += 1
+  end
+end
+
+timetest()
+timetest()
 ```

@@ -1,19 +1,14 @@
----
-title : Introduction
-author : Brandon Moretz
-date: 15th May 2020
-options:
-  out_path : 01_Introduction.md
-  doctype :  github
----
-
 # Introduction
 
-```julia
+````julia
 using JuMP; using Clp;
 
 using GLPKMathProgInterface
-```
+````
+
+
+
+
 
 Example Solver
 
@@ -32,7 +27,7 @@ $$
 $$
 
 
-```julia
+````julia
 model = Model(Clp.Optimizer)
 
 @variable(model, 0 <= x <= 40)
@@ -44,11 +39,19 @@ model = Model(Clp.Optimizer)
 @constraint(model, const1, -x + y + z <= 20)
 @constraint(model, const2, x + 3y + z <= 30)
 
-display(model)
-
 optimize!(model)
 
 results = [JuMP.value(x), JuMP.value(y), JuMP.value(z) ]
 
 display(results)
-```
+````
+
+
+````
+3-element Array{Float64,1}:
+ 40.0
+ -3.3333333333333335
+  0.0
+````
+
+

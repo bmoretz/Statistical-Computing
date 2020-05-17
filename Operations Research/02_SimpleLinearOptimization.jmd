@@ -20,10 +20,6 @@ A straight forward approach to linear programming problems:
 
 Given,
 
-```math
-\frac{n!}{k!(n - k)!} = \binom{n}{k}
-```
-
 $$
 max \; x_1 + 2x_2 + 5x_3
 $$

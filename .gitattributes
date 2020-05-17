@@ -3,3 +3,6 @@
 
 *.html linguist-detectable=false
 *.htm inguist-detectable=false
+
+*.html    linguist-generated=true
+*.htl    linguist-generated=true

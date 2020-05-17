@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<HTML lang = "en">
+<HEAD>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Julia Basics</title>
+  
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: { equationNumbers: { autoNumber: "AMS" } }
+    });
+  </script>
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+
+  
+<style>
+pre.hljl {
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+    overflow-x: auto;
+    color: rgb(68,68,68); background-color: rgb(251,251,251); }
+pre.hljl > span.hljl-t { }
+pre.hljl > span.hljl-w { }
+pre.hljl > span.hljl-e { }
+pre.hljl > span.hljl-eB { }
+pre.hljl > span.hljl-o { }
+pre.hljl > span.hljl-k { color: rgb(148,91,176); font-weight: bold; }
+pre.hljl > span.hljl-kc { color: rgb(59,151,46); font-style: italic; }
+pre.hljl > span.hljl-kd { color: rgb(214,102,97); font-style: italic; }
+pre.hljl > span.hljl-kn { color: rgb(148,91,176); font-weight: bold; }
+pre.hljl > span.hljl-kp { color: rgb(148,91,176); font-weight: bold; }
+pre.hljl > span.hljl-kr { color: rgb(148,91,176); font-weight: bold; }
+pre.hljl > span.hljl-kt { color: rgb(148,91,176); font-weight: bold; }
+pre.hljl > span.hljl-n { }
+pre.hljl > span.hljl-na { }
+pre.hljl > span.hljl-nb { }
+pre.hljl > span.hljl-nbp { }
+pre.hljl > span.hljl-nc { }
+pre.hljl > span.hljl-ncB { }
+pre.hljl > span.hljl-nd { color: rgb(214,102,97); }
+pre.hljl > span.hljl-ne { }
+pre.hljl > span.hljl-neB { }
+pre.hljl > span.hljl-nf { color: rgb(66,102,213); }
+pre.hljl > span.hljl-nfm { color: rgb(66,102,213); }
+pre.hljl > span.hljl-np { }
+pre.hljl > span.hljl-nl { }
+pre.hljl > span.hljl-nn { }
+pre.hljl > span.hljl-no { }
+pre.hljl > span.hljl-nt { }
+pre.hljl > span.hljl-nv { }
+pre.hljl > span.hljl-nvc { }
+pre.hljl > span.hljl-nvg { }
+pre.hljl > span.hljl-nvi { }
+pre.hljl > span.hljl-nvm { }
+pre.hljl > span.hljl-l { }
+pre.hljl > span.hljl-ld { color: rgb(148,91,176); font-style: italic; }
+pre.hljl > span.hljl-s { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sa { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sb { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sc { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sd { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sdB { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sdC { color: rgb(201,61,57); }
+pre.hljl > span.hljl-se { color: rgb(59,151,46); }
+pre.hljl > span.hljl-sh { color: rgb(201,61,57); }
+pre.hljl > span.hljl-si { }
+pre.hljl > span.hljl-so { color: rgb(201,61,57); }
+pre.hljl > span.hljl-sr { color: rgb(201,61,57); }
+pre.hljl > span.hljl-ss { color: rgb(201,61,57); }
+pre.hljl > span.hljl-ssB { color: rgb(201,61,57); }
+pre.hljl > span.hljl-nB { color: rgb(59,151,46); }
+pre.hljl > span.hljl-nbB { color: rgb(59,151,46); }
+pre.hljl > span.hljl-nfB { color: rgb(59,151,46); }
+pre.hljl > span.hljl-nh { color: rgb(59,151,46); }
+pre.hljl > span.hljl-ni { color: rgb(59,151,46); }
+pre.hljl > span.hljl-nil { color: rgb(59,151,46); }
+pre.hljl > span.hljl-noB { color: rgb(59,151,46); }
+pre.hljl > span.hljl-oB { color: rgb(102,102,102); font-weight: bold; }
+pre.hljl > span.hljl-ow { color: rgb(102,102,102); font-weight: bold; }
+pre.hljl > span.hljl-p { }
+pre.hljl > span.hljl-c { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-ch { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-cm { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-cp { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-cpB { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-cs { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-csB { color: rgb(153,153,119); font-style: italic; }
+pre.hljl > span.hljl-g { }
+pre.hljl > span.hljl-gd { }
+pre.hljl > span.hljl-ge { }
+pre.hljl > span.hljl-geB { }
+pre.hljl > span.hljl-gh { }
+pre.hljl > span.hljl-gi { }
+pre.hljl > span.hljl-go { }
+pre.hljl > span.hljl-gp { }
+pre.hljl > span.hljl-gs { }
+pre.hljl > span.hljl-gsB { }
+pre.hljl > span.hljl-gt { }
+</style>
+
+
+
+  <style type="text/css">
+  @font-face {
+  font-style: normal;
+  font-weight: 300;
+}
+@font-face {
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-style: normal;
+  font-weight: 600;
+}
+html {
+  font-family: sans-serif; /* 1 */
+  -ms-text-size-adjust: 100%; /* 2 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+body {
+  margin: 0;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+audio,
+canvas,
+progress,
+video {
+  display: inline-block; /* 1 */
+  vertical-align: baseline; /* 2 */
+}
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+[hidden],
+template {
+  display: none;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+abbr[title] {
+  border-bottom: 1px dotted;
+}
+b,
+strong {
+  font-weight: bold;
+}
+dfn {
+  font-style: italic;
+}
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+mark {
+  background: #ff0;
+  color: #000;
+}
+small {
+  font-size: 80%;
+}
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
+}
+img {
+  border: 0;
+}
+svg:not(:root) {
+  overflow: hidden;
+}
+figure {
+  margin: 1em 40px;
+}
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+pre {
+  overflow: auto;
+}
+code,
+kbd,
+pre,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit; /* 1 */
+  font: inherit; /* 2 */
+  margin: 0; /* 3 */
+}
+button {
+  overflow: visible;
+}
+button,
+select {
+  text-transform: none;
+}
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button; /* 2 */
+  cursor: pointer; /* 3 */
+}
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+input {
+  line-height: normal;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+input[type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box; /* 2 */
+  box-sizing: content-box;
+}
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+legend {
+  border: 0; /* 1 */
+  padding: 0; /* 2 */
+}
+textarea {
+  overflow: auto;
+}
+optgroup {
+  font-weight: bold;
+}
+table {
+  font-family: monospace, monospace;
+  font-size : 0.8em;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td,
+th {
+  padding: 0;
+}
+thead th {
+    border-bottom: 1px solid black;
+    background-color: white;
+}
+tr:nth-child(odd){
+  background-color: rgb(248,248,248);
+}
+
+
+/*
+* Skeleton V2.0.4
+* Copyright 2014, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 12/29/2014
+*/
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box; }
+.column,
+.columns {
+  width: 100%;
+  float: left;
+  box-sizing: border-box; }
+@media (min-width: 400px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+@media (min-width: 550px) {
+  .container {
+    width: 80%; }
+  .column,
+  .columns {
+    margin-left: 4%; }
+  .column:first-child,
+  .columns:first-child {
+    margin-left: 0; }
+
+  .one.column,
+  .one.columns                    { width: 4.66666666667%; }
+  .two.columns                    { width: 13.3333333333%; }
+  .three.columns                  { width: 22%;            }
+  .four.columns                   { width: 30.6666666667%; }
+  .five.columns                   { width: 39.3333333333%; }
+  .six.columns                    { width: 48%;            }
+  .seven.columns                  { width: 56.6666666667%; }
+  .eight.columns                  { width: 65.3333333333%; }
+  .nine.columns                   { width: 74.0%;          }
+  .ten.columns                    { width: 82.6666666667%; }
+  .eleven.columns                 { width: 91.3333333333%; }
+  .twelve.columns                 { width: 100%; margin-left: 0; }
+
+  .one-third.column               { width: 30.6666666667%; }
+  .two-thirds.column              { width: 65.3333333333%; }
+
+  .one-half.column                { width: 48%; }
+
+  /* Offsets */
+  .offset-by-one.column,
+  .offset-by-one.columns          { margin-left: 8.66666666667%; }
+  .offset-by-two.column,
+  .offset-by-two.columns          { margin-left: 17.3333333333%; }
+  .offset-by-three.column,
+  .offset-by-three.columns        { margin-left: 26%;            }
+  .offset-by-four.column,
+  .offset-by-four.columns         { margin-left: 34.6666666667%; }
+  .offset-by-five.column,
+  .offset-by-five.columns         { margin-left: 43.3333333333%; }
+  .offset-by-six.column,
+  .offset-by-six.columns          { margin-left: 52%;            }
+  .offset-by-seven.column,
+  .offset-by-seven.columns        { margin-left: 60.6666666667%; }
+  .offset-by-eight.column,
+  .offset-by-eight.columns        { margin-left: 69.3333333333%; }
+  .offset-by-nine.column,
+  .offset-by-nine.columns         { margin-left: 78.0%;          }
+  .offset-by-ten.column,
+  .offset-by-ten.columns          { margin-left: 86.6666666667%; }
+  .offset-by-eleven.column,
+  .offset-by-eleven.columns       { margin-left: 95.3333333333%; }
+
+  .offset-by-one-third.column,
+  .offset-by-one-third.columns    { margin-left: 34.6666666667%; }
+  .offset-by-two-thirds.column,
+  .offset-by-two-thirds.columns   { margin-left: 69.3333333333%; }
+
+  .offset-by-one-half.column,
+  .offset-by-one-half.columns     { margin-left: 52%; }
+
+}
+html {
+  font-size: 62.5%; }
+body {
+  font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
+  line-height: 1.6;
+  font-weight: 400;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222; }
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-weight: 300; }
+h1 { font-size: 3.6rem; line-height: 1.2;  letter-spacing: -.1rem;}
+h2 { font-size: 3.4rem; line-height: 1.25; letter-spacing: -.1rem; }
+h3 { font-size: 3.2rem; line-height: 1.3;  letter-spacing: -.1rem; }
+h4 { font-size: 2.8rem; line-height: 1.35; letter-spacing: -.08rem; }
+h5 { font-size: 2.4rem; line-height: 1.5;  letter-spacing: -.05rem; }
+h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; }
+
+p {
+  margin-top: 0; }
+a {
+  color: #1EAEDB; }
+a:hover {
+  color: #0FA0CE; }
+.button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  display: inline-block;
+  height: 38px;
+  padding: 0 30px;
+  color: #555;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  box-sizing: border-box; }
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+.button:focus,
+button:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input[type="button"]:focus {
+  color: #333;
+  border-color: #888;
+  outline: 0; }
+.button.button-primary,
+button.button-primary,
+input[type="submit"].button-primary,
+input[type="reset"].button-primary,
+input[type="button"].button-primary {
+  color: #FFF;
+  background-color: #33C3F0;
+  border-color: #33C3F0; }
+.button.button-primary:hover,
+button.button-primary:hover,
+input[type="submit"].button-primary:hover,
+input[type="reset"].button-primary:hover,
+input[type="button"].button-primary:hover,
+.button.button-primary:focus,
+button.button-primary:focus,
+input[type="submit"].button-primary:focus,
+input[type="reset"].button-primary:focus,
+input[type="button"].button-primary:focus {
+  color: #FFF;
+  background-color: #1EAEDB;
+  border-color: #1EAEDB; }
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+  height: 38px;
+  padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
+  background-color: #fff;
+  border: 1px solid #D1D1D1;
+  border-radius: 4px;
+  box-shadow: none;
+  box-sizing: border-box; }
+/* Removes awkward default styles on some inputs for iOS */
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+textarea {
+  min-height: 65px;
+  padding-top: 6px;
+  padding-bottom: 6px; }
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #33C3F0;
+  outline: 0; }
+label,
+legend {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 600; }
+fieldset {
+  padding: 0;
+  border-width: 0; }
+input[type="checkbox"],
+input[type="radio"] {
+  display: inline; }
+label > .label-body {
+  display: inline-block;
+  margin-left: .5rem;
+  font-weight: normal; }
+ul {
+  list-style: circle; }
+ol {
+  list-style: decimal; }
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+  margin: 1.5rem 0 1.5rem 3rem;
+  font-size: 90%; }
+li > p {margin : 0;}
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #E1E1E1; }
+th:first-child,
+td:first-child {
+  padding-left: 0; }
+th:last-child,
+td:last-child {
+  padding-right: 0; }
+button,
+.button {
+  margin-bottom: 1rem; }
+input,
+textarea,
+select,
+fieldset {
+  margin-bottom: 1.5rem; }
+pre,
+blockquote,
+dl,
+figure,
+table,
+p,
+ul,
+ol,
+form {
+  margin-bottom: 1.0rem; }
+.u-full-width {
+  width: 100%;
+  box-sizing: border-box; }
+.u-max-full-width {
+  max-width: 100%;
+  box-sizing: border-box; }
+.u-pull-right {
+  float: right; }
+.u-pull-left {
+  float: left; }
+hr {
+  margin-top: 3rem;
+  margin-bottom: 3.5rem;
+  border-width: 0;
+  border-top: 1px solid #E1E1E1; }
+.container:after,
+.row:after,
+.u-cf {
+  content: "";
+  display: table;
+  clear: both; }
+
+pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+  word-break: break-all;
+  word-wrap: break-word;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+pre.hljl {
+  margin: 0 0 10px;
+  display: block;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding : 5px;
+}
+
+pre.output {
+  background: #ffffff;
+}
+
+pre.code {
+  background: #ffffff;
+}
+
+pre.julia-error {
+  color : red
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 0.9em;
+}
+
+
+@media (min-width: 400px) {}
+@media (min-width: 550px) {}
+@media (min-width: 750px) {}
+@media (min-width: 1000px) {}
+@media (min-width: 1200px) {}
+
+h1.title {margin-top : 20px}
+img {max-width : 100%}
+div.title {text-align: center;}
+
+  </style>
+
+
+
+</HEAD>
+  <BODY>
+    <div class ="container">
+      <div class = "row">
+        <div class = "col-md-12 twelve columns">
+
+          <div class="title">
+            <h1 class="title">Julia Basics</h1>
+            <h5>Brandon Moretz</h5>
+            <h5>16th May 2020</h5>
+          </div>
+
+          <h1>Julia Basics</h1>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>LinearAlgebra</span><span class='hljl-p'>;</span>
+</pre>
+
+
+
+<h2>Vector, Matrix, and Array</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>4</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'> </span><span class='hljl-ni'>6</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>A</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'> </span><span class='hljl-ni'>6</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span>
+</pre>
+
+
+<pre class="output">
+4
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>transpose</span><span class='hljl-p'>(</span><span class='hljl-n'>A</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-oB'>&#39;</span>
+</pre>
+
+
+<pre class="output">
+3×2 LinearAlgebra.Adjoint&#123;Int64,Array&#123;Int64,2&#125;&#125;:
+ 1  4
+ 2  5
+ 3  6
+</pre>
+
+
+<p>Column Vectors:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>c</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>7</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>8</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>9</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-oB'>&#39;*</span><span class='hljl-n'>c</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>vec</span>
+</pre>
+
+
+<pre class="output">
+vec &#40;generic function with 5 methods&#41;
+</pre>
+
+
+<p>Identity</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>Matrix</span><span class='hljl-p'>(</span><span class='hljl-n'>I</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+3×3 Array&#123;Bool,2&#125;:
+ 1  0  0
+ 0  1  0
+ 0  0  1
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>zeros</span><span class='hljl-p'>(</span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>zeros</span><span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>ones</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+1×3 Array&#123;Float64,2&#125;:
+ 1.0  1.0  1.0
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>B</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>inv</span><span class='hljl-p'>(</span><span class='hljl-n'>B</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+3×3 Array&#123;Float64,2&#125;:
+  1.11022e-16   1.0  -2.0
+  1.0           1.0  -4.0
+ -1.0          -2.0   7.0
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>B</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-nf'>inv</span><span class='hljl-p'>(</span><span class='hljl-n'>B</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>inv</span><span class='hljl-p'>(</span><span class='hljl-n'>B</span><span class='hljl-p'>)[</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span>
+</pre>
+
+
+<pre class="output">
+3-element Array&#123;Int64,1&#125;:
+ 1
+ 2
+ 3
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>d</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Array</span><span class='hljl-p'>{</span><span class='hljl-n'>Float64</span><span class='hljl-p'>}(</span><span class='hljl-n'>undef</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>print</span><span class='hljl-p'>(</span><span class='hljl-n'>d</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+&#91;1.390671161567e-309, 2.121995791e-314, 0.0&#93;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>d</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-t'>
+</span><span class='hljl-n'>d</span><span class='hljl-p'>[</span><span class='hljl-ni'>2</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'>
+</span><span class='hljl-n'>d</span><span class='hljl-p'>[</span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>print</span><span class='hljl-p'>(</span><span class='hljl-n'>d</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+&#91;1.0, 2.0, 3.0&#93;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>p</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Array</span><span class='hljl-p'>{</span><span class='hljl-n'>Float64</span><span class='hljl-p'>}(</span><span class='hljl-n'>undef</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-n'>q</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Array</span><span class='hljl-p'>{</span><span class='hljl-n'>Float64</span><span class='hljl-p'>}(</span><span class='hljl-n'>undef</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>display</span><span class='hljl-p'>(</span><span class='hljl-n'>p</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-n'>q</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+3×3 Array&#123;Float64,2&#125;:
+ 0.0  0.0  0.0
+ 0.0  0.0  0.0
+ 0.0  0.0  0.0
+</pre>
+
+
+<h2>Tuples</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>pairs</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Array</span><span class='hljl-p'>{</span><span class='hljl-nf'>Tuple</span><span class='hljl-p'>{</span><span class='hljl-n'>Int64</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>Int64</span><span class='hljl-p'>}}(</span><span class='hljl-n'>undef</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>pairs</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-n'>pairs</span><span class='hljl-p'>[</span><span class='hljl-ni'>2</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-n'>pairs</span><span class='hljl-p'>[</span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>pairs</span>
+</pre>
+
+
+<pre class="output">
+3-element Array&#123;Tuple&#123;Int64,Int64&#125;,1&#125;:
+ &#40;1, 2&#41;
+ &#40;2, 3&#41;
+ &#40;3, 4&#41;
+</pre>
+
+
+<p>Same as:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>pairs</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>);</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>);</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-p'>]</span>
+</pre>
+
+
+<pre class="output">
+3-element Array&#123;Tuple&#123;Int64,Int64&#125;,1&#125;:
+ &#40;1, 2&#41;
+ &#40;2, 3&#41;
+ &#40;3, 4&#41;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>ijk_array</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Array</span><span class='hljl-p'>{</span><span class='hljl-nf'>Tuple</span><span class='hljl-p'>{</span><span class='hljl-n'>Int64</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>Int64</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>Int64</span><span class='hljl-p'>}}(</span><span class='hljl-n'>undef</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>ijk_array</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+&#40;1, 4, 2&#41;
+</pre>
+
+
+<h2>Indices and Ranges</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>10</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>20</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>30</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>40</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>50</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>60</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>70</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>80</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>90</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>3</span><span class='hljl-oB'>:</span><span class='hljl-ni'>9</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-p'>[</span><span class='hljl-k'>end</span><span class='hljl-oB'>-</span><span class='hljl-ni'>2</span><span class='hljl-oB'>:</span><span class='hljl-k'>end</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>200</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>300</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>400</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>a</span><span class='hljl-p'>[</span><span class='hljl-ni'>2</span><span class='hljl-oB'>:</span><span class='hljl-ni'>4</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-t'>
+</span><span class='hljl-n'>a</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>c</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>collect</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>2</span><span class='hljl-oB'>:</span><span class='hljl-ni'>9</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+5-element Array&#123;Int64,1&#125;:
+ 1
+ 3
+ 5
+ 7
+ 9
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>A</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'> </span><span class='hljl-ni'>6</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>7</span><span class='hljl-t'> </span><span class='hljl-ni'>8</span><span class='hljl-t'> </span><span class='hljl-ni'>9</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-oB'>:</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-oB'>:</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-oB'>:</span><span class='hljl-ni'>3</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-oB'>:</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-oB'>:</span><span class='hljl-p'>]</span><span class='hljl-oB'>&#39;</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>3</span><span class='hljl-oB'>:</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-oB'>:</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>A</span><span class='hljl-p'>[</span><span class='hljl-ni'>2</span><span class='hljl-oB'>:</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-oB'>:</span><span class='hljl-p'>]</span>
+</pre>
+
+
+<pre class="output">
+2×3 Array&#123;Int64,2&#125;:
+ 4  5  6
+ 7  8  9
+</pre>
+
+
+<h2>Printing Messages</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Hello, World!&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+Hello, World&#33;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nfB'>123.0</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;The value of a = &quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+The value of a &#61; 123.0
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;a is </span><span class='hljl-si'>$a</span><span class='hljl-s'>, and a-10 is </span><span class='hljl-si'>$</span><span class='hljl-p'>(</span><span class='hljl-n'>a</span><span class='hljl-oB'>-</span><span class='hljl-ni'>10</span><span class='hljl-p'>)</span><span class='hljl-s'>.&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+a is 123.0, and a-10 is 113.0.
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-ni'>10</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;b is </span><span class='hljl-si'>$b</span><span class='hljl-s'>&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+b is &#91;1, 3, 10&#93;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>Printf</span><span class='hljl-t'>
+
+</span><span class='hljl-nd'>@printf</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;The %s of a = %f&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;value&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+The value of a &#61; 123.000000
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>c</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-nfB'>123.12345</span><span class='hljl-t'>    </span><span class='hljl-p'>;</span><span class='hljl-t'>
+      </span><span class='hljl-nfB'>10.983</span><span class='hljl-t'>      </span><span class='hljl-p'>;</span><span class='hljl-t'>
+       </span><span class='hljl-nfB'>1.9832132</span><span class='hljl-t'>  </span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-nf'>length</span><span class='hljl-p'>(</span><span class='hljl-n'>c</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;c[</span><span class='hljl-si'>$i</span><span class='hljl-s'>] = </span><span class='hljl-si'>$</span><span class='hljl-p'>(</span><span class='hljl-n'>c</span><span class='hljl-p'>[</span><span class='hljl-n'>i</span><span class='hljl-p'>])</span><span class='hljl-s'>&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+c&#91;1&#93; &#61; 123.12345
+c&#91;2&#93; &#61; 10.983
+c&#91;3&#93; &#61; 1.9832132
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-nf'>length</span><span class='hljl-p'>(</span><span class='hljl-n'>c</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+      </span><span class='hljl-nd'>@printf</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;c[%d] = %7.3f</span><span class='hljl-se'>\n</span><span class='hljl-s'>&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>c</span><span class='hljl-p'>[</span><span class='hljl-n'>i</span><span class='hljl-p'>])</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+c&#91;1&#93; &#61; 123.123
+c&#91;2&#93; &#61;  10.983
+c&#91;3&#93; &#61;   1.983
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>str</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nd'>@sprintf</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;The %s of a = %f&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;value&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>str</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+The value of a &#61; 123.000000
+</pre>
+
+
+<h2>Collections, Dictionary and For-Loop</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>5</span><span class='hljl-t'>
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;This is number </span><span class='hljl-si'>$i</span><span class='hljl-s'>.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+This is number 1.
+This is number 2.
+This is number 3.
+This is number 4.
+This is number 5.
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>5</span><span class='hljl-t'>
+      </span><span class='hljl-k'>if</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-oB'>&gt;=</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'>
+            </span><span class='hljl-k'>break</span><span class='hljl-t'>
+      </span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;This is number </span><span class='hljl-si'>$i</span><span class='hljl-s'>.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+This is number 1.
+This is number 2.
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>s</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-t'>
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>10</span><span class='hljl-t'>
+      </span><span class='hljl-kd'>global</span><span class='hljl-t'> </span><span class='hljl-n'>s</span><span class='hljl-t'> </span><span class='hljl-oB'>+=</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>s</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+55
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>my_keys</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-s'>&quot;Zinedine Zidane&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;Magic Johnson&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;Yuna Kim&quot;</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>my_values</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-s'>&quot;football&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;basketball&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;figure skating&quot;</span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>d</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Dict</span><span class='hljl-p'>()</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-nf'>length</span><span class='hljl-p'>(</span><span class='hljl-n'>my_keys</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>d</span><span class='hljl-p'>[</span><span class='hljl-n'>my_keys</span><span class='hljl-p'>[</span><span class='hljl-n'>i</span><span class='hljl-p'>]]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>my_values</span><span class='hljl-p'>[</span><span class='hljl-n'>i</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>display</span><span class='hljl-p'>(</span><span class='hljl-n'>d</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+Dict&#123;Any,Any&#125; with 3 entries:
+  &quot;Magic Johnson&quot;   &#61;&gt; &quot;basketball&quot;
+  &quot;Zinedine Zidane&quot; &#61;&gt; &quot;football&quot;
+  &quot;Yuna Kim&quot;        &#61;&gt; &quot;figure skating&quot;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-n'>key</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>value</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-n'>d</span><span class='hljl-t'>
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;</span><span class='hljl-si'>$key</span><span class='hljl-s'> is a </span><span class='hljl-si'>$value</span><span class='hljl-s'> player.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+Magic Johnson is a basketball player.
+Zinedine Zidane is a football player.
+Yuna Kim is a figure skating player.
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>d</span><span class='hljl-p'>[</span><span class='hljl-s'>&quot;Diego Mardona&quot;</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;football&quot;</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>d</span>
+</pre>
+
+
+<pre class="output">
+Dict&#123;Any,Any&#125; with 4 entries:
+  &quot;Magic Johnson&quot;   &#61;&gt; &quot;basketball&quot;
+  &quot;Zinedine Zidane&quot; &#61;&gt; &quot;football&quot;
+  &quot;Diego Mardona&quot;   &#61;&gt; &quot;football&quot;
+  &quot;Yuna Kim&quot;        &#61;&gt; &quot;figure skating&quot;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>links</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>),</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-p'>),</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>link_costs</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>13</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>8</span><span class='hljl-t'> </span><span class='hljl-p'>]</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>link_dict</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>Dict</span><span class='hljl-p'>()</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-nf'>length</span><span class='hljl-p'>(</span><span class='hljl-n'>links</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>link_dict</span><span class='hljl-p'>[</span><span class='hljl-t'> </span><span class='hljl-n'>links</span><span class='hljl-p'>[</span><span class='hljl-n'>i</span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-p'>]</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>link_costs</span><span class='hljl-p'>[</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>link_dict</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-n'>link</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>cost</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-n'>link_dict</span><span class='hljl-t'>
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Link </span><span class='hljl-si'>$link</span><span class='hljl-s'> has cost of </span><span class='hljl-si'>$cost</span><span class='hljl-s'>.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+Link &#40;1, 2&#41; has cost of 5.
+Link &#40;4, 2&#41; has cost of 8.
+Link &#40;3, 4&#41; has cost of 13.
+</pre>
+
+
+<h3>Functions</h3>
+<p class="math">\[
+f(x, y) = 3x + y
+\]</p>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-ni'>3</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-t'> </span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>5</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>6</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+96
+</pre>
+
+
+<p>or</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+6
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>my_func</span><span class='hljl-p'>(</span><span class='hljl-n'>n</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>m</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>zeros</span><span class='hljl-p'>(</span><span class='hljl-n'>n</span><span class='hljl-t'> </span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>ones</span><span class='hljl-p'>(</span><span class='hljl-n'>m</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>my_func</span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>x</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>y</span>
+</pre>
+
+
+<pre class="output">
+2×1 Array&#123;Float64,2&#125;:
+ 1.0
+ 1.0
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-oB'>+</span><span class='hljl-ni'>2</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>g</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-n'>x</span><span class='hljl-oB'>+</span><span class='hljl-ni'>3</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+g &#40;generic function with 1 method&#41;
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f1</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-t'>
+
+</span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>10</span><span class='hljl-t'>
+      </span><span class='hljl-kd'>global</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>i</span><span class='hljl-t'>
+      </span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-nf'>f1</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>))</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f2</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-oB'>+</span><span class='hljl-n'>a</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-nf'>f2</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>))</span>
+</pre>
+
+
+<pre class="output">
+1
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>a</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+5
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f3</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-n'>_a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>_a</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-nf'>f3</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>))</span>
+</pre>
+
+
+<pre class="output">
+1
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>a</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+5
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f4</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>)</span><span class='hljl-t'>
+      </span><span class='hljl-k'>return</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span><span class='hljl-t'>
+
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>5</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-nf'>f4</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-p'>))</span>
+</pre>
+
+
+<pre class="output">
+6
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>a</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+5
+</pre>
+
+
+<h2>Random Number Generation</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>rand</span><span class='hljl-p'>()</span>
+</pre>
+
+
+<pre class="output">
+0.009900746448553877
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>rand</span><span class='hljl-p'>(</span><span class='hljl-ni'>5</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+5-element Array&#123;Float64,1&#125;:
+ 0.6911309977155955
+ 0.21331838361207756
+ 0.10046311788304974
+ 0.9916929685227016
+ 0.5571118997063038
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>rand</span><span class='hljl-p'>(</span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+4×3 Array&#123;Float64,2&#125;:
+ 0.928844  0.389211  0.230112
+ 0.111416  0.389082  0.190854
+ 0.777831  0.314938  0.923784
+ 0.726679  0.161524  0.116942
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>rand</span><span class='hljl-p'>()</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-ni'>100</span>
+</pre>
+
+
+<pre class="output">
+98.56214458309537
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>rand</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>10</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>randn</span><span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+2×3 Array&#123;Float64,2&#125;:
+ -0.376204  1.51466   1.59721
+ -1.42856   1.45124  -0.402181
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>StatsFuns</span><span class='hljl-p'>;</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: ArgumentError: Package StatsFuns not found in current path:
+- Run &#96;import Pkg; Pkg.add&#40;&quot;StatsFuns&quot;&#41;&#96; to install the StatsFuns package.
+
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>mu</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>50</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-n'>sigma</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'>
+
+</span><span class='hljl-nf'>normpdf</span><span class='hljl-p'>(</span><span class='hljl-n'>mu</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>sigma</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>52</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: normpdf not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>normcdf</span><span class='hljl-p'>(</span><span class='hljl-n'>mu</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>sigma</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>50</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: normcdf not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>norminvcdf</span><span class='hljl-p'>(</span><span class='hljl-n'>mu</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>sigma</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>0.5</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: norminvcdf not defined
+</pre>
+
+
+<h2>File I/O</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>datafilename</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;data.txt&quot;</span><span class='hljl-t'>
+</span><span class='hljl-n'>datafile</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>open</span><span class='hljl-p'>(</span><span class='hljl-n'>datafilename</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: SystemError: opening file &quot;data.txt&quot;: No such file or directory
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>data</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>readlines</span><span class='hljl-p'>(</span><span class='hljl-n'>datafile</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: datafile not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>close</span><span class='hljl-p'>(</span><span class='hljl-n'>datafile</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: datafile not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>data</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: data not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>outputfilename</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;results1.txt&quot;</span><span class='hljl-t'>
+</span><span class='hljl-n'>outputfile</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>open</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfilename</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;w&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>print</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;Majic Johnson&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot; is a basketball player.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;Michael Jordan is also a basketball player.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>close</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>)</span>
+</pre>
+
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>outputfilename</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;results2.txt&quot;</span><span class='hljl-t'>
+</span><span class='hljl-n'>outputfile</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>open</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfilename</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;a&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>println</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;Yuna Kim is a figure skating player.&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>close</span><span class='hljl-p'>(</span><span class='hljl-n'>outputfile</span><span class='hljl-p'>)</span>
+</pre>
+
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>CSV</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>DataFrames</span><span class='hljl-p'>;</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: ArgumentError: Package CSV not found in current path:
+- Run &#96;import Pkg; Pkg.add&#40;&quot;CSV&quot;&#41;&#96; to install the CSV package.
+
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>csvfilename</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-s'>&quot;data.csv&quot;</span><span class='hljl-t'>
+</span><span class='hljl-n'>csvdata</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>CSV</span><span class='hljl-oB'>.</span><span class='hljl-nf'>file</span><span class='hljl-p'>(</span><span class='hljl-n'>csvfilename</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>|&gt;</span><span class='hljl-t'> </span><span class='hljl-n'>DataFrame!</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: CSV not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>csvdata</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: csvdata not defined
+</pre>
+
+
+<h2>Plotting</h2>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>PyPlot</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: ArgumentError: Package PyPlot not found in current path:
+- Run &#96;import Pkg; Pkg.add&#40;&quot;PyPlot&quot;&#41;&#96; to install the PyPlot package.
+
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>pygui</span><span class='hljl-p'>(</span><span class='hljl-kc'>false</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: pygui not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Preparing a figure object</span><span class='hljl-t'>
+</span><span class='hljl-n'>fig</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>figure</span><span class='hljl-p'>()</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: figure not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Data</span><span class='hljl-t'>
+</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>range</span><span class='hljl-p'>(</span><span class='hljl-ni'>0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>stop</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-oB'>*</span><span class='hljl-n'>pi</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>length</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>1000</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-n'>y</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>sin</span><span class='hljl-oB'>.</span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-oB'>*</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+
+</span><span class='hljl-cs'># Plotting with linewidth and linestyle specified</span><span class='hljl-t'>
+</span><span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>color</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;blue&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linewidth</span><span class='hljl-oB'>=</span><span class='hljl-nfB'>2.0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linestyle</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;--&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plot not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Labeling the axes</span><span class='hljl-t'>
+</span><span class='hljl-nf'>xlabel</span><span class='hljl-p'>(</span><span class='hljl-so'>L&quot;value of $x$&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:3
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>ylabel</span><span class='hljl-p'>(</span><span class='hljl-so'>L&quot;\sin(3x)&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:1
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Title</span><span class='hljl-t'>
+</span><span class='hljl-nf'>title</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Test plotting&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: title not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>plt</span><span class='hljl-oB'>.</span><span class='hljl-nf'>show</span><span class='hljl-p'>()</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plt not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>p</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-n'>y</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plot not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>xlabel</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;X&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: xlabel not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>ylabel</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Y&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: ylabel not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>PyPlot</span><span class='hljl-oB'>.</span><span class='hljl-nf'>title</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Your Title Goes Here&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: PyPlot not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>grid</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;on&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: grid not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-n'>p</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>plot_date</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>,</span><span class='hljl-n'>y</span><span class='hljl-p'>,</span><span class='hljl-n'>linestyle</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;-&quot;</span><span class='hljl-p'>,</span><span class='hljl-n'>marker</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;None&quot;</span><span class='hljl-p'>,</span><span class='hljl-n'>label</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;Base Plot&quot;</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-cs'># Basic line plot</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plot_date not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>PyPlot</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: ArgumentError: Package PyPlot not found in current path:
+- Run &#96;import Pkg; Pkg.add&#40;&quot;PyPlot&quot;&#41;&#96; to install the PyPlot package.
+
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>([</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-ni'>4</span><span class='hljl-p'>])</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plot not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Data</span><span class='hljl-t'>
+</span><span class='hljl-n'>lower_bound</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-nfB'>4.0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.8</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.9</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.95</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>4.99</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.00</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>upper_bound</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-nfB'>5.4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.15</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.10</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-nfB'>5.05</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>iter</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>8</span><span class='hljl-t'>
+
+</span><span class='hljl-cs'># Creating a new figure object</span><span class='hljl-t'>
+</span><span class='hljl-n'>fig</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>figure</span><span class='hljl-p'>()</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: figure not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Plotting two datasets</span><span class='hljl-t'>
+</span><span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>iter</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>lower_bound</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>color</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;red&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linewidth</span><span class='hljl-oB'>=</span><span class='hljl-nfB'>2.0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linestyle</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;-&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'>
+ </span><span class='hljl-n'>marker</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;o&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>label</span><span class='hljl-oB'>=</span><span class='hljl-so'>L&quot;Lower Bound $Z^k_L$&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:4
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>iter</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>upper_bound</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>color</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;blue&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linewidth</span><span class='hljl-oB'>=</span><span class='hljl-nfB'>2.0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linestyle</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;-.&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'>
+ </span><span class='hljl-n'>marker</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;D&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>label</span><span class='hljl-oB'>=</span><span class='hljl-so'>L&quot;Upper Bound $Z^k_U$&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:2
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Labeling axes</span><span class='hljl-t'>
+</span><span class='hljl-nf'>xlabel</span><span class='hljl-p'>(</span><span class='hljl-so'>L&quot;iteration clock $k$&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>fontsize</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;xx-large&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:3
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>ylabel</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;objective function value&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>fontsize</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;xx-large&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: ylabel not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Putting the legend and determining the location</span><span class='hljl-t'>
+</span><span class='hljl-nf'>legend</span><span class='hljl-p'>(</span><span class='hljl-n'>loc</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;upper right&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>fontsize</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;x-large&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: legend not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Add grid lines</span><span class='hljl-t'>
+</span><span class='hljl-nf'>grid</span><span class='hljl-p'>(</span><span class='hljl-n'>color</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;#DDDDDD&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linestyle</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;-&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>linewidth</span><span class='hljl-oB'>=</span><span class='hljl-nfB'>1.0</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: grid not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>tick_params</span><span class='hljl-p'>(</span><span class='hljl-n'>axis</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;both&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>which</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;major&quot;</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>labelsize</span><span class='hljl-oB'>=</span><span class='hljl-s'>&quot;x-large&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: tick_params not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Title</span><span class='hljl-t'>
+</span><span class='hljl-nf'>title</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Lower and Upper Bounds&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: title not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Save the figure as PNG and PDF</span><span class='hljl-t'>
+</span><span class='hljl-nf'>savefig</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;plot2.png&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: savefig not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>savefig</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;plot2.pdf&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: savefig not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Closing the figure object</span><span class='hljl-t'>
+</span><span class='hljl-nf'>close</span><span class='hljl-p'>(</span><span class='hljl-n'>fig</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: fig not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>PyPlot</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: ArgumentError: Package PyPlot not found in current path:
+- Run &#96;import Pkg; Pkg.add&#40;&quot;PyPlot&quot;&#41;&#96; to install the PyPlot package.
+
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Data</span><span class='hljl-t'>
+</span><span class='hljl-n'>data</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>randn</span><span class='hljl-p'>(</span><span class='hljl-ni'>100</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-cs'># Some Random Data</span><span class='hljl-t'>
+</span><span class='hljl-n'>nbins</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>10</span><span class='hljl-t'>        </span><span class='hljl-cs'># Number of bins</span><span class='hljl-t'>
+
+</span><span class='hljl-cs'># Creating a new figure object</span><span class='hljl-t'>
+</span><span class='hljl-n'>fig</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-nf'>figure</span><span class='hljl-p'>()</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: figure not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Histogram</span><span class='hljl-t'>
+</span><span class='hljl-n'>plt</span><span class='hljl-p'>[</span><span class='hljl-sc'>:hist</span><span class='hljl-p'>](</span><span class='hljl-n'>data</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>nbins</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: plt not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Title</span><span class='hljl-t'>
+</span><span class='hljl-nf'>title</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;Histogram&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: title not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Save the figure as PNG and PDF</span><span class='hljl-t'>
+</span><span class='hljl-nf'>savefig</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;plot3.png&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: savefig not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>savefig</span><span class='hljl-p'>(</span><span class='hljl-s'>&quot;plot3.pdf&quot;</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: savefig not defined
+</pre>
+
+
+
+<pre class='hljl'>
+<span class='hljl-cs'># Closing the figure object</span><span class='hljl-t'>
+</span><span class='hljl-nf'>close</span><span class='hljl-p'>(</span><span class='hljl-n'>fig</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="julia-error">
+ERROR: UndefVarError: fig not defined
+</pre>
+
+
+
+
+          <HR/>
+          <div class="footer"><p>
+          Published from <a href="03_Julia-Basics.jmd">03_Julia-Basics.jmd</a> using
+          <a href="http://github.com/mpastell/Weave.jl">Weave.jl</a>
+           on 2020-05-17.
+          <p></div>
+
+
+        </div>
+      </div>
+    </div>
+  </BODY>
+</HTML>

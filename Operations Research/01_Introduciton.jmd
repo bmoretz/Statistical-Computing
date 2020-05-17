@@ -2,9 +2,6 @@
 title : Introduction
 author : Brandon Moretz
 date: 15th May 2020
-options:
-  out_path : 01_Introduction.md
-  doctype :  github
 ---
 
 # Introduction

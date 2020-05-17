@@ -21,7 +21,7 @@ $$
 subject to
 
 $$
-\sum_{i,j \in A} x_{ij} - \sum_{(j,i)\in A} x_{ij} = b_i \thickspace \forall_i \in N
+\sum_{i,j \in A} x_{ij} - \sum_{(j,i)\in A} x_{ij} = b_i \; \forall_i \in N
 $$
 
 $$

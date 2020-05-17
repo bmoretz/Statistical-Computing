@@ -66,8 +66,6 @@ JuMP.dual(constraint1)
 JuMP.dual(constraint2)
 ```
 
-\newpage
-
 ## Alternative
 
 ```julia
@@ -120,8 +118,6 @@ JuMP.dual(constraint1)
 JuMP.dual(constraint2)
 ```
 
-\newpage
-
 ## Yet Another Way
 
 ```julia
@@ -160,8 +156,6 @@ for j in index_constraints
 end
 
 ```
-
-\newpage
 
 ### Mixed Integer Liner Programming
 

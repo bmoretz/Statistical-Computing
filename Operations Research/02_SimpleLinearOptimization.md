@@ -8,23 +8,15 @@ using JuMP;
 using CPLEX; using Gurobi; using Cbc;
 ````
 
-
-
-
-
 ## Linear Programs
 
 A straight forward approach to linear programming problems:
 
 Given,
 
-```math
-\frac{n!}{k!(n - k)!} = \binom{n}{k}
-```
-
-$$
+$
 max \; x_1 + 2x_2 + 5x_3
-$$
+$
 
 subject to,
 
@@ -426,5 +418,3 @@ end
 dual[1] = -1.8124999999999998
 dual[2] = -0.06249999999999989
 ````
-
-

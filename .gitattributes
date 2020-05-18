@@ -1,8 +1,8 @@
-# Example of a `.gitattributes` file which reclassifies `.rb` files as Java:
 *.jmd linguist-language=Julia
 
 *.html linguist-detectable=false
 *.htm inguist-detectable=false
+*.jmd linguist-detectable=true
 
 *.html    linguist-generated=true
 *.htl    linguist-generated=true

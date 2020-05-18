@@ -7,8 +7,24 @@ date: 16th May 2020
 # Gadfly
 
 ```julia
-using Gadfly; using Cairo;
-using RDatasets;
+using GraphPlot
+using Gadfly
+using Cairo
+using RDatasets
+
+import Juno: Juno, @render, media, Media
+
+media(Plot, Media.Plot)
+
+function Juno.render(pp::Juno.PlotPane, p::Plot)
+    x, y = Juno.plotsize()
+    set_default_plot_size(x*Gadfly.px, (y-1)*Gadfly.px)
+    w = Juno.Atom.blinkplot()
+    Juno.Atom.Blink.body!(w, HTML(stringmime("text/html", p)))
+end
+```
+
+```julia
 
 iris = dataset("datasets", "iris")
 
@@ -45,22 +61,6 @@ plot(iris, x=:SepalLength, y=:SepalWidth, Geom.point, Geom.line)
 ```
 
 ```julia
-using GraphPlot
-using Gadfly
-
 g = graphfamous("karate")
 gplot(g)
-```
-
-```julia
-import Juno: Juno, @render, media, Media
-
-media(Plot, Media.Plot)
-
-function Juno.render(pp::Juno.PlotPane, p::Plot)
-    x, y = Juno.plotsize()
-    set_default_plot_size(x*Gadfly.px, (y-1)*Gadfly.px)
-    w = Juno.Atom.blinkplot()
-    Juno.Atom.Blink.body!(w, HTML(stringmime("text/html", p)))
-end
 ```

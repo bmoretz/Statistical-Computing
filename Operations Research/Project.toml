@@ -1,0 +1,5 @@
+[deps]
+Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
+Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
+GraphPlot = "a2cc645c-3eea-5389-862e-a155d0052231"
+RDatasets = "ce6b1742-4840-55fa-b093-852dadbb1d8b"

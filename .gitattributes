@@ -5,4 +5,4 @@
 *.jmd linguist-detectable=true
 
 *.html    linguist-generated=true
-*.htl    linguist-generated=true
+*.htm    linguist-generated=true

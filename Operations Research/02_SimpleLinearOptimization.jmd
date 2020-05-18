@@ -1,10 +1,10 @@
 ---
-title : Introduction
+title : Selected Topics in Numerical Methods
 author : Brandon Moretz
 date: 15th May 2020
 markdown:
-  image_dir: /assets
-  path: output.md
+  image_dir: Operations Researchs/02/assets
+  path: 02_SimpleLinearOptimization.md
   ignore_from_front_matter: true
   absolute_image_path: false
 export_on_save:

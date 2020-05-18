@@ -1,7 +1,14 @@
 ---
 title : Julia Basics
 author : Brandon Moretz
-date: 16th May 2020
+date: 15th May 2020
+markdown:
+  image_dir: Operations Researchs/03/assets
+  path: 03_Julia-Basics.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
 ---
 
 # Julia Basics

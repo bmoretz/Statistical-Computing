@@ -3,7 +3,7 @@ title : Selected Topics in Numerical Methods
 author : Brandon Moretz
 date: 16th May 2020
 markdown:
-  image_dir: Operations Researchs/04/assets
+  image_dir: _assets/04/
   path: 04_Numerical-Methods.md
   ignore_from_front_matter: true
   absolute_image_path: false

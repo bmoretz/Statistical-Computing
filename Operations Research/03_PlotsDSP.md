@@ -1,22 +1,17 @@
 ---
-title : DSP Plots
-author : Brandon Moretz
-date: 15th May 2020
-markdown:
-  image_dir: _assets/03/
-  path: 03_PlotsDSP.md
-  ignore_from_front_matter: true
-  absolute_image_path: false
-export_on_save:
-  markdown: true
----
-
-# Plots, DSP
-
+title: 'DSP Plots'
+author: 'Brandon Moretz'
+date: '15th May 2020'
+---  
+  
+  
+#  Plots, DSP
+  
+  
 ```julia
 using Plots, DSP
 gr(fmt = :png)
-
+  
 function FIRfreqz(b::Array, w = range(0, stop=π, length=1024))
     n = length(w)
     h = Array{ComplexF32}(undef, n)
@@ -30,15 +25,16 @@ function FIRfreqz(b::Array, w = range(0, stop=π, length=1024))
     end
     return h
 end
-
+  
 fs = 20
 f = digitalfilter(Lowpass(5, fs = fs), FIRWindow(hamming(61)))
 w = range(0, stop=pi, length=1024)
 h = FIRfreqz(f, w)
-
+  
 h_db = log10.(abs.(h));
 ws = w/pi*(fs/2)
-
+  
 plot(ws, h_db,
       xlabel = "Frequency (Hz)", ylabel = "Magnitude (db)")
 ```
+  

@@ -3,7 +3,7 @@ title : Introduction
 author : Brandon Moretz
 date: 15th May 2020
 markdown:
-  image_dir: Operations Researchs/01/assets
+  image_dir: _assets/01/
   path: 01_Introduciton.md
   ignore_from_front_matter: true
   absolute_image_path: false

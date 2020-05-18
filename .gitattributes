@@ -6,3 +6,4 @@
 
 *.html    linguist-generated=true
 *.htm    linguist-generated=true
+*.jmd    linguist-generated=false

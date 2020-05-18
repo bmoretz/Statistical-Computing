@@ -1,5 +1,3 @@
-*.jmd linguist-language=Julia
-
 *.html linguist-detectable=false
 *.htm inguist-detectable=false
 *.jmd linguist-detectable=true
@@ -7,3 +5,5 @@
 *.html    linguist-generated=true
 *.htm    linguist-generated=true
 *.jmd    linguist-generated=false
+
+*.jmd linguist-language=Julia

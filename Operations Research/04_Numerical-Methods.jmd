@@ -80,3 +80,5 @@ pyplot()
 plot(xdata, ydata, color="black", linewidth=2.0, marker="o", linecolor = :transparent)
 plot(xfit, yfit, color="red", linewidth=2.0)
 ```
+
+## Numerical Differentiation

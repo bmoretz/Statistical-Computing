@@ -111,3 +111,108 @@ plot([f, over(scale(f, 1/3), 2)], -1, 5)
 
 
 $h(x) = \frac{1}{a}f(\frac{x - b}{a})$
+
+````julia
+a = 2; b = 5
+h(x) = stretch(over(scale(f, 1/a), b), 1/a)(x)
+plot([f, h], -1, 8)
+````
+
+
+![](figures/04_Transformations_12_1.png)
+
+
+
+$a + bsin(d(x - c))$
+
+````julia
+a = 12
+b = ((15 + 5/60 + 46/60/60) - (9 + 19/60 + 44/60/60)) / 2
+d = 2pi/365
+
+c = 79
+
+newyork(t) = up(stretch(over(scale(sin, d), c), b), a)(t)
+plot(newyork, -20, 385)
+````
+
+
+![](figures/04_Transformations_13_1.png)
+
+
+
+$g(x) = \sqrt(x)$
+$f(x) = sin(x)$
+$f(g(x)) = $
+
+````julia
+g(x) = sqrt(x)
+f(x) = sin(x)
+
+pi/2 |> g |> f
+````
+
+
+````
+0.9500244274657834
+````
+
+
+
+
+
+von Bertanlaffy growth equation is:
+
+$L(t) = L_{\infty} * (1 - e^{k*(t-t_0)})$
+
+````julia
+f(k) = 1 + k^2
+D(f)(3), f(3) - f(3-1)
+````
+
+
+````
+(6.0, 5)
+````
+
+
+
+````julia
+S(f) = k -> sum(f(i) for i in 1:k)
+
+S(f)(4), f(1) + f(2) + f(3) + f(4)
+````
+
+
+````
+(34, 34)
+````
+
+
+
+````julia
+k=15
+S(D(f))(k),  f(k) - f(0)
+````
+
+
+````
+(240.0, 225)
+````
+
+
+
+````julia
+f(x) = 1; g(x) = x - 2
+
+h(x) = f(x) ∘ g(x)
+
+h
+````
+
+
+````
+h (generic function with 1 method)
+````
+
+

@@ -90,9 +90,3 @@ ys = f.(xs)
 plot(xs, ys)
 plot!(ys, xs)
 ```
-
-```julia
-1/.7
-
-1/13
-```

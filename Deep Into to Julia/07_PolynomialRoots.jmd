@@ -1,0 +1,14 @@
+---
+title : Polynomial Roots
+author : Brandon Moretz
+date: 22th May 2020
+markdown:
+  image_dir: _assets/06/
+  path: 07_PolynomialRoots.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
+---
+
+# Polynomial Roots

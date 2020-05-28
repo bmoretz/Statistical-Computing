@@ -9,10 +9,7 @@ date: '21th May 2020'
   
   
 ```julia
-using Plots
 using CalculusWithJulia
-  
-Plots.PlotlyBackend()
 ```
   
 <img src="https://latex.codecogs.com/gif.latex?f(x)%20=%201%20-%20&#x5C;frac{x^2}{2}"/>

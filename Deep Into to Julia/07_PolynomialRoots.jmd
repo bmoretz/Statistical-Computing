@@ -25,8 +25,216 @@ plot!(zero)
 
 ```julia
 f(x) = log(x)
-plot(f, 0, 100)
+plot(f, 0, 100, legend = false)
 plot!(zero)
+plot!([20, 20, 0], [0, f(20), f(20)], color =:green)
+plot!([40, 40, 0], [0, f(40), f(40)], color =:green)
+```
 
-plot([0, 20], [25, 25], color =:green)
+```julia
+f(x) = x^4 + 2x^2 + 5
+g(x) = x - 2
+
+plot(f, -5, 5, legend = false)
+plot!(g)
+
+f(2)
+```
+
+nieve division:
+
+```julia
+@vars x real=true
+
+(x^4 + 2x^2 + 5) / ( x - 2)
+```
+
+doesn't simplify.
+
+```julia
+q, r = divrem(x^4 + 2x^2 + 5, x - 2)
+```
+
+```julia
+apart((x^4 + 2x^2 + 5) / (x-2))
+```
+
+```julia
+p = 2*x^4 + x^3 - 19x^2 - 9x + 9
+factor(p)
+```
+
+```julia
+plot(x^2 - 1, -2, 2, legend = false)
+plot!(x^2)
+plot!(x^2 + 1)
+plot!(zero)
+```
+
+```julia
+solve(x^2 + 2x - 3)
+```
+
+```julia
+@vars a b c
+solve(a*x^2 + b*x + c, x)
+```
+
+```julia
+@vars a
+@vars b real=true
+c = symbols("c", positive=true)
+solve(a^2 + 1) # works, as a can be complex
+
+solve(b^2 + 1)
+
+solve(c + 1) # fails, as b is assumed real
+```
+
+```julia
+p = x^2 - 2
+factor(p)
+```
+
+```julia
+rts = solve(p)
+prod(x - r for r in rts)
+```
+
+```julia
+@vars x
+solve(x^4 - 2x - 1)
+```
+
+```julia
+solve(x^5 - x + 1)
+```
+
+```julia
+rts = solve(x^5 - x + 1)
+N.(rts)
+```
+
+```julia
+ex = x^7 - 3x^6 + 2x^5 - 1x^3 + 2x^2 + 1x^1 - 2
+solve(ex)
+
+N.(solve(ex))
+```
+
+```julia
+p = 8x^4 - 8x^2 + 1
+
+rts = solveset(p)
+```
+
+```julia
+elements(rts)
+```
+
+```julia
+p =   x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
+plot(p, -10, 10, legend = false)
+
+plot(p, 10, 20, legend = false)
+
+plot(p, 18, 22, legend = false)
+```
+
+```julia
+f(x) = (x - 100)^2 + 0.1
+plot(f, legend = false)
+
+@vars x
+solve((x - 100)^2 + 0.1)
+```
+
+```julia
+p =  x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
+N.(solve(p))
+```
+
+```julia
+@vars x
+q, r = divrem(x^4 - x^3 - x^2 + 2, (x - 2))
+q, r
+
+N.(r)
+
+apart(x^4 - x^3 - x^2 + 2, x - 2)
+```
+
+```julia
+@vars x
+apart(x^4 - x^3 - x^2 + 2, x^3 - 2x)
+```
+
+```julia
+rem(x^4 - x^3 - x^2 + 2, (x^3 - 2x))
+```
+
+```julia
+rem(x^5 - x + 1, x^2 - x + 1)
+```
+
+```julia
+p = x^4 - 9x^3 + 30x^2 - 44x + 24
+factor(p)
+```
+
+```julia
+@vars x real=true
+factor(x^4 - 5)
+```
+
+```julia
+solve(x^4 - 5)
+```
+
+```julia
+p = x^6 - 5x^5 + x^4 - 3x^3 + x^2 - x + 1
+N.(solve(p))
+```
+
+```julia
+p = x^5 - 3x + 1
+solve(p)
+```
+
+```julia
+using Roots
+
+xs = fzeros(x -> x^5 - 1.5x + 1, -10, 10)
+length(xs) > 1
+
+```
+
+```julia
+@vars x
+p = x^5 + x^4 - x^3 + x^2 + x + 1
+N.(solve(p))
+```
+
+```julia
+p = x^5 + x^4 - x^3 + x^2 + x + 1
+r = N.(solve(p))
+
+length(r)
+```
+
+```julia
+p = x^5 - 4x^4 + x^3 - 2x^2 + x
+
+```
+
+```julia
+p = x^5 - 4x^4 + x^3 - 2x^2 + x
+solve(p)
+```
+
+```julia
+p = 32x^5 - 32x^3 + 6x
+solve(p)
+
+plot(p)
 ```

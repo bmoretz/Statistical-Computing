@@ -3,6 +3,7 @@ title : Functions
 author : Brandon Moretz
 date: 21th May 2020
 markdown:
+  image_dir: /figures
   path: 03_Graphs.md
   ignore_from_front_matter: true
   absolute_image_path: false

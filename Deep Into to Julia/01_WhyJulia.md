@@ -503,7 +503,7 @@ top:
   %8 = load %jl_value_t**, %jl_value_t*** %5
   store %jl_value_t** %8, %jl_value_t*** %7
   %9 = bitcast %jl_value_t*** %5 to %jl_value_t addrspace(10)***
-  store %jl_value_t addrspace(10)** %gcframe, %jl_value_t addrspace(10)*** 
+  store %jl_value_t addrspace(10)** %gcframe, %jl_value_t addrspace(10)***
 %9
   %10 = load %jl_value_t*, %jl_value_t** @delayedvar25787, align 8
   %11 = icmp eq %jl_value_t* %10, null
@@ -601,5 +601,3 @@ timetest()
 ````
 0.000000 seconds
 ````
-
-

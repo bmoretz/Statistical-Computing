@@ -13,7 +13,6 @@ date: '16th May 2020'
   
 ```julia
 using LsqFit
-using Plots
 using PyPlot
   
 # preparing data for fitting
@@ -70,10 +69,31 @@ margin_error(fit)
 xfit = 0:0.1:20
 yfit = model(xfit, fit.param)
   
-pyplot()
 # Plotting two datasets
+plot(xdata, ydata, color="black", linewidth=2.0, marker="o",
+  linecolor = :transparent, label = "data")
+plot!(xfit, yfit, color="lightblue", linewidth=2.0,
+  label = "model")
   
-plot(xdata, ydata, color="black", linewidth=2.0, marker="o", linecolor = :transparent)
-plot(xfit, yfit, color="red", linewidth=2.0)
+PyPlot.savefig("Operations Research\\03_model_fig.png")
 ```
+  
+![Image Test](03_model_fig.png )
+  
+##  Numerical Differentation
+  
+  
+<img src="https://latex.codecogs.com/gif.latex?f&#x27;(x)%20=%20&#x5C;lim_{h%20-&gt;%20&#x5C;infty}&#x5C;frac{f(x%20+%20h)%20-%20f(x)}{h}"/>
+  
+...
+  
+<img src="https://latex.codecogs.com/gif.latex?f&#x27;(x)%20&#x5C;approx%20&#x5C;frac{f(x%20+%20h)%20-%20f(x)}{h}"/>
+  
+Forward finite approximation
+  
+<img src="https://latex.codecogs.com/gif.latex?f&#x27;(x)%20&#x5C;approx%20&#x5C;frac{f(x)%20-%20f(x%20-%20h)}{h}"/>
+  
+Central approximation
+  
+<img src="https://latex.codecogs.com/gif.latex?f&#x27;(x)%20&#x5C;approx%20&#x5C;frac{f(x%20+%20h)%20-%20f(x%20-%20h)}{2h}"/>
   

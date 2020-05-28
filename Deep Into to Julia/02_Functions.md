@@ -101,7 +101,7 @@ methods(log, (Number,)) |> collect
 ore\.juliapro\JuliaPro_v1.4.1-1\packages\ImplicitEquations\H1dxT\src\interv
 als.jl:217
 [8] log(x::Sym) in SymPy at C:\Users\bmore\.juliapro\JuliaPro_v1.4.1-1\pack
-ages\SymPy\JaxDZ\src\mathfuns.jl:40
+ages\SymPy\1Cwgd\src\mathfuns.jl:40
 [9] log(z::Complex{T}) where T<:AbstractFloat in Base at complex.jl:564
 [10] log(z::Complex{T}) where T<:IntervalArithmetic.Interval in IntervalAri
 thmetic at C:\Users\bmore\.juliapro\JuliaPro_v1.4.1-1\packages\IntervalArit

@@ -1,28 +1,27 @@
----
-title: 'Polynomial Roots'
-author: 'Brandon Moretz'
-date: '22th May 2020'
----  
-  
-  
-#  Polynomial Roots
-  
-  
-```julia
+# Polynomial Roots
+
+````julia
 using CalculusWithJulia;
-```
-  
-```julia
+````
+
+
+
+````julia
 f(x) = x^2 - x
 plot(f, -2, 2)
 plot!(zero)
-```
-  
-```julia
+````
+
+
+![](figures/07_PolynomialRoots_2_1.png)
+
+````julia
 f(x) = log(x)
 plot(f, 0, 100)
 plot!(zero)
-  
+
 plot([0, 20], [25, 25], color =:green)
-```
-  
+````
+
+
+![](figures/07_PolynomialRoots_3_1.png)

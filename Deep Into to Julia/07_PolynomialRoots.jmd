@@ -28,4 +28,5 @@ f(x) = log(x)
 plot(f, 0, 100)
 plot!(zero)
 
+plot([0, 20], [25, 25], color =:green)
 ```

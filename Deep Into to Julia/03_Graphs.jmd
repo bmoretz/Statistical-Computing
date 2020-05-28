@@ -15,6 +15,7 @@ export_on_save:
 
 ```julia
 using CalculusWithJulia
+
 ```
 
 $f(x) = 1 - \frac{x^2}{2}$

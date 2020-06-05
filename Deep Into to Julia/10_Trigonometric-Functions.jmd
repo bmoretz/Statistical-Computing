@@ -1,0 +1,184 @@
+---
+title : Trigonometric Functions
+author : Brandon Moretz
+date: 3st June 2020
+markdown:
+  image_dir: _assets/10/
+  path: 10_Trigonometric-Functions.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
+---
+
+# Trigonometric Functions
+
+```julia
+using CalculusWithJulia
+```
+
+```julia
+[cos(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
+```
+
+```julia
+cos.([0, PI/6, PI/4, PI/3, PI/2])
+```
+
+```julia
+theta = 15 * 180/pi
+adjacent = 100
+opposite = adjacent * tan(theta)
+```
+
+```julia
+tan(10*pi/180)
+
+30*3/6
+```
+
+```julia
+1/30, tan(2*pi/180)
+```
+
+```julia
+plot(sin, 0, 4pi)
+```
+
+```julia
+plot([sin, cos], 0, 4pi)
+```
+
+```julia
+xs = range(-2pi, 2pi, step = 0.01)
+ys = tan.(xs)
+
+for index in length(xs)
+  y = abs(ys[index])
+  if y < 0.01 || y > 10
+    ys[index] = NaN
+  end
+end
+
+plot(xs, ys, color=:lightblue)
+```
+
+```julia
+plot(asin, -1, 1)
+```
+
+```julia
+plot(atan, -10, 10)
+```
+
+```julia
+theta = 3pi/4                     # 2.35619...
+x,y = (cos(theta), sin(theta))    # -0.7071..., 0.7071...
+atan(y/x)
+```
+
+```julia
+atan(y, x)
+```
+
+δ = θ - α + arcsin(n sin(α - arcsin(1/n sin(θ))))
+
+```julia
+n, alpha, theta0 = 1.5, pi/3, pi/6
+delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
+```
+
+```julia
+n, alpha, theta0 = 1.5, pi/15, pi/10
+delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
+delta, (n-1)*alpha
+```
+
+```julia
+n = 4/3
+D(i) = pi + 2i - 4 * asin(sin(i)/n)
+plot(D, 0, pi/2)
+```
+
+```julia
+rad2deg(1.0)
+```
+
+```julia
+T4(x) = (8x^4 - 8x^2 + 1) / 8
+q1(x) = (x+3/5)*(x+1/5)*(x-1/5)*(x-3/5)
+plot([x -> abs(T4(x)), x -> abs(q1(x))], -1,1)
+```
+
+```julia
+
+sin(1.23456)
+cos(6.54321)
+```
+
+```julia
+x = pi/4
+
+cos(x)
+x
+```
+
+```julia
+cos(x)
+pi/2 * sin(x)
+sin(x - pi/2)
+sin(x + pi/2)
+```
+
+```julia
+plot(sec, 0, pi)
+vline!([pi/2])
+```
+
+```julia
+
+xs = range(0, 180)
+sindeg(x) = 4x*(180 - x)/(40500 - x*(180 -x))
+
+xs = range(0, 180, step = .1)
+y1 = sindeg.(xs)
+y2 = sin.(xs)
+
+delta = y1 - y2
+sort(delta)
+
+plot([sindeg, sin], 0, pi/2)
+```
+
+```julia
+f(x) = cos(x/3)
+```
+
+```julia
+n=10
+f(x) = cos(x) - n*x
+
+plot(f, 0, pi/2)
+vline!([pi/31])
+
+function searchsortednearest(a,x)
+   idx = searchsortedfirst(a,x)
+   if (idx==1); return idx; end
+   if (idx>length(a)); return length(a); end
+   if (a[idx]==x); return idx; end
+   if (abs(a[idx]-x) < abs(a[idx-1]-x))
+      return idx
+   else
+      return idx-1
+   end
+end
+
+xs = range(pi/32, pi/31, step = .000001)
+ys = f.(xs)
+
+xs[searchsorted(ys, 0)]
+
+xs[10]
+vals = (xs, ys)
+
+```

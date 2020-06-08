@@ -1,0 +1,243 @@
+---
+title : Limits
+author : Brandon Moretz
+date: 8st June 2020
+markdown:
+  image_dir: _assets/11/
+  path: 11_Limits.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
+---
+
+# Limits
+
+```julia
+using CalculusWithJulia  # to load Plots and SymPy
+```
+
+```julia
+x = 1/10000
+(1 + x)^(1/x)
+```
+
+```julia
+f(x) = (1 + x)^(1/x)
+xs = [1/10^i for i in 1:10]
+[xs f.(xs)]
+```
+
+```julia
+x = 1
+sin(x) / x
+```
+
+```julia
+f(x) = sin(x)/x
+plot(f, -pi/2, pi/2, legend=false)
+```
+
+```julia
+plot([sin, x -> x], -pi/2, pi/2)
+```
+
+$\lim_{x→2}\frac{x^2 - 5x + 6}{x^2 + x - 6}$
+
+```julia
+f(x) = (x^2 - 5x + 6) / (x^2 + x - 6)
+c = 2
+f(c)
+```
+
+```julia
+c, delta = 2, 1
+plot(f, c - delta, c + delta)
+```
+
+```julia
+f(x) = x == 2.0 ? -0.2 : (x^2 - 5x + 6) / (x^2 + x - 6)
+```
+
+$\lim_{x→25}\frac{\sqrt{x} - 5}{\sqrt{x - 16} - 3}$
+
+```julia
+f(x) = (sqrt(x) - 5)/(sqrt(x - 16) - 3)
+c = 25
+f(c)
+
+plot(f, 0, 40)
+```
+
+```julia
+hs = [1/10^i for i in 1:8]
+
+xs = c .+ hs
+ys = f.(xs)
+```
+
+```julia
+[xs ys]
+```
+
+```julia
+xs = c .- hs
+ys = f.(xs)
+[xs ys]
+```
+
+```julia
+c = 1
+f(x) = x^x
+ys = [(f(c + h) - f(c))/h for h in hs]
+[hs ys]
+```
+
+```julia
+ys = [(f(c + h) - f(c))/h for h in -hs]
+[-hs ys]
+```
+
+$\lim_{x→0}\frac{1 - cos(x)}{x^2}$
+
+```julia
+f(x) = (1 - cos(x))/x^2
+f(0)
+
+c = 0
+xs = c .+ hs
+ys = [f(x) for x in xs]
+[xs ys]
+```
+
+```julia
+y1s = [1 - cos(x) for x in xs]
+y2s = [x^2 for x in xs]
+[xs y1s y2s]
+```
+
+```julia
+@vars x real=true
+f(x) = (1 - cos(x))/x^2
+limit(f(x), x => 0)
+```
+
+```julia
+limit(f, 0)
+```
+
+```julia
+limit( (2sin(x) - sin(2x)) / (x - sin(x)), x => 0)
+```
+
+```julia
+f(x) = (exp(x) - 1 - x)/x^2
+
+plot(f)
+
+limit(f, 0)
+```
+
+```julia
+@vars rho real=true
+limit( (x^(1-rho) - 1) / (1 - rho), rho => 1)
+```
+
+```julia
+c = pi/2
+f(x) = cos(x) / (x - pi/2)
+f(c)
+```
+
+```julia
+limit(f(x), x => PI/2)
+```
+
+```julia
+plot(f, c - pi/4, c + pi/4)
+```
+
+```julia
+f(x) = cos(x) / (x - PI/2)
+limit(f(x), x => PI/2)
+```
+
+```julia
+g(x) = cos(PI*x) / (1 - (2x)^2)
+limit(g, 1/2)
+```
+
+```julia
+limit(sin(PI*x)/(PI*x) * g(x), x => 1/2)
+```
+
+```julia
+plot(cos(pi*x), 0.4, 0.6)
+plot!(1 - (2x)^2)
+```
+
+```julia
+plot(cos(pi*x), 0.4, 0.6)
+plot!(-pi*(x - 1/2))
+```
+
+```julia
+plot(1 - (2x)^2, 0.4, 0.6)
+plot!(-4(x - 1/2))
+```
+
+```julia
+f(x) = 3x + 2
+c, L = 1, 5
+epsilon = rand()
+delta = epsilon / 3
+xs = c .+ delta * rand(100)
+as = [abs(f(x) - L) < epsilon for x in xs]
+all(as)
+```
+
+```julia
+f(x) = (cos(x) - 1) / x
+
+plot(x)
+```
+
+```julia
+sin(0)
+cos(0)
+```
+
+```julia
+f(x) = x == 0 ? NaN : x * sin(1/x)
+c, delta = 0, 1/4
+plot([f, abs, x -> -abs(x)], c - delta, c + delta, legend=false)
+```
+
+```julia
+f(x) = (3x^2 - x - 10)/(x^2 - 4)
+
+plot(f, 1.9, 2.1)
+
+factor((3x^2 - x - 10)/(x^2 - 4))
+
+limit((3x^2 - x - 10)/(x^2 - 4), x => 2)
+
+11/4
+```
+
+```julia
+-1/48
+limit((1/x + 1/2)/(x^3 + 8), x => -2)
+```
+
+```julia
+f(x) = (x - 27)/(x^1/3 - 3)
+limit(f(x), x => 27)
+
+plot(f, 26.5, 27.5)
+
+ys = [f(x) for x in hs]
+
+ys = [(f(c + h) - f(c))/h for h in hs]
+[hs ys]
+```

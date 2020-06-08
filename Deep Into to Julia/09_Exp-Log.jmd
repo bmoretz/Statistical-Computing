@@ -94,3 +94,9 @@ plot(log, 1/4, 4)
 f(x) = x - 1
 plot!(f)
 ```
+
+```julia
+f(x) = log(1-x)
+g(x) = -x - x^2/2
+plot([f,g], -3, 3/4)
+```

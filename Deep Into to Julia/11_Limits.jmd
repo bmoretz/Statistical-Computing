@@ -1,7 +1,7 @@
 ---
 title : Limits
 author : Brandon Moretz
-date: 8st June 2020
+date: 8th June 2020
 markdown:
   image_dir: _assets/11/
   path: 11_Limits.md
@@ -235,9 +235,19 @@ f(x) = (x - 27)/(x^1/3 - 3)
 limit(f(x), x => 27)
 
 plot(f, 26.5, 27.5)
+```
 
-ys = [f(x) for x in hs]
+```julia
+f(x) = tan(2x) / (x - PI/2)
 
-ys = [(f(c + h) - f(c))/h for h in hs]
-[hs ys]
+limit(f(x), x => PI/2)
+```
+
+```julia
+limit(sind(x)/x, x => 0)
+```
+
+```julia
+limit(sin(x), x => 0)
+limit(cos(x), x => 0)
 ```

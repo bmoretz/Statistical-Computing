@@ -1,0 +1,37 @@
+---
+title : Limit Extensions
+author : Brandon Moretz
+date: 9th June 2020
+markdown:
+  image_dir: _assets/1/
+  path: 12_Limit-Extensions.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
+---
+
+# Limit Extensions
+
+
+$f(x) = sin(1/x)$
+
+```julia
+using CalculusWithJulia;
+```
+
+```julia
+f(x) = x* sin(1/x)
+plot(f, -1, 1)
+plot!(abs)
+plot!(x -> -abs(x))
+```
+
+```julia
+f(x) = abs(x)/x
+plot(f, -2, 2)
+```
+
+```julia
+
+```

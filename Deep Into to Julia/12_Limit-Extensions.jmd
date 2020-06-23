@@ -3,7 +3,7 @@ title : Limit Extensions
 author : Brandon Moretz
 date: 9th June 2020
 markdown:
-  image_dir: _assets/1/
+  image_dir: _assets/12/
   path: 12_Limit-Extensions.md
   ignore_from_front_matter: true
   absolute_image_path: false
@@ -169,10 +169,22 @@ limit(f(x), x => 0, dir="+")
 ```
 
 ```julia
-k = 1
+k = 2
 
-f(x) = x^(k*x)
+f(x) = x^(1/log(k, x))
+
 plot(f, 0, 1)
 limit(f(x), x => 0, dir="+")
 
+```
+
+```julia
+a = 0
+
+f(x) = sin(1/x)
+
+s₁ =
+plot(f, 0, 1)
+
+limit(f(x), x => 0, dir="+")
 ```

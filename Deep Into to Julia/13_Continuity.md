@@ -1,62 +1,83 @@
----
-title : Continuity
-author : Brandon Moretz
-date: 18th June 2020
-markdown:
-  image_dir: _assets/13/
-  path: 12_Limit-Extensions.md
-  ignore_from_front_matter: true
-  absolute_image_path: false
-export_on_save:
-  markdown: true
----
-
 # Continuity
 
-```julia
+````julia
 using CalculusWithJulia
-```
+````
 
-```julia
+
+
+````julia
 f(x) = (e^x + e^(-x))/2
 plot(f)
-```
+````
 
-```julia
+
+![](figures/13_Continuity_2_1.png)
+
+````julia
 @vars x c
 ex1 = 3x^2 + c
 ex2 = 2x-3
 del = limit(ex1, x=>0, dir="+") - limit(ex2, x=>0, dir="-")
-```
+````
 
-```julia
+
+````
+c + 3
+````
+
+
+
+````julia
 solve(del, c)
-```
+````
 
-```julia
+
+````
+1-element Array{Sym,1}:
+ -3
+````
+
+
+
+````julia
 f(x) = sqrt(sin(x))
 plot(f)
-```
+````
 
-```julia
 
+![](figures/13_Continuity_5_1.png)
+
+````julia
 @vars x
 ex3 = (x^2 - 4)/(x - 2)
 plot(ex3)
 
 limit(ex3, x => 2)
-```
+````
 
-```julia
+
+````
+4
+````
+
+
+
+````julia
 ex4 = x^2*(cos(1/x) - 1)
 plot(ex4)
 
 limit(ex4, x => 0)
+````
 
-```
 
-```julia
+````
+0
+````
 
+
+
+````julia
 c = 0
 
 f(x) = if x < 0 3x - 4 else -3 + sin(2x - pi/2) end
@@ -67,4 +88,11 @@ limit(ex6, x => 0, dir="+")
 
 ex7 = 3x - 4
 limit(ex7, x => 0)
-```
+````
+
+
+````
+-4
+````
+
+

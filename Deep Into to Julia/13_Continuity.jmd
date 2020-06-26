@@ -4,7 +4,7 @@ author : Brandon Moretz
 date: 18th June 2020
 markdown:
   image_dir: _assets/13/
-  path: 12_Limit-Extensions.md
+  path: 13_Continuity.md
   ignore_from_front_matter: true
   absolute_image_path: false
 export_on_save:

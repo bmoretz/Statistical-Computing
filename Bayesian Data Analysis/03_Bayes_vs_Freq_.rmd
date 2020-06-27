@@ -1,0 +1,229 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Bayesian vs Frequentist}
+   \rfoot{\color{headergrey}Chapter 6}
+   \lfoot{\color{headergrey}}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Bayesian Data Analysis}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 4.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(cowplot, quietly = TRUE, warn.conflicts = FALSE)
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+library(lattice, quietly = TRUE, warn.conflicts = FALSE)
+
+library(blmeco, quietly = TRUE, warn.conflicts = FALSE)
+library(tidybayes, quietly = TRUE, warn.conflicts = FALSE)
+library(arm, quietly = TRUE, warn.conflicts = FALSE)
+library(coda, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+# The Bayesian Way
+
+```{r}
+
+# utility function for plotting a posterior
+
+plot_posterior <- function(bsim) {
+   res <- data.table(mu = bsim@coef, sigma = bsim@sigma)
+   colnames(res) <- c("mu", "sigma")
+   
+   pmain <- ggplot(res, aes(mu, sigma)) +
+     geom_point(alpha = .65, col = "darkgrey") +
+     labs(x = "", y = "") +
+     stat_density_2d(aes(fill = stat(level), alpha = ..level..), geom = "polygon")
+   
+   xbox <- axis_canvas(pmain, axis = "x") +
+     geom_histogram(data = res, aes(mu, y = ..density.., fill = ..count..), size = .2, bins = 50, alpha = .85) +
+     geom_density(data = res, aes(mu), col = "darkgrey", alpha = .85) +
+     theme(legend.position = "none")
+   
+   ybox <- axis_canvas(pmain, axis = "y", coord_flip = T) +
+     geom_histogram(data = res, aes(sigma, y = ..density.., fill = ..count..), size = .2, bins = 50, alpha = .85) +
+     geom_density(data = res, aes(sigma), col = "darkgrey", alpha = .85) +
+     coord_flip() +
+     theme(legend.position = "none")
+   
+   suppressWarnings({
+     p1 <- insert_xaxis_grob(pmain, xbox, grid::unit(.2, "null"), position = "top")
+     p2 <- insert_yaxis_grob(p1, ybox, grid::unit(.2, "null"), position = "right")
+   })
+   
+   ggdraw(p2)
+}
+```
+
+## Bayes Therom
+
+$P(\theta | y) = \frac{P(\theta)P(y|\theta)}{P(y)}$
+
+### Estimating the Mean
+
+The model of the data is:
+
+$y \sim Norm(\theta, \sigma^2)$
+
+Given the data has three measurements,
+
+$y_1 = 27.1, y_2 = 14.6, y_3 = 14.6$
+
+$\sigma^2 = 20$
+
+```{r}
+n <- 200
+
+x <- rnorm(n, mean = 17, sd = .5)
+triplot.normal.knownvariance(n=n, theta.data = x, variance.known = 20, prior.theta = 0, prior.variance = 17)
+```
+
+### Estimating Mean and Variance using Simulating
+
+```{r}
+# Simulate hypothetical body height measurements
+
+true.mean <- 165
+true.sd <- 10
+y <- round(rnorm(10, mean = true.mean, sd = true.sd))
+
+mod <- lm(y ~ 1)
+mod
+
+summary(mod)$sigma
+```
+
+$y \sim Norm(\hat{\theta} = 166.3, \sigma^2 = 13.3)$
+
+```{r}
+nsim <- 5000
+bsim <- sim(mod, n.sim=nsim)
+
+str(bsim)
+
+str(bsim, max.level = 2)
+
+plot_posterior(bsim)
+
+quantile(bsim@coef, prob = c(.025, 0.5, 0.975))
+quantile(bsim@sigma, prob = c(0.025, 0.5, 0.975))
+
+HPDinterval(as.mcmc(bsim@coef))
+
+sum(bsim@coef > 160) / nsim
+mean(bsim@coef > 160)
+
+cvsim <- bsim@sigma / bsim@coef
+quantile(cvsim, prob = c(0.025, 0.5, 0.975))
+```
+
+### The Frequentist Way
+
+```{r}
+
+```
+
+
+

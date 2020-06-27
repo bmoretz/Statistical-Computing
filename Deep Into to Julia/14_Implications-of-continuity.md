@@ -400,7 +400,7 @@ find_zeros(D)
 
 ````
 Error: MethodError: no method matching find_zeros(::typeof(Main.WeaveSandBo
-x6.D))
+x7.D))
 Closest candidates are:
   find_zeros(::Any, !Matched::Any, !Matched::Any; no_pts, k, naive, kwargs.
 ..) at C:\Users\bmore\.juliapro\JuliaPro_v1.4.1-1\packages\Roots\sNoys\src\

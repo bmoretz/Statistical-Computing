@@ -65,6 +65,7 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(scales, quietly = TRUE, warn.conflicts = FALSE)
 
+
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
 library(pander, quietly = TRUE, warn.conflicts = FALSE)

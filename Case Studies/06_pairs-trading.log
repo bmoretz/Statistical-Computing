@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  27 JUN 2020 11:42
+This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  28 JUN 2020 18:39
 entering extended mode
 **./06_pairs-trading.tex
 (06_pairs-trading.tex
@@ -1097,29 +1097,102 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
 
 
 ]
+File: 06_pairs-trading_files/figure-latex/plot-symbols-1.png Graphic file (type
+ bmp)
+<06_pairs-trading_files/figure-latex/plot-symbols-1.png>
+File: 06_pairs-trading_files/figure-latex/plot-symbols-2.png Graphic file (type
+ bmp)
+<06_pairs-trading_files/figure-latex/plot-symbols-2.png>
+[2] [3]
+File: 06_pairs-trading_files/figure-latex/plot-ratio-1.png Graphic file (type b
+mp)
+<06_pairs-trading_files/figure-latex/plot-ratio-1.png>
+[4]
+LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
+(Font)              scaled to size 14.4pt on input line 359.
+LaTeX Font Info:    Font shape `TU/Arial(0)/b/n' will be
+(Font)              scaled to size 14.4pt on input line 359.
+[5]
+File: 06_pairs-trading_files/figure-latex/plot-ratio-2-1.png Graphic file (type
+ bmp)
+<06_pairs-trading_files/figure-latex/plot-ratio-2-1.png>
+[6]
 File: 06_pairs-trading_files/figure-latex/unnamed-chunk-3-1.png Graphic file (t
 ype bmp)
 <06_pairs-trading_files/figure-latex/unnamed-chunk-3-1.png>
-File: 06_pairs-trading_files/figure-latex/unnamed-chunk-3-2.png Graphic file (t
+[7] [8]
+Overfull \vbox (0.99576pt too high) detected at line 560
+ []
+
+[9]
+File: 06_pairs-trading_files/figure-latex/unnamed-chunk-6-1.png Graphic file (t
 ype bmp)
-<06_pairs-trading_files/figure-latex/unnamed-chunk-3-2.png>
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 221.
-[2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 221.
+<06_pairs-trading_files/figure-latex/unnamed-chunk-6-1.png>
+[10]
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 10.10637pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 7.21884pt on input line 605.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 6
+05.
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\omllmm.fd"
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 14.43915pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 10.10739pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 7.21957pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 14.43622pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 10.10533pt on input line 605.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 7.21811pt on input line 605.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 605
+.
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd"
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+) (C:\Users\bmore\AppData\Roaming\MiKTeX\2.9\tex/latex/microtype\mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 605
+.
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd"
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) (C:\Users\bmore\AppData\Roaming\MiKTeX\2.9\tex/latex/microtype\mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+File: 06_pairs-trading_files/figure-latex/unnamed-chunk-9-1.png Graphic file (t
+ype bmp)
+<06_pairs-trading_files/figure-latex/unnamed-chunk-9-1.png>
+[11]
+File: 06_pairs-trading_files/figure-latex/unnamed-chunk-9-2.png Graphic file (t
+ype bmp)
+<06_pairs-trading_files/figure-latex/unnamed-chunk-9-2.png>
+[12] [13]
+File: 06_pairs-trading_files/figure-latex/unnamed-chunk-11-1.png Graphic file (
+type bmp)
+<06_pairs-trading_files/figure-latex/unnamed-chunk-11-1.png>
+[14] [15] [16]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 910.
+[17]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 910.
 (06_pairs-trading.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 221.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 221.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 910.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 910.
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 22084 strings out of 414221
- 374642 string characters out of 2902595
- 832418 words of memory out of 3000000
- 39326 multiletter control sequences out of 15000+200000
- 533692 words of font info for 53 fonts, out of 3000000 for 9000
+ 22244 strings out of 414221
+ 379591 string characters out of 2902595
+ 835766 words of memory out of 3000000
+ 39442 multiletter control sequences out of 15000+200000
+ 536533 words of font info for 72 fonts, out of 3000000 for 9000
  1348 hyphenation exceptions out of 8191
- 53i,11n,121p,817b,466s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 54i,12n,121p,817b,466s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on 06_pairs-trading.pdf (2 pages).
+Output written on 06_pairs-trading.pdf (17 pages).

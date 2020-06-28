@@ -124,7 +124,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ## Our Financial Data
 
-```{r}
+```{r read-data}
 
 readData <- 
    #
@@ -150,14 +150,15 @@ readData <-
 
 ```
 
+```{r get-symbols}
 
-```{r}
 getSymbols("T", src = "yahoo", from = "1985-01-01", to = "2015-12-31")
 getSymbols("VZ", src = "yahoo", from = "1985-01-01", to = "2015-12-31")
 ```
 
 
-```{r, fig.height=4}
+```{r plot-symbols, fig.height=4}
+
 chartSeries(T)
 chartSeries(VZ)
 ```
@@ -166,7 +167,8 @@ chartSeries(VZ)
 ATT_adj = T$T.Adjusted; VER_adj <- VZ$VZ.Adjusted
 ```
 
-```{r}
+```{r combine-stocks}
+
 combineStocks <- 
    function(lseries, rseries, 
             stockNames = c(deparse(substitute((a)),
@@ -190,7 +192,7 @@ combineStocks <-
 
 ```
 
-```{r}
+```{r get-overlap}
 
 overlap <- combineStocks(T, VZ, c("ATT", "VER"))
 
@@ -199,7 +201,7 @@ names(overlap)
 range(overlap$Date)
 ```
 
-```{r}
+```{r plot-ratio}
 
 plotRatio <-
    function(r, k = 1, date = seq(along = r), ...)
@@ -224,7 +226,7 @@ plotRatio(overlap$Ratio, k = .85,
 
 ```
 
-```{r}
+```{r find-positions}
 
 findNextPosition <-
    # e.g., findNextPosition(r)
@@ -237,11 +239,11 @@ findNextPosition <-
       down = m - k * s
       
       if(startDay > 1)
-         ratio <- ratio[ - (1:(startDay-1))]
+           ratio = ratio[ - (1:(startDay-1)) ]
       
-      isExtreme <- ratio >= up | ratio <= down
-      
-      if(!any(isExtreme))
+     isExtreme = ratio >= up | ratio <= down
+     
+     if( is.na(isExtreme) || !any(isExtreme))
          return(integer())
       
       start = which(isExtreme)[1]
@@ -275,7 +277,7 @@ c <- findNextPosition(r, b[2], k = k)
 
 ### Displaying the Positions
 
-```{r}
+```{r show-position}
 
 showPosition <- 
    function(days, ratios, radius = 100) {
@@ -296,18 +298,19 @@ showPosition <-
 ```
 
 
-```{r}
+```{r plot-ratio-2}
 
 plotRatio(r, k, overlap$Date, xlab = "Date", ylab = "Ratio")
 
-showPosition(overlap$Date[a], r[a])
-showPosition(overlap$Date[b], r[b])
-showPosition(overlap$Date[c], r[c])
+#showPosition(overlap$Date[a], r[a])
+#showPosition(overlap$Date[b], r[b])
+#showPosition(overlap$Date[c], r[c])
 ```
 
 ### Finding all Positions
 
-```{r}
+```{r get-positions}
+
 getPositions <-
    function(ratio, k = 1, m = mean(ratio), s = sd(ratio))
    {
@@ -327,13 +330,6 @@ getPositions <-
       
       when
    }
-```
-
-```{r}
-pos <- getPositions(r, k)
-plotRatio(r, k, overlap$Date, xlab = "Date", ylab = "Ratio")
-invisible(lapply(pos, function(p)
-                           showPosition(overlap$Date[p], r[p])))
 ```
 
 ```{r}
@@ -360,6 +356,7 @@ showPosition(pos, r)
 ### Computing Profit
 
 ```{r}
+
 positionProfit <-
    # r = overlap$att / overlap$verizon
    # k = 1.7
@@ -391,6 +388,9 @@ positionProfit <-
       # The dollar amount of how many units we would buy of A and B
       # at the cost at the end of the position of each
       amt <- c(unitsOfA * priceA[2], unitsOfB * priceB[2])
+      
+      if(is.na(priceA[1]) | is.na(priceB[1]))
+         return(0)
       
       # which are we selling
       sellWhat <- if(priceA[1] / priceB[1] > ratioMean) "A" else "B"
@@ -472,5 +472,203 @@ testProfit <- sum(positionProfit(pos, test$ATT, test$VER), na.rm=T)
 
 testProfit * 100
 
+```
+
+## Simulation
+
+Vector Auto-regression
+
+$X_t^{(1)} = \rho X^{(1)}_{t-1} + \psi(1 - \rho)X^{(2)}_{t-1} + \epsilon^{(1)}_t$
+
+$X_t^{(2)} = \rho X^{(2)}_{t-1} + \psi(1 - \rho)X^{(1)}_{t-1}+ \epsilon^{(2)}_t$
+
+$\epsilon^{(1)}_t \sim N(0, \sigma^2_i)$
+
+...
+
+$Y^{(1)}_t = \beta^{(1)}_0 + \beta^{(1)}_1t + X^{1}_t$
+
+$Y^{(2)}_t = \beta^{(2)}_0 + \beta^{(2)}_1t + X^{2}_t$
+
+### Simulating the Stock Price Series
+
+```{r}
+stockSim <-
+   function(n = 4000, rho = 0.99, psi = 0, sigma = rep(1, 2),
+            beta0 = rep(100, 2), beta1 = rep(0, 2),
+            epsilon = matrix(rnorm(2*n, sd = sigma),
+                             nrow = n, byrow = T))
+   {
+      X <- matrix(0, nrow = n, ncol = 2)
+      X[1, ] <- epsilon[1, ]
+      
+      A <- matrix(c(rho, psi * (1-rho), psi*(1-rho), rho), nrow = 2)
+      for(i in 2:n)
+         X[i, ] = A %*% X[i-1, ] + epsilon[i, ]
+      
+      X[, 1] <- beta0[1] + beta1[1] * (1:n) + X[, 1]
+      X[, 2] <- beta0[2] + beta1[2] * (1:n) + X[, 2]
+      
+      X
+   }
+
+```
+
+```{r}
+a <- stockSim(rho = .99, psi = 0)
+
+matplot(1:nrow(a), a, type = "l", xlab = "Day", ylab = "Y",
+        col = c("black", "grey"), lty = "solid")
+
+
+beta1 <- c(.05, .1)
+
+a <- stockSim(beta1 = c(.05, .1))
+
+matplot(1:nrow(a), a, type = "l", xlab = "Day", ylab = "Y",
+        col = c("black", "grey"), lty = "solid")
+
+```
+
+### Simulation Utilities
+
+```{r}
+
+runSim <-
+function(rho = .99, psi = .9, beta0 = c(100, 100), beta1 = c(0, 0),
+         sigma = c(1, 1), n = 4000)
+{
+    X = stockSim(n, rho, psi, sigma, beta = beta0, beta1 = beta1)
+    train = X[ 1:floor(n/2), ]
+    test = X[ (floor(n/2)+1):n, ]
+    m = mean(train[, 1]/train[, 2])
+    s = sd(train[, 1]/train[, 2])
+    k.star = getBestK(train[, 1], train[, 2], m = m, s = s)
+    getProfit.K(k.star, test[, 1], test[, 2], m, s)
+}
+
+getProfit.K =
+function(k, x, y, m = mean(x/y), s = sd(x/y))
+{
+    pos = getPositions(x/y, k, m = m, s = s)
+    if(length(pos) == 0)  
+       0
+    else
+       sum(positionProfit(pos, x, y, m), na.rm=T)
+}
+
+getBestK = 
+function(x, y, ks = seq(0.1, max.k, length = N), N = 100, 
+         max.k = NA, m = mean(x/y), s = sd(x/y))
+{
+    if(is.na(max.k)) {
+       r = x/y
+       max.k = max(r/sd(r))
+    }
+
+    pr.k = sapply(ks, getProfit.K, x, y, m = m, s = s)
+    median(ks[ pr.k == max(pr.k) ])
+}
+
+simProfitDist = 
+function(..., B = 999) 
+      sapply(1:B,  function(i, ...) runSim(...), ...)
+
+```
+
+### Run the Simulation
+
+```{r}
+system.time({ x = simProfitDist( .99, .9, c(0, 0)) })
+
+ggplot(data.table(profit = x), aes(profit)) +
+   geom_density()
+```
+
+```{r}
+g <- expand.grid(psi = seq(.8, .99, length.out = 20),
+                 beta1 = seq(-0.01, .01, length.out = 20),
+                 beta2 = seq(-0.1, 0.01, length.out = 20))
+
+dim(g)
+```
+
+```{r}
+Rprof("sim.prof")
+
+system.time({x = simProfitDist( .99, .9, c(0, 0))})
+
+Rprof(NULL)
+
+head(summaryRprof("sim.prof")$by.self)
+```
+
+```{r}
+counter <- 0L
+trace(findNextPosition, quote( counter <<- counter + 1L),
+      print = FALSE)
+
+system.time({x = simProfitDist( .99, .9, c(0, 0))})
+
+counter
+
+untrace(findNextPosition)
+```
+
+```{r}
+library(compiler)
+stockSim.cmp <- cmpfun(stockSim)
+
+```
+
+```{r}
+
+tm.orig <- system.time({replicate(80, stockSim())})
+tm.compiled <- system.time({replicate(80, stockSim.cmp())})
+
+tm.orig/tm.compiled
+```
+
+```{r}
+c.lib <- paste(here(), "Case Studies", "06_stockSim.dll", sep="/")
+
+dyn.load(c.lib)
+```
+
+```{r}
+stockSim.c <-
+   function(n = 4000, rho = 0.99, psi = 0, sigma = rep(1, 2),
+            beta0 = rep(100, 2), beta1 = rep(0, 2),
+            epsilon = matrix(rnorm(2*n, sd = sigma), nrow = n))
+   {
+      X <- matrix(0, nrow = n, ncol = 2)
+      X[1, ] <- epsilon[1, ]
+      
+      X <- .C("stockSim", X, as.integer(n), rho, psi, epsilon)[[1]]
+      
+      X[, 1] <- beta0[1] + beta1[1] + (1:n) + X[, 1]
+      X[, 2] <- beta0[2] + beta1[2] + (1:n) + X[, 2]
+      
+      X
+   }
+```
+
+
+```{r}
+
+e <- matrix(rnorm(2*4000, sd = c(1, 1)), , 2)
+tmp1 <- stockSim.c(epsilon = e)
+tmp2 <- stockSim(epsilon = e)
+
+```
+
+```{r}
+
+stockSim <- stockSim.c
+
+Rprof("sim.prof")
+system.time({x = simProfitDist(.99, .9, c(0, 0))})
+Rprof(NULL)
+head(summaryRprof("sim.prof")$by.self)
 ```
 

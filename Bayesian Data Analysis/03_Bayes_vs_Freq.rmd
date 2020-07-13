@@ -31,7 +31,7 @@ header-includes:
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
    \fancyhead[C]{\Large\bfseries\color{headergrey}Bayesian vs Frequentist}
-   \rfoot{\color{headergrey}Chapter 6}
+   \rfoot{\color{headergrey}Chapter 3}
    \lfoot{\color{headergrey}}
    \fancyfoot[C]{\rmfamily\color{headergrey}Bayesian Data Analysis}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm

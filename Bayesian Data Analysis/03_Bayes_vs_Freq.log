@@ -1,7 +1,7 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  27 JUN 2020 18:58
+This is XeTeX, Version 3.14159265-2.6-0.999992 (MiKTeX 2.9.7300 64-bit) (preloaded format=xelatex 2020.3.20)  1 JUL 2020 16:28
 entering extended mode
-**./03_Bayes_vs_Freq_.tex
-(03_Bayes_vs_Freq_.tex
+**./03_Bayes_vs_Freq.tex
+(03_Bayes_vs_Freq.tex
 LaTeX2e <2020-02-02> patch level 5
 L3 programming layer <2020-03-06> ("C:\Program Files\MiKTeX 2.9\tex/latex/base\
 report.cls"
@@ -729,8 +729,8 @@ File: t3cmr.fd 2001/12/31 TIPA font definitions
 LaTeX Font Warning: Font shape `T3/lmss/m/n' undefined
 (Font)              using `T3/cmr/m/n' instead on input line 357.
 
-))) (03_Bayes_vs_Freq_.aux)
-\openout1 = `03_Bayes_vs_Freq_.aux'.
+))) (03_Bayes_vs_Freq.aux)
+\openout1 = `03_Bayes_vs_Freq.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 140.
 LaTeX Font Info:    ... okay on input line 140.
@@ -1135,18 +1135,18 @@ LaTeX Font Info:    Font shape `TU/Arial(0)/m/n' will be
 (Font)              scaled to size 14.4pt on input line 185.
 LaTeX Font Info:    Font shape `TU/Arial(0)/b/n' will be
 (Font)              scaled to size 14.4pt on input line 185.
-File: 03_Bayes_vs_Freq__files/figure-latex/unnamed-chunk-2-1.png Graphic file (
-type bmp)
-<03_Bayes_vs_Freq__files/figure-latex/unnamed-chunk-2-1.png>
+File: 03_Bayes_vs_Freq_files/figure-latex/unnamed-chunk-2-1.png Graphic file (t
+ype bmp)
+<03_Bayes_vs_Freq_files/figure-latex/unnamed-chunk-2-1.png>
 [2] [3]
-File: 03_Bayes_vs_Freq__files/figure-latex/unnamed-chunk-4-1.png Graphic file (
-type bmp)
-<03_Bayes_vs_Freq__files/figure-latex/unnamed-chunk-4-1.png>
+File: 03_Bayes_vs_Freq_files/figure-latex/unnamed-chunk-4-1.png Graphic file (t
+ype bmp)
+<03_Bayes_vs_Freq_files/figure-latex/unnamed-chunk-4-1.png>
 [4] [5]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 395.
 [6]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 395.
-(03_Bayes_vs_Freq_.aux)
+(03_Bayes_vs_Freq.aux)
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 395.
 Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 395.
 
@@ -1155,11 +1155,11 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
  ) 
 Here is how much of TeX's memory you used:
  22192 strings out of 414221
- 377350 string characters out of 2902595
- 834573 words of memory out of 3000000
+ 377328 string characters out of 2902595
+ 834569 words of memory out of 3000000
  39397 multiletter control sequences out of 15000+200000
  536533 words of font info for 72 fonts, out of 3000000 for 9000
  1348 hyphenation exceptions out of 8191
- 54i,11n,121p,818b,467s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 54i,11n,121p,817b,467s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on 03_Bayes_vs_Freq_.pdf (6 pages).
+Output written on 03_Bayes_vs_Freq.pdf (6 pages).

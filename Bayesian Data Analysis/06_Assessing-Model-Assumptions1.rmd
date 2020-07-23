@@ -31,7 +31,7 @@ header-includes:
    \rhead{\color{headergrey}\today}
    \fancyhead[L]{\color{headergrey}Moretz, Brandon}
    \fancyhead[C]{\Large\bfseries\color{headergrey}Assessing Model Assumptions}
-   \rfoot{\color{headergrey}Chapter 5}
+   \rfoot{\color{headergrey}Chapter 6}
    \lfoot{\color{headergrey}}
    \fancyfoot[C]{\rmfamily\color{headergrey}Bayesian Data Analysis}
 geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm

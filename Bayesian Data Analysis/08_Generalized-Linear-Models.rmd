@@ -1,0 +1,362 @@
+---
+title: ''
+mainfont: Arial
+fontsize: 12pt
+documentclass: report
+header-includes:
+- \PassOptionsToPackage{table}{xcolor}
+- \usepackage{caption}
+- \usepackage{amssymb}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage[table]{xcolor}
+- \usepackage{fancyhdr}
+- \usepackage{boldline}
+- \usepackage{tipa}
+   \definecolor{headergrey}{HTML}{545454}
+   \definecolor{msdblue}{HTML}{1C93D1}
+   \pagestyle{fancy}
+   \setlength\headheight{30pt}
+   \rhead{\color{headergrey}\today}
+   \fancyhead[L]{\color{headergrey}Moretz, Brandon}
+   \fancyhead[C]{\Large\bfseries\color{headergrey}Linear Mixed Effects Models}
+   \rfoot{\color{headergrey}Chapter 7}
+   \lfoot{\color{headergrey}}
+   \fancyfoot[C]{\rmfamily\color{headergrey}Bayesian Data Analysis}
+geometry: left = 1cm, right = 1cm, top = 2cm, bottom = 3cm
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r knitr_setup, include = FALSE}
+
+knitr::opts_chunk$set(
+   echo = T, 
+   eval = TRUE, 
+   dev = 'png', 
+   fig.width = 9, 
+   fig.height = 4.5)
+
+options(knitr.table.format = "latex")
+
+```
+
+```{r report_setup, message = FALSE, warning = FALSE, include = FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(scales, quietly = TRUE, warn.conflicts = FALSE)
+library(cowplot, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(pander, quietly = TRUE, warn.conflicts = FALSE)
+library(formattable, quietly = TRUE, warn.conflicts = FALSE)
+
+library(grid, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(extrafont, quietly = TRUE, warn.conflicts = FALSE)
+library(tinytex, quietly = TRUE, warn.conflicts = FALSE)
+
+library(here, quietly = TRUE, warn.conflicts = FALSE)
+
+library(lattice, quietly = TRUE, warn.conflicts = FALSE)
+
+library(blmeco, quietly = TRUE, warn.conflicts = FALSE)
+library(tidybayes, quietly = TRUE, warn.conflicts = FALSE)
+library(arm, quietly = TRUE, warn.conflicts = FALSE)
+library(coda, quietly = TRUE, warn.conflicts = FALSE)
+library(nlme, quietly = TRUE, warn.conflicts = FALSE)
+library(sp, quietly = TRUE, warn.conflicts = FALSE)
+library(gstat, quietly = TRUE, warn.conflicts = FALSE)
+library(lme4, quietly = TRUE, warn.conflicts = FALSE)
+
+options(tinytex.verbose = TRUE)
+suppressMessages(library("tidyverse"))
+
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig) %>%
+    kable_styling(bootstrap_options = c("striped", "hover")) %>%
+      kableExtra::kable_styling(latex_options = "hold_position")
+}
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             plot.title = element_text(hjust = 0.5, size = 16, face = "bold", color = "darkgreen"),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+             plot.subtitle = element_text(face = "bold", size = 8, colour = "darkred"),
+             legend.title = element_text(size = 12, color = "darkred", face = "bold"),
+             legend.position = "right", legend.title.align=0.5,
+             panel.border = element_rect(linetype = "solid", 
+                                         colour = "lightgray"), 
+             plot.margin = unit(c( 0.1, 0.1, 0.1, 0.1), "inches"))
+
+```
+
+```{r pander_setup, include = FALSE}
+
+knitr::opts_chunk$set(comment = NA)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+# Linear Mixed Effects Models
+
+## Why Mixed Effects Models?
+
+### Pooling
+
+Complete:
+
+$\hat{y}_i = \beta_o$
+$y_i \sim Norm(\hat{y}_i, \sigma^2)$
+
+Partial:
+
+$\hat{y_i} = \beta_0 + b_{g_{i}}$
+$y_i \sim Norm(\hat{y_i}, \sigma^2)$
+$b_g \sim Norm(0, \sigma^2_b)$
+
+No pooling:
+
+$\hat{y} = \beta_{g_i}$
+$y_i \sim Norm(\hat{y_i}, \sigma^2)$
+
+## Fitting Linear Mixed Models
+
+```{r}
+data("cortbowl")
+
+dat <- cortbowl
+mod <- lmer(log(totCort) ~ Implant + days + Implant:days + (1|Ring), 
+            data = dat, REML = T)
+
+summary(mod)
+
+round(fixef(mod), 3)
+
+ranef(mod)
+```
+
+## Restricted Maximum Liklihood Estimation
+
+```{r}
+mod <- lmer(log(totCort) ~ Implant + days + Implant:days + (1|Ring), 
+            data = dat, REML = F) # use ML
+
+```
+
+## Assessing Model Assumptions
+
+```{r}
+par(mfrow=c(2,2))
+scatter.smooth(fitted(mod), resid(mod)); abline(h=0, lty=2)
+title("Tukey-Anscombe Plot")
+
+qqnorm(resid(mod), main = "norm QQ-plot, residuals") # qq of residuals
+qqline(resid(mod))
+scatter.smooth(fitted(mod), sqrt(abs(resid(mod))))
+
+qqnorm(ranef(mod)$Ring[, 1], main = "normal QQ-plot, random effects")
+qqline(ranef(mod)$Ring[, 1]) # qq random effects
+```
+
+## Drawing Conclusions
+
+```{r}
+nsim <- 2000
+bsim <- sim(mod, n.sim = nsim)
+str(bsim)
+
+round(apply(bsim@fixef, 2, quantile, prob=c(0.025, 0.5, 0.975)), 3)
+
+```
+
+```{r}
+
+imp_factor <- factor(c("C", "P"), levels = levels(dat$Implant))
+days_factor <- factor(c(1, 2, 3))
+
+newdat <- expand.grid(Implant = imp_factor, days = days_factor)
+
+Xmat <- model.matrix(~Implant + days + Implant:days, data = newdat)
+fitmat <- matrix(ncol = nsim, nrow = nrow(newdat))
+for(i in 1:nsim) fitmat[, i] <- Xmat %*% bsim@fixef[i, ] # fitted values
+newdat$lower <- apply(fitmat, 1, quantile, prob = 0.025)
+newdat$upper <- apply(fitmat, 1, quantile, prob = 0.975)
+newdat$fit <- Xmat %*% fixef(mod)
+
+ggplot(newdat, aes(days, fit, color = Implant)) +
+   geom_point()
+
+```
+
+## Frequentist Results
+
+```{r}
+
+```
+
+## Random Intercept and Random Slope
+
+```{r}
+
+data(wingbowl)
+dat <- wingbowl
+dat$Age.z <- scale(dat$Age)
+mod <- lmer(Wing ~ Age.z + Implant + Age.z:Implant + (Age.z|Ring),
+          data = dat, REML = F)
+mod
+```
+
+```{r}
+
+par(mfrow=c(1, 2))
+qqnorm(ranef(mod)$Ring[, 1]) # Intercept
+qqline(ranef(mod)$Ring[, 1])
+
+qqnorm(ranef(mod)$Ring[, 2]) # Slope
+qqline(ranef(mod)$Ring[, 2])
+
+nsim <- 2000
+bsim <- sim(mod, n.sim = nsim)
+apply(bsim@fixef, 2, quantile, prob = c(0.025, 0.975))
+
+quantile(bsim@fixef[, "Age.z:ImplantP"] / sd(dat$Age), prob = c(0.025, 0.975))
+```
+
+```{r}
+newdat <- expand.grid(Age = seq(23, 45, length = 100),
+                      Implant = levels(dat$Implant))
+
+newdat$Age.z <- (newdat$Age - mean(dat$Age)) / sd(dat$Age)
+
+head(newdat)
+dim(newdat)
+
+Xmat <- model.matrix(~Age.z + Implant + Age.z:Implant, data = newdat)
+fitmat <- matrix(ncol = nsim, nrow = nrow(newdat))
+
+dim(fitmat)
+dim(bsim@fixef)
+
+head(bsim@fixef)
+
+for(i in 1:nsim) {
+   fitmat[, i] <- Xmat %*% bsim@fixef[i, ]
+}
+
+dim(bsim@fixef)
+
+newdat$lower <- apply(fitmat, 1, quantile, prob = 0.025)
+newdat$upper <- apply(fitmat, 1, quantile, prob = 0.975)
+```
+
+```{r}
+par(mfrow = c(1, 2), mar=c(5, 1, 1, 1), oma = c(0, 4, 0, 0))
+plot(dat$Age.z, dat$Wing, pch=1, cex = 0.8, las = 1,
+     col = c("orange", "blue")[as.numeric(dat$Implant)],
+     xlab = "Age (days)", ylab = NA, xaxt = "n")
+at.x_orig <- seq(25, 45, by = 5) # values on the x-axis, original scale
+at.x <- (at.x_orig - mean(dat$Age)) / sd(dat$Age) # transformed scale
+axis(1, at = at.x, labels = at.x_orig) # original values at transformed
+mtext("Wing length (mm)", side = 2, outer = T, line = 2, cex = 1.2, adj=0.6)
+abline(fixef(mod)[1], fixef(mod)[2], col = "orange", lwd=2) # for C
+abline(fixef(mod)[1] + fixef(mod)[3], fixef(mod)[2] + fixef(mod)[4],
+       col = "blue", lwd = 2)
+
+for(i in 1:2) {
+   index <- newdat$Implant == levels(newdat$Implant)[i]
+   
+   x <- c(newdat$Age.z[index], rev(newdat$Age.z[index]))
+   y <- c(newdat$lower[index], rev(newdat$upper[index]))
+   
+   polygon(x, y,
+           border = NA, col = c(rgb(1, 0.65, 0, 0.5), rgb(0, 0, 1, 0.5))[i])
+}
+
+plot(dat$Age.z, dat$Wing, pch=1, cex=0.8, las=1,
+     col = c("orange", "blue")[as.numeric(dat$Implant)],
+     xlab = "Age (days)", ylab = NA, yaxt = "n", xaxt = "n")
+at.x_orig <- seq(25, 45, by = 5)
+ax.x <- (at.x_orig - mean(dat$Age)) / sd(dat$Age)
+axis(1, at = at.x, labels = at.x_orig)
+indtreat <- tapply(dat$Implant, dat$Ring, function(x) as.character(x[1]))
+for(i in 1:86) {
+   if(indtreat[i] == "C") abline(fixef(mod)[1] + ranef(mod)$Ring[i, 1],
+                                 fixef(mod)[2] + ranef(mod)$Ring[i, 2],
+                                 col = "Orange") else
+                                    abline(fixef(mod)[1] + fixef(mod)[3],
+                                           ranef(mod)$Ring[i, 1], fixef(mod)[2] +
+                                              fixef(mod)[4] + ranef(mod)$Ring[i, 2],
+                                           col = "blue")
+}
+
+```
+
+## Nested and Crossed Random Effects
+
+```{r}
+data(cortbowl)
+dat <- cortbowl
+
+mod <- lmer(log(totCort) ~ Implant + days + Implant:days + (1|Brood) + (1|Ring),
+            data = dat, REML = F)
+
+mod
+
+```
+
+```{r}
+mod <- lmer(log(totCort) ~ Implant + days + Implant:days + (1|Brood/Ring),
+            data = dat, REML = F)
+mod
+```
+
+```{r}
+data("ellenberg")
+
+ellenberg$gradient <- paste(ellenberg$Year, ellenberg$Soil)
+table(ellenberg$Species, ellenberg$gradient)
+```
+
+```{r}
+ellenberg$Water.z <- as.numeric(scale(ellenberg$Water))
+mod <- lmer(log(Yi.g) ~ Water.z + I(Water.z^2) +
+               (Water.z + I(Water.z^2)|Species) + (1|gradient),
+            data = ellenberg)
+
+mod
+```
+
+```{r}
+
+```
+
